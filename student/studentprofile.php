@@ -96,7 +96,7 @@ include('includes/menu.php');
 				  <label for="name">Student Number: </label>
 				  <?php echo "<b>$snum</b>";  ?>
 				  <label for="name">Course: </label>
-				  <?php echo "<b>BSIT</b>";  ?>
+				  <?php echo "<b>" . strtoupper($course) . "</b>";  ?>
 				  <label for="name">Section/Year Level: </label>
 				  <?php echo "<b>$yrlvlsec</b>";  ?>
 				</li>
@@ -181,12 +181,10 @@ include('includes/menu.php');
 			  
 
 
-<div align='center'><input type='submit' name='register' value='Add new user'>&nbsp;&nbsp;
-<input type='reset' name='clear' value='Clear'></div>
-</form>
-</center>
-	</div>
-	<div><br></div>
+<div align='center' class='no-print'>
+	<input type='button' value='Print Profile' onclick="window.print()">&nbsp;&nbsp;
+	<input type='button' value='Change Password' onclick="window.location='changepass.php'">&nbsp;&nbsp;
+	<input type='button' value='Back to Home' onclick="window.location='studentindex.php'">
 </div>
 <!-- /Main -->
 

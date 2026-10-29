@@ -94,7 +94,7 @@ include('includes/menu1.php');
 				  <label for="name">UserName<em>*</em></label>
 				  <input type='text' required='required' maxlength='50' id="name" name='username' value="<?php echo $username ;?>"/>
 				  <label for="name">Password<em>*</em></label>
-				  <input type='password' required='required' maxlength='50' id="name" name='password' value="<?php echo $password ;?>" />
+				  <input type='text' required='required' maxlength='50' id="name" name='password' value="<?php echo $password ;?>" />
 				</li>
 				
   </ol>
