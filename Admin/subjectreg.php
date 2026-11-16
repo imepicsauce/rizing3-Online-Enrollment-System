@@ -1,7 +1,7 @@
 <?php
 	session_start();
-	include('logcheck.php');
-	include('includes/conn.php');
+	include(__DIR__ . '/../includes/logcheck.php');
+	require_once(__DIR__ . '/../config/db.php');
 	
 	
 ?>
@@ -11,24 +11,23 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>John Paul College</title>
 
-<link rel="stylesheet" type="text/css" media="all" href="niceforms-default.css" />
 	
 
-<link href = "style.css" rel = "stylesheet" type = "text/css"/>
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript">
 $('.confirm').live('click', function(){
     return confirm("Are you sure?");
 });
 </script>
 
-	<script src="js/jquery-1.7.min.js"></script>
+	<script src="../assets/js/jquery-1.7.min.js"></script>
 
-	<script src="js/jquery.dataTables.js" type="text/javascript"></script>
-    <script src="js/jquery.easing.1.3.js"></script>
+	<script src="../assets/js/jquery.dataTables.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.easing.1.3.js"></script>
 
   <style type="text/css">
-			@import "css/demo_table_jui.css";
-            @import "css/jquery-ui-1.8.4.custom.css";
+			@import "../assets/css/vendor/demo_table_jui.css";
+            @import "../assets/css/vendor/jquery-ui-1.8.4.custom.css";
     </style>
         
         <script type="text/javascript" charset="utf-8">
@@ -46,7 +45,7 @@ $('.confirm').live('click', function(){
 
 ?>
 
-<body>
+<body class="app">
 
 <div class='header'>
 </div>
@@ -64,7 +63,7 @@ include('includes/menu1.php');
 <div id="main">
 	<div class="shell">
 	<div style='float:left; margin-left: 350px;'><center><b><h1>Subjects List</h1></b></center></div>
-	<div style='float:right; margin-right:25px; margin-bottom:20px;'><a href='addnewsubj.php'><img src='iconadd2.png' width='50' ></a></div>
+	<div style='float:right; margin-right:25px; margin-bottom:20px;'><a href='addnewsubj.php'><img src='../assets/img/iconadd2.png' width='50' ></a></div>
 		<form method="post" class="niceform" >
 
 		

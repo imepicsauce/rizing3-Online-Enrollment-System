@@ -1,7 +1,7 @@
 <?php
 	session_start();
-	include('includes/conn.php');
-	include('logcheck.php');
+	require_once(__DIR__ . '/../config/db.php');
+	include(__DIR__ . '/../includes/logcheck.php');
 	$getquery=$conn->query("SELECT * FROM usertbl WHERE user_type='admin' LIMIT 1");
 	$rowfetch=mysqli_fetch_array($getquery);
 	if(isset($_POST['register']))
@@ -27,11 +27,11 @@
 <title>John Paul College</title>
 
 
-<link href = "style.css" rel = "stylesheet" type = "text/css"/>
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
 
 </head>
 
-<body>
+<body class="app">
 
 <div class='header'>
 </div>

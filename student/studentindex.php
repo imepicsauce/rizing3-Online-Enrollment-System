@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('logcheck.php');
+include(__DIR__ . '/../includes/logcheck.php');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -8,10 +8,10 @@ include('logcheck.php');
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>John Paul College</title>
 
-<link href = "style.css" rel = "stylesheet" type = "text/css"/>
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
 </head>
 
-<body>
+<body class="app">
 
 <div class='header'>
 </div>
@@ -52,7 +52,7 @@ include('includes/menu.php');
 					<ul>
 						<li>
 							<div class="post-image">
-								<a href="#"><img src="news1.jpg" width='90' height='70' alt="" /></a>
+								<a href="#"><img src="../assets/img/news1.jpg" width='90' height='70' alt="" /></a>
 							</div>
 							<div class="post-data">
 								<h5><a href="#">September 11th, 2010</a></h5>
@@ -63,7 +63,7 @@ include('includes/menu.php');
 						
 						<li class="last">
 							<div class="post-image">
-								<a href="#"><img src="news2.jpg" width='90' height='70'  alt="" /></a>
+								<a href="#"><img src="../assets/img/news2.jpg" width='90' height='70'  alt="" /></a>
 							</div>
 							<div class="post-data">
 								<h5><a href="#">September 10th, 2010</a></h5>
@@ -91,8 +91,8 @@ include('includes/menu.php');
 	                    <li><a href="#">TESDA COURSES</a></li>
 				</ul>
 				<div class="post-image">
-								<a href="#"><img src="news3.jpg" width='100' height='100' alt="" /></a>
-								<a href="#"><img src="news4.jpg" width='100' height='100' alt="" /></a>
+								<a href="#"><img src="../assets/img/news3.jpg" width='100' height='100' alt="" /></a>
+								<a href="#"><img src="../assets/img/news4.jpg" width='100' height='100' alt="" /></a>
 							</div>
 			</div>
 		

@@ -1,7 +1,7 @@
 <?php
 session_start();
-include('includes/conn.php');
-include('logcheck.php');
+require_once(__DIR__ . '/../config/db.php');
+include(__DIR__ . '/../includes/logcheck.php');
 	$stid=$_SESSION['studnum'];
 				$getprofile=$conn->query("SELECT * FROM studenttbl WHERE studnum = '$stid'");
 				$rows=mysqli_fetch_array($getprofile);
@@ -35,20 +35,13 @@ document.write('<form><input type=button name=print value="Print" onClick="windo
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Enrollment Form</title>
 
-	<link href = "css/style.css" rel = "stylesheet" type = "text/css"/>
-	<link rel="stylesheet" href="jquery-ui-1.10.4.custom/development-bundle/themes/base/jquery.ui.all.css">
-	<script src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js"></script>
-	<script src="jquery-ui-1.10.4.custom/development-bundle/ui/jquery.ui.core.js"></script>
-	<script src="jquery-ui-1.10.4.custom/development-bundle/ui/jquery.ui.widget.js"></script>
-	<script src="jquery-ui-1.10.4.custom/development-bundle/ui/jquery.ui.datepicker.js"></script>
-	<link rel="stylesheet" href="jquery-ui-1.10.4.custom/development-bundle/demos/demos.css">
 
 	
 	</head>
 	
 	<body>
 		
-		<div align='center'><img width='130' height='100' src='../logo.jpg'></div><div align='center' style='margin-top: 20px; font-family: Georgia, &quot;Times New Roman&quot;, Times, serif;'>John Paul College<br>MG ANDAYA COMPOUND<br>Odiong, Roxas, Oriental Mindoro, Philippines</div></div><br>
+		<div align='center'><img width='130' height='100' src='../assets/img/logo-login.jpg'></div><div align='center' style='margin-top: 20px; font-family: Georgia, &quot;Times New Roman&quot;, Times, serif;'>John Paul College<br>MG ANDAYA COMPOUND<br>Odiong, Roxas, Oriental Mindoro, Philippines</div></div><br>
 		<div align='center' style='margin-top: 20px; font-family: Georgia, &quot;Times New Roman&quot;, Times, serif;'> UNOFFICIAL ENROLLMENT FORM 
 		</div>
 		<div align='center' style='margin-top: 0px; font-family: Georgia, &quot;Times New Roman&quot;, Times, serif;'> <?php echo "$_POST[sem]"; ?> School Year 2015 - 2016

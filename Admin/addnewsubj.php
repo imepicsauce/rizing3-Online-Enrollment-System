@@ -1,9 +1,9 @@
 <?php
 	session_start();
-	include('logcheck.php');
+	include(__DIR__ . '/../includes/logcheck.php');
 	if(isset($_POST['register']))
 	{
-		include('includes/conn.php');
+		require_once(__DIR__ . '/../config/db.php');
 		
 		$course=$_POST['course'];
 		$stitle=$_POST['stitle'];
@@ -49,11 +49,11 @@
 <title>John Paul College</title>
 
 
-<link href = "style.css" rel = "stylesheet" type = "text/css"/>
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
 
 </head>
 
-<body>
+<body class="app">
 
 <div class='header'>
 </div>

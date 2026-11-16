@@ -2,8 +2,8 @@
 	session_start();
 	
 	$getID=$_SESSION['userID'];
-	include('includes/conn.php');
-	include('logcheck.php');
+	require_once(__DIR__ . '/../config/db.php');
+	include(__DIR__ . '/../includes/logcheck.php');
 	
 	
 	$getprofile=$conn->query("SELECT * FROM studenttbl WHERE accountID = '$getID'");
@@ -37,11 +37,11 @@
 <title>John Paul College</title>
 
 
-<link href = "style.css" rel = "stylesheet" type = "text/css"/>
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
 
 </head>
 
-<body>
+<body class="app">
 
 <div class='header'>
 </div>

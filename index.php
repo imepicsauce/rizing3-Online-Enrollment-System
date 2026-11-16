@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once('conn.php');
+require_once(__DIR__ . '/config/db.php');
 
 if(isset($_POST['submit']))
 {
@@ -42,10 +42,10 @@ if(isset($_POST['submit']))
 <head>
 <title>LOGIN PAGE</title>
 
-<link href = "style.css" rel = "stylesheet" type = "text/css"/>
+<link href="assets/css/style.css" rel="stylesheet" type="text/css"/>
 
 </head>
-<body>
+<body class="login">
 
 
 
@@ -56,7 +56,7 @@ if(isset($_POST['submit']))
 	
 <form method="POST">	
 <div style="float:left; margin-top: -40px; margin-left: 40px;">
-<img src="logo.jpg" width="160px" width="110px">
+<img src="assets/img/logo-login.jpg" width="160px" width="110px">
 </div>
 <div style="margin-left: auto; margin-right: auto;">
 	

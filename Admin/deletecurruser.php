@@ -2,7 +2,7 @@
 if(isset($_GET['accid']))
 {
 	$num=$_GET['accid'];
-	require('includes/conn.php');
+	require_once(__DIR__ . '/../config/db.php');
 	$getval=mysql_query("SELECT * FROM studenttbl WHERE ID = $num");
 	$rowval=mysql_fetch_array($getval);
 	$accountID	= $rowval['accountID'];

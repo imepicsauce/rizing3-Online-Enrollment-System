@@ -1,8 +1,8 @@
 <?php
 	session_start();
-	include('logcheck.php');
+	include(__DIR__ . '/../includes/logcheck.php');
 	$getID=$_SESSION['userID'];
-	include('includes/conn.php');
+	require_once(__DIR__ . '/../config/db.php');
 	
 	$getprofile=$conn->query("SELECT * FROM studenttbl WHERE accountID = '$getID'");
 	$rows=mysqli_fetch_array($getprofile);
@@ -54,11 +54,11 @@
 <title>John Paul College</title>
 
 
-<link href = "style.css" rel = "stylesheet" type = "text/css"/>
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
 
 </head>
 
-<body>
+<body class="app">
 
 <div class='header'>
 </div>

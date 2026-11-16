@@ -1,7 +1,7 @@
 <?php
 	session_start();
-	include('logcheck.php');
-	include('includes/conn.php');
+	include(__DIR__ . '/../includes/logcheck.php');
+	require_once(__DIR__ . '/../config/db.php');
 	
 	
 ?>
@@ -11,24 +11,23 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>John Paul College</title>
 
-<link rel="stylesheet" type="text/css" media="all" href="niceforms-default.css" />
 	
 
-<link href = "style.css" rel = "stylesheet" type = "text/css"/>
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript">
 $('.confirm').live('click', function(){
     return confirm("Are you sure?");
 });
 </script>
 
-	<script src="js/jquery-1.7.min.js"></script>
+	<script src="../assets/js/jquery-1.7.min.js"></script>
 
-	<script src="js/jquery.dataTables.js" type="text/javascript"></script>
-    <script src="js/jquery.easing.1.3.js"></script>
+	<script src="../assets/js/jquery.dataTables.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.easing.1.3.js"></script>
 
   <style type="text/css">
-			@import "css/demo_table_jui.css";
-            @import "css/jquery-ui-1.8.4.custom.css";
+			@import "../assets/css/vendor/demo_table_jui.css";
+            @import "../assets/css/vendor/jquery-ui-1.8.4.custom.css";
     </style>
         
         <script type="text/javascript" charset="utf-8">
@@ -43,7 +42,7 @@ $('.confirm').live('click', function(){
 </head>
 
 
-<body>
+<body class="app">
 
 <div class='header'>
 </div>
@@ -61,7 +60,7 @@ include('includes/menu1.php');
 <div id="main">
 	<div class="shell">
 	<div style='float:left; margin-left: 450px;'><center><b><h1>Registered User List</h1></b></center></div>
-	<div style='float:right; margin-right:25px; margin-bottom:20px;'><a href='adminedit.php'><img src='adminedit.png' title='edit admin details' width='50' ></a><a href='addnewuser.php'><img title='Add new user' src='iconadd.png' width='50' ></a></div>
+	<div style='float:right; margin-right:25px; margin-bottom:20px;'><a href='adminedit.php'><img src='../assets/img/adminedit.png' title='edit admin details' width='50' ></a><a href='addnewuser.php'><img title='Add new user' src='../assets/img/iconadd.png' width='50' ></a></div>
 		<form method="post" class="niceform" >
 
 		
@@ -75,7 +74,7 @@ include('includes/menu1.php');
               </thead>    
               <tbody>
 			  <?php
-			  include('includes/conn.php');
+			  require_once(__DIR__ . '/../config/db.php');
 				$getusers=$conn->query("SELECT * FROM studenttbl");
 				if(mysqli_num_rows($getusers)==0)
 				{

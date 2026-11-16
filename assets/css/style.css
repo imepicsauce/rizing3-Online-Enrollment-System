@@ -1,0 +1,436 @@
+/* ==========================================================================
+   Online Enrollment System - single stylesheet
+   Two sections, selected by the class on <body>:
+     body.login  -> index.php (login page)
+     body.app    -> every Admin/ and student/ page
+   ========================================================================== */
+
+/* ---------- 1. Login page ---------- */
+body.login {
+  background-image:url('../img/dommc.jpg');
+  background-repeat: no-repeat;
+  background-size: 1500px 1000px;
+  background-position: center;
+}
+
+:where(body.login) .loginForm {
+  margin-top: 150px;
+  margin-left: auto;
+  margin-right: auto;
+  position: aboslute;
+  width: 560px;
+  height: 230px;
+  padding: 10px;
+  background: #FFFFFF;
+  border: 1px #666666 dotted;
+  font-size: 14px;
+  color: #669900;
+  opacity: 0.6;
+}
+
+:where(body.login) input.text {
+  color:#000000;
+  font:'trebuchet ms',helvetica,sans-serif;
+  font-size: 12px;
+}
+
+:where(body.login) input.btn {
+  width: 200px;
+  color:#000000;
+  font: bold small 'trebuchet ms',helvetica,sans-serif;
+}
+
+/* ---------- 2. Application pages (Admin and student) ---------- */
+body.app {
+  background-image:url('../img/dommc.jpg');
+  background-repeat: no-repeat;
+  background-size: 1500px 1000px;
+  background-position: center;
+  margin-top:10px;
+  font-size: 12px;
+  font-family: Arial, "Trebuchet MS", sans-serif;
+  color:#565656;
+}
+
+:where(body.app),
+:where(body.app) * {
+  padding: 0;
+  margin: 0;
+  outline: 0;
+}
+
+:where(body.app) .header {
+  width: 1050px;
+  height: 180px;
+  margin: 0 auto;
+  overflow: hidden;
+  background:url(../img/header.jpg) no-repeat;
+  background-size: 100% 100%;
+  border: 1px #000000 solid;
+}
+
+:where(body.app) a {
+  color: #565656;
+  text-decoration: underline;
+}
+
+:where(body.app) a:hover {
+  text-decoration:none;
+}
+
+:where(body.app) .cl,
+:where(body.app) .clear {
+  display: block;
+  height: 0;
+  font-size: 0;
+  line-height: 0;
+  text-indent: -4000px;
+  clear: both;
+}
+
+:where(body.app) .shell {
+  width:960px;
+  margin:0 auto;
+  position:relative;
+}
+
+:where(body.app) h2 {
+  padding-bottom:4px;
+  margin-bottom:9px;
+  font-family: "Trebuchet MS", Arial, Sans-Serif;
+  font-size:27px;
+  color:#272728;
+}
+
+:where(body.app) h3 {
+  color:#fff;
+  font-size:20px;
+  padding-bottom:10px;
+}
+
+:where(body.app) h5 {
+  font-size:10px;
+  color:#4062b7;
+  font-weight:normal;
+  padding-bottom:2px;
+}
+
+:where(body.app) h5 a {
+  color:#4062b7;
+  text-decoration:none;
+}
+
+:where(body.app) h5 a:hover {
+  color:#4062b7;
+  text-decoration:underline;
+}
+
+:where(body.app) .button {
+  font-size:11px;
+  color:#2a2b22;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+:where(body.app) .button span {
+  font-size:11px;
+  color:#2a2b22;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+:where(body.app) .container {
+  width: 640px;
+  text-align: center;
+  margin-left: 85px;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+:where(body.app) .nav-item {
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.01);
+  border-radius: 4px;
+  display: inline-block;
+  vertical-align: baseline;
+  zoom: 1;
+  *display: inline;
+  *vertical-align: auto;
+  background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.01), rgba(255, 255, 255, 0.12));
+  background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0.01), rgba(255, 255, 255, 0.12));
+  background-image: -o-linear-gradient(top, rgba(0, 0, 0, 0.01), rgba(255, 255, 255, 0.12));
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.01), rgba(255, 255, 255, 0.12));
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 -1px rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 -1px rgba(255, 255, 255, 0.15);
+}
+
+:where(body.app) .nav-link {
+  display: block;
+  line-height: 27px;
+  width: 100px;
+  font-size: 12px;
+  color: white;
+  text-decoration: none;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+  background: #7e929b;
+  border: 1px solid;
+  border-color: #c2ccd1 #9cacb2 #91a2aa;
+  border-color: #c2ccd1 rgba(255, 255, 255, 0.1) #91a2aa;
+  border-radius: 3px;
+  background-image: -webkit-linear-gradient(top, #b9c6cc, #8ea1aa 50%, #768b94 51%, #7c9099 75%, #7e929b);
+  background-image: -moz-linear-gradient(top, #b9c6cc, #8ea1aa 50%, #768b94 51%, #7c9099 75%, #7e929b);
+  background-image: -o-linear-gradient(top, #b9c6cc, #8ea1aa 50%, #768b94 51%, #7c9099 75%, #7e929b);
+  background-image: linear-gradient(to bottom, #b9c6cc, #8ea1aa 50%, #768b94 51%, #7c9099 75%, #7e929b);
+}
+
+:where(body.app) .nav-link:hover {
+  background: #a8bdc7;
+  border-color: #e3eaed #d3dee3 #cedadf;
+  background-image: -webkit-linear-gradient(top, #cfdae0, #b5c7cf 50%, #a6bac5 51%, #aec1ca);
+  background-image: -moz-linear-gradient(top, #cfdae0, #b5c7cf 50%, #a6bac5 51%, #aec1ca);
+  background-image: -o-linear-gradient(top, #cfdae0, #b5c7cf 50%, #a6bac5 51%, #aec1ca);
+  background-image: linear-gradient(to bottom, #cfdae0, #b5c7cf 50%, #a6bac5 51%, #aec1ca);
+}
+
+:where(body.app) .nav-link:active {
+  padding: 1px;
+  background: #8c9da5;
+  border: 0;
+  background-image: -webkit-linear-gradient(top, #5f7681, #8c9da5 45%, #9dabb1);
+  background-image: -moz-linear-gradient(top, #5f7681, #8c9da5 45%, #9dabb1);
+  background-image: -o-linear-gradient(top, #5f7681, #8c9da5 45%, #9dabb1);
+  background-image: linear-gradient(to bottom, #5f7681, #8c9da5 45%, #9dabb1);
+}
+
+:where(body.app) .shell {
+  width:1050px;
+  margin:0 auto;
+  position:relative;
+}
+
+:where(body.app) #main {
+  margin-top:20px;
+}
+
+:where(body.app) #main .shell {
+  padding:25px 0;
+  background:#f8f8f8;
+}
+
+:where(body.app) #main p {
+  padding-bottom:10px;
+  line-height:17px;
+}
+
+:where(body.app) .box {
+  margin-left:20px;
+  float:left;
+  width:306px;
+  padding:0 19px 0 0;
+}
+
+:where(body.app) .last-box {
+  padding-right:0;
+}
+
+:where(body.app) .box .entry {
+  height:217px;
+  padding-left:2px;
+}
+
+:where(body.app) .box .big-image {
+  padding:4px 0 10px 0;
+}
+
+:where(body.app) .box .big-image img {
+  border:2px solid #fff;
+}
+
+:where(body.app) .box .buttons .button,
+:where(body.app) .box .buttons .button span {
+  height:29px;
+  line-height:29px;
+  float:right;
+  display:inline;
+  border:1px solid #bfbebe;
+  padding:0 8px;
+}
+
+:where(body.app) .box .buttons .button span {
+  float:left;
+  border:0;
+  padding:0 0 0 7px;
+}
+
+:where(body.app) #main .news {
+
+}
+
+:where(body.app) #main .news ul {
+  list-style:none;
+}
+
+:where(body.app) #main .news ul li {
+  border-bottom:1px dotted #e8d0d2;
+  padding-bottom:7px;
+  margin-bottom:15px;
+}
+
+:where(body.app) #main .news ul li.last {
+  border-bottom:0;
+  padding-bottom:0;
+  margin-bottom:0;
+}
+
+:where(body.app) #main .news ul li .post-image {
+  float:left;
+  width:76px;
+  padding:3px 22px 0 0;
+}
+
+:where(body.app) #main .news ul li .post-image img {
+  border:2px solid #fff;
+}
+
+:where(body.app) #main .news ul li .post-data {
+  float:left;
+  width:203px;
+}
+
+:where(body.app) #main .news ul li .post-data p {
+  color:#413f3f;
+  line-height:18px;
+  padding-bottom:0;
+}
+
+:where(body.app) #main .news ul li .post-data a {
+  color:#4062b7;
+}
+
+:where(body.app) .bullet-list ul {
+  list-style:none;
+  padding-top:1px;
+}
+
+:where(body.app) .bullet-list ul li {
+  line-height:12px;
+  padding:0 0 14px 10px;
+}
+
+:where(body.app) .bullet-list ul li a {
+  color:#4062b7;
+}
+
+:where(body.app) #footer {
+  margin-top:10px;
+  color:black;
+  padding:24px 4px;
+  font-size:15px;
+}
+
+:where(body.app) #footer a {
+  color:black;
+  text-decoration:none;
+}
+
+:where(body.app) #footer a:hover {
+  text-decoration:underline;
+}
+
+:where(body.app) #footer .footer-navigation {
+
+}
+
+:where(body.app) #footer .footer-navigation ul {
+  list-style:none;
+}
+
+:where(body.app) #footer .footer-navigation ul li {
+  float:left;
+  padding-right:8px;
+  margin-right:8px;
+  border-right:1px solid #b3adad;
+  height:10px;
+  line-height:10px;
+}
+
+:where(body.app) #footer .footer-navigation ul li.last {
+  padding-right:0;
+  margin-right:0;
+  border-right:0;
+}
+
+:where(body.app) #footer .footer-navigation ul li a {
+
+}
+
+:where(body.app) #footer .right {
+  float:right;
+  font-family:Verdana, Arial, Sans-Serif;
+}
+
+:where(body.app) #footer .right a {
+  color:black;
+  font-weight:bold;
+  text-decoration:underline;
+}
+
+:where(body.app) #footer .right a:hover {
+  text-decoration:none;
+}
+
+:where(body.app) form.cmxform fieldset {
+  margin-bottom: 10px;
+}
+
+:where(body.app) form.cmxform legend {
+  padding: 0 2px;
+  font-weight: bold;
+}
+
+:where(body.app) form.cmxform label {
+  display: inline-block;
+  line-height: 1.8;
+  vertical-align: top;
+}
+
+:where(body.app) form.cmxform fieldset ol {
+  margin: 0;
+  padding: 0;
+}
+
+:where(body.app) form.cmxform fieldset li {
+  list-style: none;
+  padding: 5px;
+  margin: 0;
+}
+
+:where(body.app) form.cmxform fieldset fieldset {
+  border: none;
+  margin: 3px 0 0;
+}
+
+:where(body.app) form.cmxform fieldset fieldset legend {
+  padding: 0 0 5px;
+  font-weight: normal;
+}
+
+:where(body.app) form.cmxform fieldset fieldset label {
+  display: block;
+  width: auto;
+}
+
+:where(body.app) form.cmxform em {
+  font-weight: bold;
+  font-style: normal;
+  color: #f00;
+}
+
+:where(body.app) form.cmxform label {
+  width: 120px;
+}
+
+:where(body.app) form.cmxform fieldset fieldset label {
+  margin-left: 123px;
+}

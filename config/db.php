@@ -1,4 +1,6 @@
 <?php
+// Single database connection used by every page.
+// Include it with:  require_once __DIR__ . '/../config/db.php';   (from Admin/ or student/)
 $conn = new mysqli("localhost", "root", "");
 
 if ($conn->connect_error) {

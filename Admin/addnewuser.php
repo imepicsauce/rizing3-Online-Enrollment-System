@@ -1,7 +1,7 @@
 <?php
 	session_start();
-	include('logcheck.php');
-	include('includes/conn.php');
+	include(__DIR__ . '/../includes/logcheck.php');
+	require_once(__DIR__ . '/../config/db.php');
 	if(isset($_POST['register']))
 	{
 		
@@ -64,11 +64,11 @@
 <title>John Paul College</title>
 
 
-<link href = "style.css" rel = "stylesheet" type = "text/css"/>
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
 
 </head>
 
-<body>
+<body class="app">
 
 <div class='header'>
 </div>
