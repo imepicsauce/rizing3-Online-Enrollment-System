@@ -1,17 +1,19 @@
 <?php
-	session_start();
-	include(__DIR__ . '/../includes/logcheck.php');
-	$getID=$_SESSION['userID'];
-	require_once(__DIR__ . '/../config/db.php');
-	
-	$getprofile=$conn->query("SELECT * FROM studenttbl WHERE accountID = '$getID'");
-	$rows=mysqli_fetch_array($getprofile);
-	
-	$getacc=$conn->query("SELECT * FROM usertbl WHERE ID = '$getID'");
-	$rowacc=mysqli_fetch_array($getacc);
-	
-		$username=$rowacc['username'];
-		$password=$rowacc['password'];
+require_once(__DIR__ . '/../includes/auth.php');
+require_role('student');
+require_once(__DIR__ . '/../config/db.php');
+	$getID = (int)$_SESSION['userID'];
+
+	$stmt = $conn->prepare("SELECT * FROM studenttbl WHERE accountID = ?");
+	$stmt->bind_param("i", $getID);
+	$stmt->execute();
+	$rows = $stmt->get_result()->fetch_assoc();
+
+	$stmt = $conn->prepare("SELECT username FROM usertbl WHERE ID = ?");
+	$stmt->bind_param("i", $getID);
+	$stmt->execute();
+	$rowacc = $stmt->get_result()->fetch_assoc();
+$username=$rowacc['username'];
 		
 		$course=$rows['course'];
 		$yrlvlsec=$rows['yearlvl'];
@@ -184,7 +186,13 @@ include('includes/menu.php');
 <div align='center' class='no-print'>
 	<input type='button' value='Print Profile' onclick="window.print()">&nbsp;&nbsp;
 	<input type='button' value='Change Password' onclick="window.location='changepass.php'">&nbsp;&nbsp;
+	<input type='button' value='My Enrollment Report' onclick="window.location='report.php'">&nbsp;&nbsp;
 	<input type='button' value='Back to Home' onclick="window.location='studentindex.php'">
+</div>
+</form>
+</center>
+	</div>
+	<div><br></div>
 </div>
 <!-- /Main -->
 

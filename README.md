@@ -15,7 +15,7 @@ Database settings live in one place: `config/db.php`.
 ```
 index.php            login page
 config/db.php        the one database connection
-includes/            code shared by Admin and student (logcheck.php, logout.php)
+includes/            code shared by Admin and student (auth.php: login/role/CSRF helpers, logout.php)
 assets/css/          style.css (the one stylesheet) + vendor/ (DataTables, jQuery UI)
 assets/js/           jQuery, DataTables, easing
 assets/img/          all images

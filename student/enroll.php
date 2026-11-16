@@ -1,9 +1,8 @@
 <?php
-	session_start();
-	
+	require_once(__DIR__ . '/../includes/auth.php');
+	require_role('student');
 	$getID=$_SESSION['userID'];
 	require_once(__DIR__ . '/../config/db.php');
-	include(__DIR__ . '/../includes/logcheck.php');
 	
 	
 	$getprofile=$conn->query("SELECT * FROM studenttbl WHERE accountID = '$getID'");

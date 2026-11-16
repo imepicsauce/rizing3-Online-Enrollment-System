@@ -1,35 +1,40 @@
 <?php
-	session_start();
-	
-	$getID=$_SESSION['userID'];
-	require_once(__DIR__ . '/../config/db.php');
-	include(__DIR__ . '/../includes/logcheck.php');
-	$getprofile=$conn->query("SELECT * FROM studenttbl WHERE accountID = '$getID'");
-	$rows=mysqli_fetch_array($getprofile);
-	
-	$getacc=$conn->query("SELECT * FROM usertbl WHERE ID= '$getID'");
-	$rowaccs=mysqli_fetch_array($getacc);
-	
-	
-	if(isset($_POST['cpass']))
-	{
-		$oldpass=$_POST['opassword'];
-		$checkpass=$conn->query("SELECT * FROM usertbl WHERE ID= '$getID' AND password='$oldpass'");
-		if(mysqli_num_rows($checkpass)==0)
-		{
-			echo"<script>window.alert('Inputted password is wrong please try again')</script>";
-		}
-		else
-		{
-			if($_POST['password']==$_POST['password2'])
-			{
-				$newpass=$_POST['password'];
-				$updatepass=$conn->query("UPDATE usertbl SET password='$newpass' WHERE ID='$getID'");
-				echo"<script>window.alert('Successfully updated the password')</script>";
-				echo"<script>window.location='studentprofile.php')</script>";
-			}
-		}
+require_once(__DIR__ . '/../includes/auth.php');
+require_role('student');
+require_once(__DIR__ . '/../config/db.php');
+
+$getID = (int)$_SESSION['userID'];
+
+$stmt = $conn->prepare("SELECT * FROM studenttbl WHERE accountID = ?");
+$stmt->bind_param("i", $getID);
+$stmt->execute();
+$rows = $stmt->get_result()->fetch_assoc();
+
+$stmt = $conn->prepare("SELECT * FROM usertbl WHERE ID = ?");
+$stmt->bind_param("i", $getID);
+$stmt->execute();
+$rowaccs = $stmt->get_result()->fetch_assoc();
+
+if (isset($_POST['cpass'])) {
+	$oldpass  = (string)($_POST['opassword'] ?? '');
+	$newpass  = (string)($_POST['password'] ?? '');
+	$newpass2 = (string)($_POST['password2'] ?? '');
+
+	if (!$rowaccs || !hash_equals((string)$rowaccs['password'], $oldpass)) {
+		js_alert('Inputted password is wrong please try again');
+	} elseif ($newpass === '') {
+		js_alert('The new password cannot be empty.');
+	} elseif ($newpass !== $newpass2) {
+		js_alert('The new passwords do not match. Please try again.');
+	} else {
+		$stmt = $conn->prepare("UPDATE usertbl SET password = ? WHERE ID = ?");
+		$stmt->bind_param("si", $newpass, $getID);
+		$stmt->execute();
+		js_alert('Successfully updated the password');
+		js_redirect('studentprofile.php');
+		exit;
 	}
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

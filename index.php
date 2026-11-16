@@ -1,40 +1,36 @@
 <?php
 session_start();
 require_once(__DIR__ . '/config/db.php');
+require_once(__DIR__ . '/includes/auth.php');
 
-if(isset($_POST['submit']))
-{
-	$username=$_POST['username'];
-	$password=$_POST['password'];
-	
-		$check= $conn->query("SELECT * FROM usertbl WHERE username='$username' AND password='$password' LIMIT 1");
-		if(mysqli_num_rows($check)==0)
-			{
-				echo"<script>window.alert('User doesn't exist please try again.')</script>";
-			}
-		else
-			{
-				while($rowval=mysqli_fetch_array($check))
-					{
-						if($rowval['user_type']=='admin')
-							{
-								$_SESSION['username']='$rowval[username]';
-								$_SESSION['type']='admin';
-								$_SESSION['logcheck']=1;
-								echo"<script>window.alert('Successfully log in as Administrator')</script>";
-								echo"<script>window.location='Admin/adminindex.php'</script>";
-							}
-						else	
-							{
-								$_SESSION['username']='$rowval[username]';
-								$_SESSION['type']='student';
-									$_SESSION['logcheck']=1;
-								$_SESSION['userID']=$rowval['ID'];
-								echo"<script>window.alert('Successfully log in as Student')</script>";
-								echo"<script>window.location='student/studentindex.php'</script>";
-							}
-					}
-			}
+if (isset($_POST['submit'])) {
+	$username = trim($_POST['username'] ?? '');
+	$password = (string)($_POST['password'] ?? '');
+
+	$stmt = $conn->prepare("SELECT ID, username, password, user_type FROM usertbl WHERE username = ? LIMIT 1");
+	$stmt->bind_param("s", $username);
+	$stmt->execute();
+	$row = $stmt->get_result()->fetch_assoc();
+
+	if (!$row || !hash_equals((string)$row['password'], $password)) {
+		js_alert("User doesn't exist please try again.");
+	} else {
+		session_regenerate_id(true);
+		$_SESSION['username'] = $row['username'];
+		$_SESSION['userID']   = (int)$row['ID'];
+		$_SESSION['logcheck'] = 1;
+
+		if ($row['user_type'] == 'admin') {
+			$_SESSION['type'] = 'admin';
+			js_alert('Successfully log in as Administrator');
+			js_redirect('Admin/adminindex.php');
+		} else {
+			$_SESSION['type'] = 'student';
+			js_alert('Successfully log in as Student');
+			js_redirect('student/studentindex.php');
+		}
+		exit;
+	}
 }
 ?>
 <!doctype html>

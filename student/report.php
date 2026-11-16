@@ -1,14 +1,7 @@
 <?php
-session_start();
-
-if (!isset($_SESSION['logcheck']) || ($_SESSION['type'] ?? '') !== 'student') {
-	header('Location: ../index.php');
-	exit;
-}
-
+require_once(__DIR__ . '/../includes/auth.php');
+require_role('student');
 require_once(__DIR__ . '/../config/db.php');
-
-function h($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 
 // This student's record
 $accountID = (string)($_SESSION['userID'] ?? '');

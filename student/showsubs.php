@@ -1,7 +1,7 @@
 <?php
-session_start();
+require_once(__DIR__ . '/../includes/auth.php');
+require_role('student');
 require_once(__DIR__ . '/../config/db.php');
-include(__DIR__ . '/../includes/logcheck.php');
 	$stid=$_SESSION['studnum'];
 				$getprofile=$conn->query("SELECT * FROM studenttbl WHERE studnum = '$stid'");
 				$rows=mysqli_fetch_array($getprofile);

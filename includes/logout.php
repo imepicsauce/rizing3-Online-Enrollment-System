@@ -1,7 +1,10 @@
 <?php
-error_reporting(E_ALL);
 session_start();
-unset($_SESSION['id']);
+$_SESSION = [];
+if (ini_get('session.use_cookies')) {
+	$p = session_get_cookie_params();
+	setcookie(session_name(), '', time() - 42000, $p['path'], $p['domain'], $p['secure'], $p['httponly']);
+}
 session_destroy();
-echo "<script language='javascript'>window.location='../index.php';</script>";
-?>
+header('Location: ../index.php');
+exit;

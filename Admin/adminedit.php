@@ -1,24 +1,40 @@
 <?php
-	session_start();
-	require_once(__DIR__ . '/../config/db.php');
-	include(__DIR__ . '/../includes/logcheck.php');
-	$getquery=$conn->query("SELECT * FROM usertbl WHERE user_type='admin' LIMIT 1");
-	$rowfetch=mysqli_fetch_array($getquery);
-	if(isset($_POST['register']))
-	{
-		
-		$username=$_POST['username'];
-		$password=$_POST['password'];
-		
-		
-		$insertquery=$conn->query("UPDATE usertbl SET username='$username', password='$password' WHERE user_type='admin' ");
-		
-			echo"<script>window.alert('Successfully updated the admin account')</script>";
-			echo"<script>window.location='userreg.php'</script>";
-	}
+require_once(__DIR__ . '/../includes/auth.php');
+require_role('admin');
+require_once(__DIR__ . '/../config/db.php');
 
-	
-	
+$adminID = (int)$_SESSION['userID'];
+
+if (isset($_POST['register'])) {
+	$username = trim($_POST['username'] ?? '');
+	$password = (string)($_POST['password'] ?? '');
+
+	if ($username === '' || $password === '') {
+		js_alert('Username and password are required.');
+	} else {
+		try {
+			// Only the logged-in administrator's own account is changed.
+			$stmt = $conn->prepare("UPDATE usertbl SET username = ?, password = ? WHERE ID = ? AND user_type = 'admin'");
+			$stmt->bind_param("ssi", $username, $password, $adminID);
+			$stmt->execute();
+			$_SESSION['username'] = $username;
+			js_alert('Successfully updated the admin account');
+			js_redirect('userreg.php');
+			exit;
+		} catch (mysqli_sql_exception $e) {
+			js_alert(($e->getCode() == 1062) ? 'That username is already taken.' : 'The account could not be saved.');
+		}
+	}
+}
+
+$stmt = $conn->prepare("SELECT username, password FROM usertbl WHERE ID = ? AND user_type = 'admin' LIMIT 1");
+$stmt->bind_param("i", $adminID);
+$stmt->execute();
+$rowfetch = $stmt->get_result()->fetch_assoc();
+if (!$rowfetch) {
+	header('Location: ../index.php');
+	exit;
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -55,9 +71,9 @@ include('includes/menu1.php');
 			  <ol>
 			  <li>
 				  <label for="name">UserName<em>*</em></label>
-				  <input type='text' required='required' maxlength='50' id="name" name='username' value="<?php echo $rowfetch['username']; ?>"/>
+				  <input type='text' required='required' maxlength='50' id="name" name='username' value="<?php echo h($rowfetch['username']); ?>"/>
 				  <label for="name">Password<em>*</em></label>
-				  <input type='text' required='required' maxlength='50' id="name" name='password' value="<?php echo $rowfetch['password']; ?>"/>
+				  <input type='text' required='required' maxlength='50' id="name" name='password' value="<?php echo h($rowfetch['password']); ?>"/>
 				</li>
 				
   </ol>
@@ -65,8 +81,7 @@ include('includes/menu1.php');
 	</fieldset>
 	
 	
-<div align='center'><input type='submit' name='register' value='Add new user'>&nbsp;&nbsp;
-<input type='reset' name='clear' value='Clear'></div>
+<div align='center'><input type='submit' name='register' value='Save changes'></div>
 </form>
 </center>
 	</div>

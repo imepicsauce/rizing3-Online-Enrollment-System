@@ -1,15 +1,7 @@
 <?php
-session_start();
-
-// Admins only
-if (($_SESSION['type'] ?? '') !== 'admin') {
-	header('Location: ../index.php');
-	exit;
-}
-
+require_once(__DIR__ . '/../includes/auth.php');
+require_role('admin');
 require_once(__DIR__ . '/../config/db.php');
-
-function h($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 
 $result = $conn->query("
 	SELECT ss.ID, ss.studentID, ss.subjects, ss.totalunits, ss.approved,

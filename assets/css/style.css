@@ -434,3 +434,38 @@ body.app {
 :where(body.app) form.cmxform fieldset fieldset label {
   margin-left: 123px;
 }
+
+/* Buttons that look like links (used for the POST "DELETE" buttons in the lists) */
+:where(body.app) .link-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Plain data table used on the Curriculum page */
+:where(body.app) .data-table {
+  border-collapse: collapse;
+}
+:where(body.app) .data-table th,
+:where(body.app) .data-table td {
+  border: 1px solid #999;
+  padding: 5px 8px;
+}
+:where(body.app) .data-table th {
+  background: #1d4e89;
+  color: #fff;
+}
+
+/* Printing: show only the page content, not the banner, menus and buttons */
+@media print {
+  :where(body.app) .header,
+  :where(body.app) nav.container,
+  :where(body.app) #footer,
+  :where(body.app) .no-print {
+    display: none !important;
+  }
+}
