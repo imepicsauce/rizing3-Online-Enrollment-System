@@ -44,4 +44,5 @@ Done:
 
 - Passwords are stored hashed. The sample accounts in `database/online_enroll.sql` still have plain-text passwords; each is converted to a hash automatically the first time that user logs in.
 - School year, per-unit fee, entrance/internet/misc/lab/tutorial fees and the semester names are in `config/settings.php`.
-- Admins approve student enrollment forms from the **Approvals** page.
+- Admins approve student enrollment forms from the **Approvals** page. A student can have one form per semester per school year; a pending form can be cancelled by the student, an approved one is locked.
+- Admins manage courses from the **Courses** page, and can edit any student (including resetting the password) or subject from the lists.

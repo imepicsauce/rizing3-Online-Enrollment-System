@@ -147,26 +147,23 @@ INSERT INTO `subjecttbl` (`ID`, `subjectcode`, `subjecttitle`, `numofunits`, `ro
 -- so it cannot carry a foreign key (see the notes after this file).
 -- ------------------------------------------------------------
 CREATE TABLE `student_subject` (
-  `ID`         int(11)      NOT NULL AUTO_INCREMENT,
-  `studentID`  varchar(20)  NOT NULL,
-  `subjects`   longtext     NOT NULL,
-  `totalunits` int(11)      NOT NULL,
-  `approved`   tinyint(1)   NOT NULL DEFAULT 0,
+  `ID`          int(11)      NOT NULL AUTO_INCREMENT,
+  `studentID`   varchar(20)  NOT NULL,
+  `subjects`    longtext     NOT NULL,
+  `totalunits`  int(11)      NOT NULL,
+  `approved`    tinyint(1)   NOT NULL DEFAULT 0,
+  `semester`    varchar(10)  NOT NULL DEFAULT '1st Sem',
+  `school_year` varchar(20)  NOT NULL DEFAULT '',
   PRIMARY KEY (`ID`),
-  KEY `idx_enroll_student` (`studentID`),
+  -- one enrollment form per student per semester per school year
+  UNIQUE KEY `uq_enroll_term` (`studentID`, `semester`, `school_year`),
   CONSTRAINT `fk_enroll_student` FOREIGN KEY (`studentID`)
     REFERENCES `studenttbl` (`studnum`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=9;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=3;
 
--- Original row 1 had an empty studentID (an orphan), so it is not included.
-INSERT INTO `student_subject` (`ID`, `studentID`, `subjects`, `totalunits`, `approved`) VALUES
-(2, '2014-052', 'IT201,IT201,', 2, 0),
-(3, '2014-052', 'IT202,IT201,', 2, 0),
-(4, '2014-052', 'IT202,IT201,', 2, 0),
-(5, '2014-052', 'IT202,IT201,', 2, 0),
-(6, '2014-052', 'IT202,IT201,', 0, 0),
-(7, '2014-052', 'IT202,IT201,', 2, 0),
-(8, '2014-052', ',IT201,IT202', 2, 0);
+-- The original test data had seven duplicate forms for one student; one sample form is kept.
+INSERT INTO `student_subject` (`ID`, `studentID`, `subjects`, `totalunits`, `approved`, `semester`, `school_year`) VALUES
+(2, '2014-052', 'IT201,IT202', 4, 0, '1st Sem', '2015 - 2016');
 
 -- ------------------------------------------------------------
 -- sections_tbl : class sections, tied to a course

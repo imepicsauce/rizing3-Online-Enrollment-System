@@ -78,7 +78,8 @@ include('includes/menu1.php');
 					<td><?php echo h($r['subjecttitle']); ?></td>
 					<td><?php echo h($r['numofunits']); ?></td>
 					<td>
-						<form method="post" action="deletecurrsubj.php" onsubmit="return confirm('Are you sure?');">
+						<a href="editsubject.php?id=<?php echo (int)$r['ID']; ?>">EDIT</a> |
+						<form method="post" action="deletecurrsubj.php" style="display:inline" onsubmit="return confirm('Are you sure?');">
 							<input type="hidden" name="accid" value="<?php echo (int)$r['ID']; ?>">
 							<?php echo csrf_field(); ?>
 							<button type="submit" class="link-button">DELETE</button>

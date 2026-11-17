@@ -4,7 +4,7 @@ require_role('admin');
 require_once(__DIR__ . '/../config/db.php');
 
 $result = $conn->query("
-	SELECT ss.ID, ss.studentID, ss.subjects, ss.totalunits, ss.approved,
+	SELECT ss.ID, ss.studentID, ss.subjects, ss.totalunits, ss.approved, ss.semester, ss.school_year,
 	       s.fname, s.minitial, s.lname, s.course, s.yearlvl
 	FROM student_subject ss
 	LEFT JOIN studenttbl s ON s.studnum = ss.studentID
@@ -34,7 +34,7 @@ if (!$result) {
 		<button onclick="window.print()">Print</button>
 	</div>
 
-	<div align="center"><img width="130" height="100" src="../assets/img/logo-report.jpg"></div>
+	<div align="center"><img width="130" height="100" src="../assets/img/logo-login.jpg"></div>
 	<div align="center" style="margin-top:20px;">
 		John Paul College<br>MG ANDAYA COMPOUND<br>Odiong, Roxas, Oriental Mindoro, Philippines
 	</div>
@@ -51,10 +51,11 @@ if (!$result) {
 				<td width="120" align="center"><b>Course / Year</b></td>
 				<td width="280" align="center"><b>Subjects</b></td>
 				<td width="60" align="center"><b>Units</b></td>
+				<td width="110" align="center"><b>Semester</b></td>
 				<td width="90" align="center"><b>Status</b></td>
 			</tr>
 			<?php if ($result->num_rows == 0) { ?>
-				<tr><td colspan="7" align="center">No enrollment forms have been submitted yet.</td></tr>
+				<tr><td colspan="8" align="center">No enrollment forms have been submitted yet.</td></tr>
 			<?php } ?>
 			<?php
 			$totalForms = 0;
@@ -72,6 +73,7 @@ if (!$result) {
 				<td><?php echo h(strtoupper($row['course'] ?? '') . ' ' . ($row['yearlvl'] ?? '')); ?></td>
 				<td><?php echo h($subjects); ?></td>
 				<td align="center"><?php echo h($row['totalunits']); ?></td>
+				<td align="center"><?php echo h($row['semester'] . ' ' . $row['school_year']); ?></td>
 				<td align="center"><?php echo $status; ?></td>
 			</tr>
 			<?php } ?>

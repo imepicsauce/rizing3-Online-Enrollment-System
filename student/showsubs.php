@@ -28,9 +28,23 @@ if (!$rows) {
 	back_to_enroll('Your student profile was not found. Please contact the administrator.');
 }
 
+$schoolYear = SCHOOL_YEAR;
 $sem = (string)($_POST['sem'] ?? '');
 if (!in_array($sem, SEMESTERS, true)) {
 	back_to_enroll('Please choose a semester.');
+}
+
+// One enrollment form per student per semester and school year.
+$chk = $conn->prepare("SELECT approved FROM student_subject WHERE studentID = ? AND semester = ? AND school_year = ? LIMIT 1");
+$chk->bind_param("sss", $rows['studnum'], $sem, $schoolYear);
+$chk->execute();
+$existing = $chk->get_result()->fetch_assoc();
+$chk->close();
+if ($existing) {
+	if ((int)$existing['approved'] === 1) {
+		back_to_enroll("You already have an approved enrollment form for $sem, $schoolYear. Please contact the administrator if it needs to change.");
+	}
+	back_to_enroll("You already submitted an enrollment form for $sem, $schoolYear, and it is waiting for approval. Cancel it in \"My Enrollment Report\" if you want to submit a different one.");
 }
 
 $codes = $_POST['subject'] ?? [];
@@ -67,20 +81,14 @@ $total = ($totalunits * PER_UNIT_FEE) + ENTRANCE_FEE + INTERNET_FEE + MISC_FEE +
 // Step 2: the student pressed "Submit Enrollment Form".
 if (isset($_POST['reg'])) {
 	$stid = $rows['studnum'];
-	$check = $conn->prepare("SELECT COUNT(*) FROM student_subject WHERE studentID = ? AND subjects = ?");
-	$check->bind_param("ss", $stid, $subjectList);
-	$check->execute();
-	$check->bind_result($already);
-	$check->fetch();
-	$check->close();
-	if ($already > 0) {
-		js_alert('You already submitted a form with exactly these subjects. See "My Enrollment Report" on your profile.');
-		js_redirect('studentindex.php');
-		exit;
+	try {
+		$ins = $conn->prepare("INSERT INTO student_subject (studentID, subjects, totalunits, approved, semester, school_year) VALUES (?, ?, ?, 0, ?, ?)");
+		$ins->bind_param("ssiss", $stid, $subjectList, $totalunits, $sem, $schoolYear);
+		$ins->execute();
+	} catch (mysqli_sql_exception $e) {
+		// Two quick clicks: the database allows only one form per semester.
+		back_to_enroll("You already have an enrollment form for $sem, $schoolYear.");
 	}
-	$ins = $conn->prepare("INSERT INTO student_subject (studentID, subjects, totalunits, approved) VALUES (?, ?, ?, 0)");
-	$ins->bind_param("ssi", $stid, $subjectList, $totalunits);
-	$ins->execute();
 	js_alert('Enrollment form was successfully sent to the system');
 	js_redirect('studentindex.php');
 	exit;
