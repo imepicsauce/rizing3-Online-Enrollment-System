@@ -1,49 +1,52 @@
 <?php
-	session_start();
-	include('logcheck.php');
-	$getID=$_SESSION['userID'];
-	include('includes/conn.php');
-	
-	$getprofile=$conn->query("SELECT * FROM studenttbl WHERE accountID = '$getID'");
-	$rows=mysqli_fetch_array($getprofile);
-	
-	$getacc=$conn->query("SELECT * FROM usertbl WHERE ID = '$getID'");
-	$rowacc=mysqli_fetch_array($getacc);
-	
-		$username=$rowacc['username'];
-		$password=$rowacc['password'];
+require_once(__DIR__ . '/../includes/auth.php');
+require_role('student');
+require_once(__DIR__ . '/../config/db.php');
+	$getID = (int)$_SESSION['userID'];
+
+	$stmt = $conn->prepare("SELECT * FROM studenttbl WHERE accountID = ?");
+	$stmt->bind_param("i", $getID);
+	$stmt->execute();
+	$rows = $stmt->get_result()->fetch_assoc();
+	if (!$rows) { header('Location: studentindex.php'); exit; }
+
+	$stmt = $conn->prepare("SELECT username FROM usertbl WHERE ID = ?");
+	$stmt->bind_param("i", $getID);
+	$stmt->execute();
+	$rowacc = $stmt->get_result()->fetch_assoc();
+$username=h($rowacc['username']);
 		
-		$course=$rows['course'];
-		$yrlvlsec=$rows['yearlvl'];
-		$snum=$rows['studnum'];
+		$course=h($rows['course']);
+		$yrlvlsec=h($rows['yearlvl']);
+		$snum=h($rows['studnum']);
 		
-		$fname=$rows['fname'];
-		$minitial=$rows['minitial'];
-		$lname=$rows['lname'];
+		$fname=h($rows['fname']);
+		$minitial=h($rows['minitial']);
+		$lname=h($rows['lname']);
 		$fullname= $fname." ".$minitial." ".$lname;
 		
-		$gender=$rows['gender'];
-		$bdate=$rows['birthdate'];
+		$gender=h($rows['gender']);
+		$bdate=h($rows['birthdate']);
 		
-		$address=$rows['address'];
-		$cnum=$rows['contact'];
-		$email=$rows['emailaddress'];
+		$address=h($rows['address']);
+		$cnum=h($rows['contact']);
+		$email=h($rows['emailaddress']);
 		
 		
-		$fathername=$rows['fathername'];
-		$mothername=$rows['mothername'];
-		$guardianname=$rows['guardianname'];
+		$fathername=h($rows['fathername']);
+		$mothername=h($rows['mothername']);
+		$guardianname=h($rows['guardianname']);
 		
-		$civilstatus=$rows['civilstatus'];
-		$bplace=$rows['birthplace'];
+		$civilstatus=h($rows['civilstatus']);
+		$bplace=h($rows['birthplace']);
 		
-		$elemschool=$rows['elemschool'];
-		$yrelem=$rows['dategradelem'];
-		$hsschool=$rows['hsschool'];
-		$yrgradhs=$rows['datehsgrad'];
-		$lastschool=$rows['lastgrad'];
-		$yrlast=$rows['datelastgrad'];
-		$gradaddresslast=$rows['addresslastgrad'];
+		$elemschool=h($rows['elemschool']);
+		$yrelem=h($rows['dategradelem']);
+		$hsschool=h($rows['hsschool']);
+		$yrgradhs=h($rows['datehsgrad']);
+		$lastschool=h($rows['lastgrad']);
+		$yrlast=h($rows['datelastgrad']);
+		$gradaddresslast=h($rows['addresslastgrad']);
 	
 	
 ?>
@@ -54,11 +57,11 @@
 <title>John Paul College</title>
 
 
-<link href = "style.css" rel = "stylesheet" type = "text/css"/>
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
 
 </head>
 
-<body>
+<body class="app">
 
 <div class='header'>
 </div>
@@ -184,7 +187,13 @@ include('includes/menu.php');
 <div align='center' class='no-print'>
 	<input type='button' value='Print Profile' onclick="window.print()">&nbsp;&nbsp;
 	<input type='button' value='Change Password' onclick="window.location='changepass.php'">&nbsp;&nbsp;
+	<input type='button' value='My Enrollment Report' onclick="window.location='report.php'">&nbsp;&nbsp;
 	<input type='button' value='Back to Home' onclick="window.location='studentindex.php'">
+</div>
+</form>
+</center>
+	</div>
+	<div><br></div>
 </div>
 <!-- /Main -->
 

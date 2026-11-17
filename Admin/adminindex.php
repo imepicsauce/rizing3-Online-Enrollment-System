@@ -1,17 +1,17 @@
 <?php
-session_start();
-include('logcheck.php');
+require_once(__DIR__ . '/../includes/auth.php');
+require_role('admin');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Rizing 3 College</title>
+<title>John Paul College</title>
 
-<link href = "style.css" rel = "stylesheet" type = "text/css"/>
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
 </head>
 
-<body>
+<body class="app">
 
 <div class='header'>
 </div>
@@ -52,22 +52,22 @@ include('includes/menu1.php');
 					<ul>
 						<li>
 							<div class="post-image">
-								<a href="#"><img src="news1.jpg" width='90' height='70' alt="" /></a>
+								<img src="../assets/img/news1.jpg" width='90' height='70' alt="" />
 							</div>
 							<div class="post-data">
-								<h5><a href="#">September 11th, 2010</a></h5>
-								<p>Nam scelerisque mi ut leo eleifend imperdiet. Donec at molestie diam. Etiam quam nisi, elementum sed commodo, posuere <a href="#">&hellip;</a></p>
+								<h5>September 11th, 2010</h5>
+								<p>Nam scelerisque mi ut leo eleifend imperdiet. Donec at molestie diam. Etiam quam nisi, elementum sed commodo, posuere &hellip;</p>
 							</div>
 							<div class="cl">&nbsp;</div>
 						</li>
 						
 						<li class="last">
 							<div class="post-image">
-								<a href="#"><img src="news2.jpg" width='90' height='70'  alt="" /></a>
+								<img src="../assets/img/news2.jpg" width='90' height='70'  alt="" />
 							</div>
 							<div class="post-data">
-								<h5><a href="#">September 10th, 2010</a></h5>
-								<p>Nam scelerisque mi ut leo eleifend imperdiet. Donec at molestie diam. Etiam quam nisi, elementum sed commodo, posuere <a href="#">&hellip;</a></p>
+								<h5>September 10th, 2010</h5>
+								<p>Nam scelerisque mi ut leo eleifend imperdiet. Donec at molestie diam. Etiam quam nisi, elementum sed commodo, posuere &hellip;</p>
 							</div>
 							<div class="cl">&nbsp;</div>
 						</li>
@@ -76,9 +76,7 @@ include('includes/menu1.php');
 				<!-- /News -->
 			</div>
 			
-			<div class="buttons">
-				<a href="#" class="button"><span>Read More</span></a>
-			</div>
+			
 		</div>
 		<!-- /Box -->
 		<!-- Box -->
@@ -87,12 +85,12 @@ include('includes/menu1.php');
 			
 			<div class="entry bullet-list">
 				<ul>
-					  <li><a href="#">CHED COURSES</a></li>
-	                    <li><a href="#">TESDA COURSES</a></li>
+					  <li>CHED COURSES</li>
+	                    <li>TESDA COURSES</li>
 				</ul>
 				<div class="post-image">
-								<a href="#"><img src="news3.jpg" width='100' height='100' alt="" /></a>
-								<a href="#"><img src="news4.jpg" width='100' height='100' alt="" /></a>
+								<img src="../assets/img/news3.jpg" width='100' height='100' alt="" />
+								<img src="../assets/img/news4.jpg" width='100' height='100' alt="" />
 							</div>
 			</div>
 		

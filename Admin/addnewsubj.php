@@ -1,46 +1,50 @@
 <?php
-	session_start();
-	include('logcheck.php');
-	if(isset($_POST['register']))
-	{
-		include('includes/conn.php');
-		
-		$course=$_POST['course'];
-		$stitle=$_POST['stitle'];
-		$scode=$_POST['scode'];
-		$sdescription=$_POST['cdescription'];
-		$numunits=$_POST['numunits'];
-		
-		$sroom=$_POST['sroom'];
-		$stime=$_POST['stime'];
-		$sday=$_POST['sday'];
-		$sinstructor=$_POST['sinstructor'];
-		
-		if(isset($_POST['islab']))
-		{
-			$islab=1;
-		}
-		else
-		{
-			$islab=0;
-		}
-	
-		if(isset($_POST['istutorial']))
-		{
-			$istutorial=1;
-		}
-		else
-		{
-			$istutorial=0;
-		}
-		
-		$insertquery=mysql_query("INSERT INTO subjecttbl VALUES ('','$scode','$stitle','$numunits','$sroom','$stime','$sday','$sinstructor',$islab,$istutorial,'$sdescription','$course')");
-		
-		echo"<script>window.alert('Successfully Created new Subject')</script>";
-		echo"<script>window.location='addnewsubj.php'</script>";
+require_once(__DIR__ . '/../includes/auth.php');
+require_role('admin');
+require_once(__DIR__ . '/../config/db.php');
+
+$courses = $conn->query("SELECT course_code FROM courses_tbl ORDER BY course_code")->fetch_all(MYSQLI_ASSOC);
+
+if (isset($_POST['register'])) {
+	$course       = trim($_POST['course'] ?? '');
+	$scode        = trim($_POST['scode'] ?? '');
+	$stitle       = trim($_POST['stitle'] ?? '');
+	$sdescription = trim($_POST['cdescription'] ?? '');
+	$numunits     = (int)($_POST['numunits'] ?? 0);
+	$sroom        = trim($_POST['sroom'] ?? '');
+	$stime        = trim($_POST['stime'] ?? '');
+	$sday         = trim($_POST['sday'] ?? '');
+	$sinstructor  = trim($_POST['sinstructor'] ?? '');
+	$islab        = isset($_POST['islab']) ? 1 : 0;
+	$istutorial   = isset($_POST['istutorial']) ? 1 : 0;
+
+	$validCourses = array_column($courses, 'course_code');
+	$error = '';
+	if ($scode === '' || $stitle === '') {
+		$error = 'Subject code and subject title are required.';
+	} elseif ($numunits < 1 || $numunits > 6) {
+		$error = 'Number of units must be from 1 to 6.';
+	} elseif (!in_array($course, $validCourses, true)) {
+		$error = 'Please select a valid course.';
 	}
-	
-	
+
+	if ($error === '') {
+		try {
+			$units = (string)$numunits;
+			$stmt = $conn->prepare("INSERT INTO subjecttbl
+				(subjectcode, subjecttitle, numofunits, room, time, instructor, day, islab, istutorial, description, course_con)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			$stmt->bind_param("sssssssiiss", $scode, $stitle, $units, $sroom, $stime, $sinstructor, $sday, $islab, $istutorial, $sdescription, $course);
+			$stmt->execute();
+			js_alert('Successfully Created new Subject');
+			js_redirect('addnewsubj.php');
+			exit;
+		} catch (mysqli_sql_exception $e) {
+			$error = ($e->getCode() == 1062) ? 'That subject code already exists.' : 'The subject could not be saved.';
+		}
+	}
+	js_alert($error);
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -49,11 +53,11 @@
 <title>John Paul College</title>
 
 
-<link href = "style.css" rel = "stylesheet" type = "text/css"/>
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
 
 </head>
 
-<body>
+<body class="app">
 
 <div class='header'>
 </div>
@@ -78,7 +82,9 @@ include('includes/menu1.php');
 			  <li>
 				  <label for="name">Select Course:<em>*</em></label>
 				  <select name='course'>
-					<option value='bsit'>BSIT</option>
+					<?php foreach ($courses as $c) { ?>
+					<option value='<?php echo h($c['course_code']); ?>'><?php echo h(strtoupper($c['course_code'])); ?></option>
+					<?php } ?>
 				  </select>
 				
   </ol>

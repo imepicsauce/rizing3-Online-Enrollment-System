@@ -1,14 +1,7 @@
 <?php
-session_start();
-
-if (!isset($_SESSION['logcheck']) || ($_SESSION['type'] ?? '') !== 'student') {
-	header('Location: ../../index.php');
-	exit;
-}
-
-include('conn.php');
-
-function h($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
+require_once(__DIR__ . '/../includes/auth.php');
+require_role('student');
+require_once(__DIR__ . '/../config/db.php');
 
 // This student's record
 $accountID = (string)($_SESSION['userID'] ?? '');
@@ -49,11 +42,11 @@ if ($student) {
 <body>
 
 	<div class="no-print" align="center" style="margin:10px;">
-		<a href="../studentindex.php">&larr; Back to Home</a> &nbsp;|&nbsp;
+		<a href="studentindex.php">&larr; Back to Home</a> &nbsp;|&nbsp;
 		<button onclick="window.print()">Print</button>
 	</div>
 
-	<div align="center"><img width="130" height="100" src="logo.jpg"></div>
+	<div align="center"><img width="130" height="100" src="../assets/img/logo-report.jpg"></div>
 	<div align="center" style="margin-top:20px;">
 		John Paul College<br>MG ANDAYA COMPOUND<br>Odiong, Roxas, Oriental Mindoro, Philippines
 	</div>

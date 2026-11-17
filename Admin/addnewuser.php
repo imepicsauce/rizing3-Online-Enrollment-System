@@ -1,61 +1,61 @@
 <?php
-	session_start();
-	include('logcheck.php');
-	include('includes/conn.php');
-	if(isset($_POST['register']))
-	{
-		
-		$username=$_POST['username'];
-		$password=$_POST['password'];
-		
-		$course=$_POST['course'];
-		$yrlvlsec=$_POST['yrlvlsec'];
-		$snum=$_POST['snum'];
-		
-		$fname=$_POST['fname'];
-		$minitial=$_POST['minitial'];
-		$lname=$_POST['lname'];
-		$fullname= $fname." ".$minitial." ".$lname;
-		
-		$gender=$_POST['gender'];
-		$bdate=$_POST['bdate'];
-		
-		$address=$_POST['address'];
-		$cnum=$_POST['cnumber'];
-		$email=$_POST['email'];
-		
-		
-		$fathername=$_POST['fathername'];
-		$mothername=$_POST['mothername'];
-		$guardianname=$_POST['guardianname'];
-		
-		$civilstatus=$_POST['cstatus'];
-		$bplace=$_POST['bplace'];
-		
-		$elemschool=$_POST['elemschool'];
-		$yrelem=$_POST['yrgradelem'];
-		$hsschool=$_POST['hschool'];
-		$yrgradhs=$_POST['yrgradhs'];
-		$lastschool=$_POST['lastschool'];
-		$yrlast=$_POST['yrlast'];
-		$gradaddresslast=$_POST['address2'];
-		
-		
-		$insertquery=$conn->query("INSERT INTO usertbl VALUES ('','$username','$password','$fullname','student')");
-		
-		$gethighest=$conn->query("SELECT * FROM usertbl ORDER BY ID DESC LIMIT 1");
-		$check=mysqli_num_rows($gethighest);
-			while($getid=mysqli_fetch_array($gethighest))
-			{
-				$insertstudent=$conn->query("INSERT INTO studenttbl VALUES('','$getid[ID]','$snum','$fname','$minitial','$lname','$address','$cnum','$email','$bdate','$course','$yrlvlsec','$gender',
-				'$fathername','$mothername','$guardianname','$bplace','$civilstatus','$elemschool','$yrelem','$hsschool','$yrgradhs',
-				'$lastschool','$yrlast','$gradaddresslast')");
-			}
-			echo"<script>window.alert('Successfully Created new account $check')</script>";
-			echo"<script>window.location='addnewuser.php'</script>";
+require_once(__DIR__ . '/../includes/auth.php');
+require_role('admin');
+require_once(__DIR__ . '/../config/db.php');
+
+// Keep what was typed so the two account fields are never "undefined" on the first visit.
+$username = '';
+$password = '';
+
+if (isset($_POST['register'])) {
+	$in = [];
+	foreach (["username", "password", "course", "yrlvlsec", "snum", "fname", "minitial", "lname", "gender", "bdate", "address", "cnumber", "email", "fathername", "mothername", "guardianname", "cstatus", "bplace", "elemschool", "yrgradelem", "hschool", "yrgradhs", "lastschool", "yrlast", "address2"] as $k) {
+		$in[$k] = trim($_POST[$k] ?? '');
 	}
-	
-	
+	$username = $in['username'];
+	$password = $in['password'];
+	$fullname = $in['fname'] . " " . $in['minitial'] . " " . $in['lname'];
+
+	if ($username === '' || $password === '' || $in['snum'] === '') {
+		js_alert('Username, password and student number are required.');
+	} else {
+		try {
+			$conn->begin_transaction();
+
+			$stmt = $conn->prepare("INSERT INTO usertbl (username, password, fullname, user_type) VALUES (?, ?, ?, 'student')");
+			$passwordHash = password_make($password);
+			$stmt->bind_param("sss", $username, $passwordHash, $fullname);
+			$stmt->execute();
+			$accountID = $conn->insert_id;
+
+			$stmt2 = $conn->prepare("INSERT INTO studenttbl
+				(accountID, studnum, fname, minitial, lname, address, contact, emailaddress, birthdate, course, yearlvl, gender,
+				 fathername, mothername, guardianname, birthplace, civilstatus, elemschool, dategradelem, hsschool, datehsgrad,
+				 lastgrad, datelastgrad, addresslastgrad)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			$stmt2->bind_param("isssssssssssssssssssssss", $accountID, $in['snum'], $in['fname'], $in['minitial'], $in['lname'],
+				$in['address'], $in['cnumber'], $in['email'], $in['bdate'], $in['course'], $in['yrlvlsec'], $in['gender'],
+				$in['fathername'], $in['mothername'], $in['guardianname'], $in['bplace'], $in['cstatus'], $in['elemschool'],
+				$in['yrgradelem'], $in['hschool'], $in['yrgradhs'], $in['lastschool'], $in['yrlast'], $in['address2']);
+			$stmt2->execute();
+
+			$conn->commit();
+			js_alert('Successfully Created new account');
+			js_redirect('addnewuser.php');
+			exit;
+		} catch (mysqli_sql_exception $e) {
+			$conn->rollback();
+			$msg = $e->getMessage();
+			if (strpos($msg, 'uq_user_username') !== false) {
+				js_alert('That username is already taken.');
+			} elseif (strpos($msg, 'uq_student_studnum') !== false) {
+				js_alert('That student number is already registered.');
+			} else {
+				js_alert('The account could not be saved. Please check the details and try again.');
+			}
+		}
+	}
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -64,11 +64,11 @@
 <title>John Paul College</title>
 
 
-<link href = "style.css" rel = "stylesheet" type = "text/css"/>
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
 
 </head>
 
-<body>
+<body class="app">
 
 <div class='header'>
 </div>
@@ -92,9 +92,9 @@ include('includes/menu1.php');
 			  <ol>
 			  <li>
 				  <label for="name">UserName<em>*</em></label>
-				  <input type='text' required='required' maxlength='50' id="name" name='username' value="<?php echo $username ;?>"/>
+				  <input type='text' required='required' maxlength='50' id="name" name='username' value="<?php echo h($username); ?>"/>
 				  <label for="name">Password<em>*</em></label>
-				  <input type='text' required='required' maxlength='50' id="name" name='password' value="<?php echo $password ;?>" />
+				  <input type='text' required='required' maxlength='50' id="name" name='password' value="<?php echo h($password); ?>" />
 				</li>
 				
   </ol>

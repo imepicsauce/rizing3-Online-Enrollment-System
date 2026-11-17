@@ -1,159 +1,170 @@
 <?php
-session_start();
-include('includes/conn.php');
-include('logcheck.php');
-	$stid=$_SESSION['studnum'];
-				$getprofile=$conn->query("SELECT * FROM studenttbl WHERE studnum = '$stid'");
-				$rows=mysqli_fetch_array($getprofile);
-				
-if(isset($_POST['reg']))
-		{
-			$stid=$_SESSION['studnum'];
-			$values=$_POST['contents'];
-			$units=$_POST['units'];
-			
-				$insertenroll=$conn->query("INSERT INTO student_subject VALUES('','$stid','$values','$units','0')");
-				echo"<script>window.alert('Enrollment form was successfully sent to the system')</script>";
-				echo"<script>window.location='studentindex.php'</script>";
-			
-			
-		}	
-		
+require_once(__DIR__ . '/../includes/auth.php');
+require_role('student');
+require_once(__DIR__ . '/../config/db.php');
+require_once(__DIR__ . '/../config/settings.php');
+
+// This page only works when reached from the enrollment form.
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+	header('Location: enroll.php');
+	exit;
+}
+
+function back_to_enroll($msg) {
+	js_alert($msg);
+	js_redirect('enroll.php');
+	exit;
+}
+
+if (!csrf_valid()) {
+	back_to_enroll('Your session expired. Please choose your subjects again.');
+}
+
+$stmt = $conn->prepare("SELECT studnum, fname, minitial, lname, course, yearlvl FROM studenttbl WHERE accountID = ? LIMIT 1");
+$stmt->bind_param("i", $_SESSION['userID']);
+$stmt->execute();
+$rows = $stmt->get_result()->fetch_assoc();
+if (!$rows) {
+	back_to_enroll('Your student profile was not found. Please contact the administrator.');
+}
+
+$sem = (string)($_POST['sem'] ?? '');
+if (!in_array($sem, SEMESTERS, true)) {
+	back_to_enroll('Please choose a semester.');
+}
+
+$codes = $_POST['subject'] ?? [];
+$codes = is_array($codes) ? array_values(array_unique(array_map('strval', $codes))) : [];
+if (count($codes) === 0) {
+	back_to_enroll('Please tick at least one subject.');
+}
+
+// Everything on the form is re-read from the database. Nothing about units or fees is trusted from the browser.
+$subs = [];
+$stmt = $conn->prepare("SELECT subjectcode, numofunits, room, day, time, instructor, islab, istutorial FROM subjecttbl WHERE subjectcode = ? AND course_con = ?");
+foreach ($codes as $code) {
+	$stmt->bind_param("ss", $code, $rows['course']);
+	$stmt->execute();
+	$sub = $stmt->get_result()->fetch_assoc();
+	if (!$sub) {
+		back_to_enroll('One of the chosen subjects is not offered for your course. Please choose again.');
+	}
+	$subs[] = $sub;
+}
+usort($subs, fn($a, $b) => strcmp($a['subjectcode'], $b['subjectcode']));
+$codes = array_column($subs, 'subjectcode');
+$subjectList = implode(',', $codes);
+
+$totalunits = 0;
+$extras = 0;
+foreach ($subs as $s) {
+	$totalunits += (int)$s['numofunits'];
+	if ((int)$s['islab'] === 1) { $extras += LAB_FEE; }
+	if ((int)$s['istutorial'] === 1) { $extras += TUTORIAL_FEE; }
+}
+$total = ($totalunits * PER_UNIT_FEE) + ENTRANCE_FEE + INTERNET_FEE + MISC_FEE + $extras;
+
+// Step 2: the student pressed "Submit Enrollment Form".
+if (isset($_POST['reg'])) {
+	$stid = $rows['studnum'];
+	$check = $conn->prepare("SELECT COUNT(*) FROM student_subject WHERE studentID = ? AND subjects = ?");
+	$check->bind_param("ss", $stid, $subjectList);
+	$check->execute();
+	$check->bind_result($already);
+	$check->fetch();
+	$check->close();
+	if ($already > 0) {
+		js_alert('You already submitted a form with exactly these subjects. See "My Enrollment Report" on your profile.');
+		js_redirect('studentindex.php');
+		exit;
+	}
+	$ins = $conn->prepare("INSERT INTO student_subject (studentID, subjects, totalunits, approved) VALUES (?, ?, ?, 0)");
+	$ins->bind_param("ssi", $stid, $subjectList, $totalunits);
+	$ins->execute();
+	js_alert('Enrollment form was successfully sent to the system');
+	js_redirect('studentindex.php');
+	exit;
+}
+
+function money($n) { return number_format($n, 2); }
 ?>
+<!DOCTYPE html>
 <html>
 	<head>
-	<script type="text/javascript">
-$('.confirm').live('click', function(){
-    return confirm("Are you sure?");
-});
-</script>
-	<SCRIPT LANGUAGE="JavaScript"> 
-if (window.print) {
-document.write('<form><input type=button name=print value="Print" onClick="window.print()"></form>');
-}
-</script>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Enrollment Form</title>
-
-	<link href = "css/style.css" rel = "stylesheet" type = "text/css"/>
-	<link rel="stylesheet" href="jquery-ui-1.10.4.custom/development-bundle/themes/base/jquery.ui.all.css">
-	<script src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js"></script>
-	<script src="jquery-ui-1.10.4.custom/development-bundle/ui/jquery.ui.core.js"></script>
-	<script src="jquery-ui-1.10.4.custom/development-bundle/ui/jquery.ui.widget.js"></script>
-	<script src="jquery-ui-1.10.4.custom/development-bundle/ui/jquery.ui.datepicker.js"></script>
-	<link rel="stylesheet" href="jquery-ui-1.10.4.custom/development-bundle/demos/demos.css">
-
-	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Enrollment Form</title>
+	<style>@media print { .no-print { display: none; } }</style>
 	</head>
-	
+
 	<body>
-		
-		<div align='center'><img width='130' height='100' src='../logo.jpg'></div><div align='center' style='margin-top: 20px; font-family: Georgia, &quot;Times New Roman&quot;, Times, serif;'>John Paul College<br>MG ANDAYA COMPOUND<br>Odiong, Roxas, Oriental Mindoro, Philippines</div></div><br>
-		<div align='center' style='margin-top: 20px; font-family: Georgia, &quot;Times New Roman&quot;, Times, serif;'> UNOFFICIAL ENROLLMENT FORM 
-		</div>
-		<div align='center' style='margin-top: 0px; font-family: Georgia, &quot;Times New Roman&quot;, Times, serif;'> <?php echo "$_POST[sem]"; ?> School Year 2015 - 2016
-		</div>
-		<div align='center' width='600px' style='margin-top:30px;'><?php echo  "<b>Student Name: </b>$rows[fname] $rows[minitial] $rows[lname]|| <b>Course: </b>$rows[course]|| <b>Year Level: </b>$rows[yearlvl]" ;?>
-		
-		<table border="2" align='center' width='800'>
-		<tr>
-				<td align='left' colspan='3'><b>ENTRANCE FEE</b> </td><td colspan='3' align='right'>2,050.00</td>
-		</tr>
-		<tr>
-				<td width="300" align="center"><b>Tuition</b></td>
-				<td width="200" align="center"><b>Number of Units</b></td>
-				<td width="200" align="center"><b>Per Unit</b></td>
-				<td width="200" align="center"><b>Tutorial</b></td>
-				<td width="200" align="center"><b>Lab</b></td>
-				<td width="200" align="center"><b>Room</b></td>
-				<td width="200" align="center"><b>Day</b></td>
-				<td width="200" align="center"><b>Time</b></td>
-				<td width="200" align="center"><b>Instructor</b></td>
-				<td width="200" align="center"><b>Total</b></td>
+		<div align='center'><img width='130' height='100' src='../assets/img/logo-login.jpg'></div>
+		<div align='center' style='margin-top: 20px; font-family: Georgia, "Times New Roman", Times, serif;'>John Paul College<br>MG ANDAYA COMPOUND<br>Odiong, Roxas, Oriental Mindoro, Philippines</div><br>
+		<div align='center' style='margin-top: 20px; font-family: Georgia, "Times New Roman", Times, serif;'>UNOFFICIAL ENROLLMENT FORM</div>
+		<div align='center' style='margin-top: 0px; font-family: Georgia, "Times New Roman", Times, serif;'><?php echo h($sem); ?> School Year <?php echo h(SCHOOL_YEAR); ?></div>
+		<div align='center' style='margin-top:30px;'>
+			<b>Student Name: </b><?php echo h($rows['fname'] . ' ' . $rows['minitial'] . ' ' . $rows['lname']); ?> ||
+			<b>Course: </b><?php echo h($rows['course']); ?> ||
+			<b>Year Level: </b><?php echo h($rows['yearlvl']); ?>
 
-			
-          </tr>
-              <tbody>
-			  <?php
-				
-				$alltext="";
-				$totalunits=0;
-				$totperlab=0;
-				foreach($_POST['subject'] as $item){
-			
-				$getcodes=$conn->query("SELECT * FROM subjecttbl WHERE subjectcode='$item'");
-			
-				$alltext=$alltext.",".$item;
+			<table border="2" align='center' width='800'>
+				<tr>
+					<td align='left' colspan='9'><b>ENTRANCE FEE</b></td>
+					<td align='right'><?php echo money(ENTRANCE_FEE); ?></td>
+				</tr>
+				<tr>
+					<td align="center"><b>Subject</b></td>
+					<td align="center"><b>Number of Units</b></td>
+					<td align="center"><b>Per Unit</b></td>
+					<td align="center"><b>Tutorial</b></td>
+					<td align="center"><b>Lab</b></td>
+					<td align="center"><b>Room</b></td>
+					<td align="center"><b>Day</b></td>
+					<td align="center"><b>Time</b></td>
+					<td align="center"><b>Instructor</b></td>
+					<td align="center"><b>Total</b></td>
+				</tr>
+				<?php foreach ($subs as $s) { ?>
+				<tr>
+					<td align='center'><?php echo h($s['subjectcode']); ?></td>
+					<td align='center'><?php echo h($s['numofunits']); ?></td>
+					<td align='center'><?php echo PER_UNIT_FEE; ?></td>
+					<td align='center'><?php echo ((int)$s['istutorial'] === 1) ? TUTORIAL_FEE : ''; ?></td>
+					<td align='center'><?php echo ((int)$s['islab'] === 1) ? LAB_FEE : ''; ?></td>
+					<td align='center'><?php echo h($s['room']); ?></td>
+					<td align='center'><?php echo h($s['day']); ?></td>
+					<td align='center'><?php echo h($s['time']); ?></td>
+					<td align='center'><?php echo h($s['instructor']); ?></td>
+					<td align='right'><?php echo money((int)$s['numofunits'] * PER_UNIT_FEE); ?></td>
+				</tr>
+				<?php } ?>
+				<tr>
+					<td align='left' colspan='9'><b>INTERNET</b></td><td align='right'><?php echo money(INTERNET_FEE); ?></td>
+				</tr>
+				<tr>
+					<td align='left' colspan='9'><b>MISC</b></td><td align='right'><?php echo money(MISC_FEE); ?></td>
+				</tr>
+				<?php if ($extras > 0) { ?>
+				<tr>
+					<td align='left' colspan='9'><b>LAB / TUTORIAL</b></td><td align='right'><?php echo money($extras); ?></td>
+				</tr>
+				<?php } ?>
+				<tr>
+					<td align='left'><b>Total units</b></td>
+					<td colspan='8' align='left'><b><?php echo (int)$totalunits; ?></b></td>
+					<td align='right' bgcolor='#00EE00'><b>P&nbsp;&nbsp;<?php echo money($total); ?></b></td>
+				</tr>
+			</table>
 
-				$subrow=mysqli_fetch_array($getcodes);
-				
-					echo"<tr>";
-						echo"<td align='center'>$subrow[subjectcode]</td>";
-						echo"<td align='center'>$subrow[numofunits]</td>";
-						echo"<td align='center'>296</td>";
-						if($subrow['islab']==1)
-						{
-							
-							$lab=1500;
-							$lab2="1500";
-							$totperlab=$totperlab+1500;
-						}
-						else
-						{
-							$lab=0;
-							$lab2="";
-						}
-						if($subrow['istutorial']==1)
-						{
-							$tut=1500;
-							$tut2="1500";
-							$totperlab=$totperlab+1500;
-						}
-						else
-						{
-							$tut=0;
-							$tut2="";
-						}
-							echo"<td align='center'>$tut2</td>";
-							echo"<td align='center'>$lab2</td>";
-							echo"<td align='center'>$subrow[room]</td>";
-							echo"<td align='center'>$subrow[day]</td>";
-							echo"<td align='center'>$subrow[time]</td>";
-							echo"<td align='center'>$subrow[instructor]</td>";
-						$totrow=$subrow['numofunits'] * 296;
-						echo"<td align='right'>$totrow.00</td>";
-						$totalunits=$totalunits + $subrow['numofunits'];
-					echo"</tr>";
-					
-				
-				}
-				$value=($totalunits * 296) + 2050 +150+50+$totperlab;				
-				echo"
-						<tr>
-							<td colspan='6'></td>
-						</tr>
-						<tr>
-							<td align='left' colspan='5'><b>INTERNET</b></td><td align='right'>150.00</td>
-						</tr>
-						<tr>
-							<td align='left' colspan='5'><b>MISC</b></td><td align='right'>50.00</td>
-						</tr>
-					<tr>
-						<td align='left'><b>Total units</td><td colspan='4' align='left'> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<b>$totalunits</b></td><td align='right' bgcolor='#00EE00'><b>P&nbsp&nbsp&nbsp&nbsp$value.00</b></td>
-					</tr>";
-			  ?>
-			</tbody>
-	</table>
-			<form method="POST" > 
-			<div style='margin-top:20px;'><input type='submit' name='reg' value='Submit Enrollment Form' onClick="return confirm('Are you sure?, Form will be submitted to the system');"></div>
-		</div>
-		<div align='center' style='margin-top:500px;' >
-		
-			<input type='hidden' name='contents' value="<?php echo $alltext; ?>">
-			<input type='hidden' name='units' value="<?php echo $totalunits; ?>">
-		</form>
-		<input type='button' onclick='window.print()'>
+			<form method="POST" class="no-print" action="showsubs.php">
+				<?php echo csrf_field(); ?>
+				<input type='hidden' name='sem' value="<?php echo h($sem); ?>">
+				<?php foreach ($codes as $c) { echo "<input type='hidden' name='subject[]' value=\"" . h($c) . "\">"; } ?>
+				<div style='margin-top:20px;'>
+					<input type='submit' name='reg' value='Submit Enrollment Form' onclick="return confirm('Are you sure? The form will be submitted to the system.');">
+					<input type='button' value='Print' onclick='window.print()'>
+					<input type='button' value='Back' onclick="window.location='enroll.php'">
+				</div>
+			</form>
 		</div>
 	</body>
-
 </html>
