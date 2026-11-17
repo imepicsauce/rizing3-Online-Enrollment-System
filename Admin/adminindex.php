@@ -1,6 +1,8 @@
 <?php
 require_once(__DIR__ . '/../includes/auth.php');
 require_role('admin');
+require_once(__DIR__ . '/../config/db.php');
+$pendingForms = (int)$conn->query("SELECT COUNT(*) FROM student_subject WHERE approved = 0")->fetch_row()[0];
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -44,36 +46,27 @@ include('includes/menu1.php');
 		<!-- /Box -->
 		<!-- Box -->
 		<div class="box">
-			<h2>Latest Events</h2>
+			<h2>Administrator Tasks</h2>
 			
 			<div class="entry">
-				<!-- News -->	
 				<div class="news">
 					<ul>
 						<li>
-							<div class="post-image">
-								<img src="../assets/img/news1.jpg" width='90' height='70' alt="" />
-							</div>
 							<div class="post-data">
-								<h5>September 11th, 2010</h5>
-								<p>Nam scelerisque mi ut leo eleifend imperdiet. Donec at molestie diam. Etiam quam nisi, elementum sed commodo, posuere &hellip;</p>
+								<h5>Approve enrollment forms</h5>
+								<p><?php echo (int)$pendingForms; ?> form(s) are waiting. Open <a href="approvals.php">Approvals</a> to review them.</p>
 							</div>
 							<div class="cl">&nbsp;</div>
 						</li>
-						
 						<li class="last">
-							<div class="post-image">
-								<img src="../assets/img/news2.jpg" width='90' height='70'  alt="" />
-							</div>
 							<div class="post-data">
-								<h5>September 10th, 2010</h5>
-								<p>Nam scelerisque mi ut leo eleifend imperdiet. Donec at molestie diam. Etiam quam nisi, elementum sed commodo, posuere &hellip;</p>
+								<h5>Keep records up to date</h5>
+								<p>Use <a href="userreg.php">Manage Users</a>, <a href="subjectreg.php">Manage Subjects</a> and <a href="courses.php">Courses</a> to add or correct students, subjects and courses.</p>
 							</div>
 							<div class="cl">&nbsp;</div>
 						</li>
 					</ul>
 				</div>
-				<!-- /News -->
 			</div>
 			
 			
@@ -115,7 +108,7 @@ include('includes/menu2.php');
 		
 		<!-- Copyrights --> 
 		<p class="right"> 
-			Copyright 2014 | Online Enrollment
+			Copyright <?php echo date("Y"); ?> | Online Enrollment
 		</p> 
 		<!-- /Copyrights --> 
 		

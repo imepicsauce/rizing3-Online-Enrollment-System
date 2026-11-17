@@ -40,6 +40,8 @@ if (isset($_POST['save'])) {
 		js_alert('Username and student number are required.');
 	} elseif (!in_array($v['course'], $courses, true)) {
 		js_alert('Please select a valid course.');
+	} elseif (($err = student_validate($v)) !== '') {
+		js_alert($err);
 	} else {
 		try {
 			$conn->begin_transaction();

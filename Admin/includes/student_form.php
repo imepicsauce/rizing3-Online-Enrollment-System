@@ -46,7 +46,7 @@
 	<li>
 		<table>
 			<tr>
-				<td>First Name:</td><td><input type='text' maxlength='50' name='fname' value="<?php echo sf_val($v, 'fname'); ?>" /></td>
+				<td>First Name:</td><td><input type='text' required='required' maxlength='50' name='fname' value="<?php echo sf_val($v, 'fname'); ?>" /></td>
 				<td>Civil Status:</td><td><select name='cstatus'>
 					<?php foreach (['single' => 'Single', 'married' => 'Married', 'widow' => 'Widow'] as $k => $label) { ?>
 					<option value='<?php echo $k; ?>'<?php echo (($v['cstatus'] ?? '') === $k) ? ' selected' : ''; ?>><?php echo $label; ?></option>
@@ -58,12 +58,12 @@
 				<td>Guardian's Name:</td><td align='left'><input type='text' maxlength='50' name='guardianname' value="<?php echo sf_val($v, 'guardianname'); ?>" /></td>
 			</tr>
 			<tr>
-				<td>Last Name:</td><td><input type='text' maxlength='50' name='lname' value="<?php echo sf_val($v, 'lname'); ?>" /></td>
+				<td>Last Name:</td><td><input type='text' required='required' maxlength='50' name='lname' value="<?php echo sf_val($v, 'lname'); ?>" /></td>
 				<td>Father's Name:</td><td align='left'><input type='text' maxlength='50' name='fathername' value="<?php echo sf_val($v, 'fathername'); ?>" /></td>
 			</tr>
 			<tr>
 				<td><label>Gender:</label></td><td align='left'>
-					<input type='radio' name='gender' value='male'<?php echo (($v['gender'] ?? '') === 'male') ? ' checked' : ''; ?>>Male &nbsp;&nbsp;
+					<input type='radio' name='gender' required='required' value='male'<?php echo (($v['gender'] ?? '') === 'male') ? ' checked' : ''; ?>>Male &nbsp;&nbsp;
 					<input type='radio' name='gender' value='female'<?php echo (($v['gender'] ?? '') === 'female') ? ' checked' : ''; ?>>Female</td>
 				<td>Mother's Name:</td><td align='left'><input type='text' maxlength='50' name='mothername' value="<?php echo sf_val($v, 'mothername'); ?>" /></td>
 			</tr>
@@ -75,15 +75,15 @@
 	</li>
 	<li>
 		<label for="address">Address<em>*</em></label>
-		<textarea name='address' id="address"><?php echo sf_val($v, 'address'); ?></textarea>
+		<textarea name='address' id="address" required='required'><?php echo sf_val($v, 'address'); ?></textarea>
 	</li>
 	<li>
 		<label for="cnumber">Contact Number</label>
-		<input type='text' name='cnumber' id="cnumber" maxlength='11' value="<?php echo sf_val($v, 'cnumber'); ?>"/>
+		<input type='text' name='cnumber' id="cnumber" maxlength='11' inputmode='numeric' pattern='[0-9]{7,11}' title='7 to 11 digits' value="<?php echo sf_val($v, 'cnumber'); ?>"/>
 	</li>
 	<li>
 		<label for="email">Email Address</label>
-		<input type='text' name='email' id="email" value="<?php echo sf_val($v, 'email'); ?>" />
+		<input type='email' name='email' id="email" value="<?php echo sf_val($v, 'email'); ?>" />
 	</li>
 	</ol>
 </fieldset>

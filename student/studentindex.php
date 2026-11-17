@@ -44,36 +44,34 @@ include('includes/menu.php');
 		<!-- /Box -->
 		<!-- Box -->
 		<div class="box">
-			<h2>Latest Events</h2>
+			<h2>How to Enroll</h2>
 			
 			<div class="entry">
-				<!-- News -->	
 				<div class="news">
 					<ul>
 						<li>
-							<div class="post-image">
-								<img src="../assets/img/news1.jpg" width='90' height='70' alt="" />
-							</div>
 							<div class="post-data">
-								<h5>September 11th, 2010</h5>
-								<p>Nam scelerisque mi ut leo eleifend imperdiet. Donec at molestie diam. Etiam quam nisi, elementum sed commodo, posuere &hellip;</p>
+								<h5>1. Check your curriculum</h5>
+								<p>Open <a href="curriculum.php">Curriculum</a> to see the subjects offered for your course.</p>
 							</div>
 							<div class="cl">&nbsp;</div>
 						</li>
-						
-						<li class="last">
-							<div class="post-image">
-								<img src="../assets/img/news2.jpg" width='90' height='70'  alt="" />
-							</div>
+						<li>
 							<div class="post-data">
-								<h5>September 10th, 2010</h5>
-								<p>Nam scelerisque mi ut leo eleifend imperdiet. Donec at molestie diam. Etiam quam nisi, elementum sed commodo, posuere &hellip;</p>
+								<h5>2. Fill in your enrollment form</h5>
+								<p>Go to <a href="enroll.php">Enroll Now</a>, choose the semester and tick your subjects. Review the form, then submit it. You get one form per semester.</p>
+							</div>
+							<div class="cl">&nbsp;</div>
+						</li>
+						<li class="last">
+							<div class="post-data">
+								<h5>3. Wait for approval</h5>
+								<p>The administrator approves your form. Check its status, print it, or cancel a pending form in <a href="report.php">My Enrollment Report</a> on your profile page.</p>
 							</div>
 							<div class="cl">&nbsp;</div>
 						</li>
 					</ul>
 				</div>
-				<!-- /News -->
 			</div>
 			
 			
@@ -115,7 +113,7 @@ include('includes/menu2.php');
 		
 		<!-- Copyrights --> 
 		<p class="right"> 
-			Copyright 2014 | Online Enrollment
+			Copyright <?php echo date("Y"); ?> | Online Enrollment
 		</p> 
 		<!-- /Copyrights --> 
 		

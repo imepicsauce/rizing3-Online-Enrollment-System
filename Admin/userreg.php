@@ -107,7 +107,7 @@ include('includes/menu1.php');
 		
 		<!-- Copyrights --> 
 		<p class="right"> 
-			Copyright 2014 | Online Enrollment
+			Copyright <?php echo date("Y"); ?> | Online Enrollment
 		</p> 
 		<!-- /Copyrights --> 
 		

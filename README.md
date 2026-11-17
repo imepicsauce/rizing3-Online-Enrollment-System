@@ -46,3 +46,5 @@ Done:
 - School year, per-unit fee, entrance/internet/misc/lab/tutorial fees and the semester names are in `config/settings.php`.
 - Admins approve student enrollment forms from the **Approvals** page. A student can have one form per semester per school year; a pending form can be cancelled by the student, an approved one is locked.
 - Admins manage courses from the **Courses** page, and can edit any student (including resetting the password) or subject from the lists.
+- Database login: defaults suit XAMPP (`root`, no password). For other settings copy `config/db.local.example.php` to `config/db.local.php` (git-ignored) and edit it.
+- Login is limited to 5 wrong passwords per username and address, then blocked for 15 minutes (table `login_attempts`).

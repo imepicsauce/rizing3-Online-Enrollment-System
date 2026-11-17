@@ -1,20 +1,45 @@
 <?php
-session_start();
+require_once(__DIR__ . '/includes/auth.php');   // starts the session
 require_once(__DIR__ . '/config/db.php');
-require_once(__DIR__ . '/includes/auth.php');
+
+// Too many wrong passwords for one username from one address: wait before trying again.
+const LOGIN_MAX_FAILS = 5;
+const LOGIN_WINDOW_MINUTES = 15;
 
 if (isset($_POST['submit'])) {
 	$username = trim($_POST['username'] ?? '');
 	$password = (string)($_POST['password'] ?? '');
+	$attemptName = substr($username, 0, 50);
+	$ip = substr((string)($_SERVER['REMOTE_ADDR'] ?? ''), 0, 45);
 
-	$stmt = $conn->prepare("SELECT ID, username, password, user_type FROM usertbl WHERE username = ? LIMIT 1");
-	$stmt->bind_param("s", $username);
+	$stmt = $conn->prepare("SELECT COUNT(*) FROM login_attempts WHERE username = ? AND ip = ?
+	                        AND attempted_at > (NOW() - INTERVAL " . LOGIN_WINDOW_MINUTES . " MINUTE)");
+	$stmt->bind_param("ss", $attemptName, $ip);
 	$stmt->execute();
-	$row = $stmt->get_result()->fetch_assoc();
+	$stmt->bind_result($recentFails);
+	$stmt->fetch();
+	$stmt->close();
 
-	if (!$row || !password_matches($password, $row['password'])) {
+	$row = null;
+	if ($recentFails < LOGIN_MAX_FAILS) {
+		$stmt = $conn->prepare("SELECT ID, username, password, user_type FROM usertbl WHERE username = ? LIMIT 1");
+		$stmt->bind_param("s", $username);
+		$stmt->execute();
+		$row = $stmt->get_result()->fetch_assoc();
+	}
+
+	if ($recentFails >= LOGIN_MAX_FAILS) {
+		js_alert("Too many failed attempts. Please wait " . LOGIN_WINDOW_MINUTES . " minutes and try again.");
+	} elseif (!$row || !password_matches($password, $row['password'])) {
+		$ins = $conn->prepare("INSERT INTO login_attempts (username, ip) VALUES (?, ?)");
+		$ins->bind_param("ss", $attemptName, $ip);
+		$ins->execute();
+		$conn->query("DELETE FROM login_attempts WHERE attempted_at < (NOW() - INTERVAL 1 DAY)");
 		js_alert("User doesn't exist please try again.");
 	} else {
+		$clr = $conn->prepare("DELETE FROM login_attempts WHERE username = ? AND ip = ?");
+		$clr->bind_param("ss", $attemptName, $ip);
+		$clr->execute();
 		// Old plain-text passwords are upgraded to a hash the first time their owner logs in.
 		if (password_is_legacy($row['password'])) {
 			$up = $conn->prepare("UPDATE usertbl SET password = ? WHERE ID = ?");

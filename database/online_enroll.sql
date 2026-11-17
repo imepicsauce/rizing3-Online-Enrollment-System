@@ -25,6 +25,7 @@ USE `online_enroll`;
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS `login_attempts`;
 DROP TABLE IF EXISTS `sched_tbl`;
 DROP TABLE IF EXISTS `student_subject`;
 DROP TABLE IF EXISTS `studenttbl`;
@@ -110,7 +111,7 @@ CREATE TABLE `studenttbl` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=3;
 
 INSERT INTO `studenttbl` (`ID`, `accountID`, `studnum`, `fname`, `minitial`, `lname`, `address`, `contact`, `emailaddress`, `birthdate`, `course`, `yearlvl`, `gender`, `fathername`, `mothername`, `guardianname`, `birthplace`, `civilstatus`, `elemschool`, `dategradelem`, `hsschool`, `datehsgrad`, `lastgrad`, `datelastgrad`, `addresslastgrad`) VALUES
-(2, 6, '2014-052', 'Karl Macniel', 'E', 'Flores', 'asdadasdasd', '09312312313', 'karloemilflore', '2015-01-14', 'bsit', 'II-2', 'male', 'Lopez Alcadia', 'Mauricia Magalpok', 'Arutro Manansala', 'Manila', 'single', 'Lacs', '1990', 'Mals', '1990', 'Navs', '1990', 'Navs');
+(2, 6, '2014-052', 'Karl Macniel', 'E', 'Flores', 'asdadasdasd', '09312312313', 'karloemilflore@example.com', '2015-01-14', 'bsit', 'II-2', 'male', 'Lopez Alcadia', 'Mauricia Magalpok', 'Arutro Manansala', 'Manila', 'single', 'Lacs', '1990', 'Mals', '1990', 'Navs', '1990', 'Navs');
 
 -- ------------------------------------------------------------
 -- subjecttbl : subjects offered, grouped by course
@@ -202,3 +203,16 @@ CREATE TABLE `sched_tbl` (
   CONSTRAINT `fk_sched_subject` FOREIGN KEY (`subject_ID`)
     REFERENCES `subjecttbl` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=1;
+
+-- ------------------------------------------------------------
+-- login_attempts : failed logins, used to slow down password guessing
+-- (5 failures for one username from one address block logins for 15 minutes)
+-- ------------------------------------------------------------
+CREATE TABLE `login_attempts` (
+  `ID`           int(11)      NOT NULL AUTO_INCREMENT,
+  `username`     varchar(50)  NOT NULL,
+  `ip`           varchar(45)  NOT NULL,
+  `attempted_at` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ID`),
+  KEY `idx_login_lookup` (`username`, `ip`, `attempted_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
