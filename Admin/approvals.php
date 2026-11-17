@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $forms = $conn->query("
-	SELECT ss.ID, ss.studentID, ss.subjects, ss.totalunits, ss.approved,
+	SELECT ss.ID, ss.studentID, ss.subjects, ss.totalunits, ss.approved, ss.semester, ss.school_year,
 	       s.fname, s.minitial, s.lname, s.course, s.yearlvl
 	FROM student_subject ss
 	LEFT JOIN studenttbl s ON s.studnum = ss.studentID
@@ -50,12 +50,12 @@ $forms = $conn->query("
 		<table class="data-table" border="1" width="100%">
 			<thead>
 				<tr>
-					<th>Form</th><th>Student No.</th><th>Name</th><th>Course / Year</th><th>Subjects</th><th>Units</th><th>Status</th><th>Action</th>
+					<th>Form</th><th>Student No.</th><th>Name</th><th>Course / Year</th><th>Subjects</th><th>Units</th><th>Semester</th><th>Status</th><th>Action</th>
 				</tr>
 			</thead>
 			<tbody>
 			<?php if ($forms->num_rows == 0) { ?>
-				<tr><td colspan="8" align="center">No enrollment forms have been submitted yet.</td></tr>
+				<tr><td colspan="9" align="center">No enrollment forms have been submitted yet.</td></tr>
 			<?php }
 			while ($f = $forms->fetch_assoc()) {
 				$isApproved = ((int)$f['approved'] === 1);
@@ -67,6 +67,7 @@ $forms = $conn->query("
 					<td><?php echo h($f['course'] . ' / ' . $f['yearlvl']); ?></td>
 					<td><?php echo h($subjects); ?></td>
 					<td align="center"><?php echo (int)$f['totalunits']; ?></td>
+					<td><?php echo h($f['semester'] . ' ' . $f['school_year']); ?></td>
 					<td align="center"><?php echo $isApproved ? 'Approved' : 'Pending'; ?></td>
 					<td align="center">
 						<form method="POST" action="approvals.php" style="display:inline">
@@ -90,7 +91,7 @@ $forms = $conn->query("
 		<div class="footer-navigation">
 		<?php include('includes/menu2.php'); ?>
 		</div>
-		<p class="right">Copyright 2014 | Online Enrollment</p>
+		<p class="right">Copyright <?php echo date("Y"); ?> | Online Enrollment</p>
 		<div class="cl">&nbsp;</div>
 	</div>
 </div>

@@ -4,3 +4,4 @@ _notes/
 *.log
 .vscode/
 .idea/
+config/db.local.php

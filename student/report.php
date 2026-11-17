@@ -17,10 +17,25 @@ while ($r = $subRes->fetch_assoc()) {
 	$titles[$r['subjectcode']] = $r['subjecttitle'];
 }
 
+// Cancel a form that is still waiting for approval (approved forms are locked).
+if ($student && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_form'])) {
+	if (!csrf_valid()) {
+		js_alert('Your session expired. Please try again.');
+	} else {
+		$fid = (int)$_POST['cancel_form'];
+		$del = $conn->prepare("DELETE FROM student_subject WHERE ID = ? AND studentID = ? AND approved = 0");
+		$del->bind_param("is", $fid, $student['studnum']);
+		$del->execute();
+		js_alert($del->affected_rows > 0 ? 'The enrollment form was cancelled. You can submit a new one.' : 'That form cannot be cancelled (it is already approved or no longer exists).');
+	}
+	js_redirect('report.php');
+	exit;
+}
+
 // This student's submitted enrollment forms
 $forms = null;
 if ($student) {
-	$stmt2 = $conn->prepare("SELECT ID, subjects, totalunits, approved FROM student_subject WHERE studentID = ? ORDER BY ID DESC");
+	$stmt2 = $conn->prepare("SELECT ID, subjects, totalunits, approved, semester, school_year FROM student_subject WHERE studentID = ? ORDER BY ID DESC");
 	$stmt2->bind_param("s", $student['studnum']);
 	$stmt2->execute();
 	$forms = $stmt2->get_result();
@@ -46,7 +61,7 @@ if ($student) {
 		<button onclick="window.print()">Print</button>
 	</div>
 
-	<div align="center"><img width="130" height="100" src="../assets/img/logo-report.jpg"></div>
+	<div align="center"><img width="130" height="100" src="../assets/img/logo-login.jpg"></div>
 	<div align="center" style="margin-top:20px;">
 		John Paul College<br>MG ANDAYA COMPOUND<br>Odiong, Roxas, Oriental Mindoro, Philippines
 	</div>
@@ -69,10 +84,12 @@ if ($student) {
 				<td width="60" align="center"><b>Form #</b></td>
 				<td width="500" align="center"><b>Subjects</b></td>
 				<td width="80" align="center"><b>Units</b></td>
+				<td width="140" align="center"><b>Semester</b></td>
 				<td width="100" align="center"><b>Status</b></td>
+				<td width="90" align="center" class="no-print"><b>Action</b></td>
 			</tr>
 			<?php if ($forms->num_rows == 0) { ?>
-				<tr><td colspan="4" align="center">You have not submitted an enrollment form yet.</td></tr>
+				<tr><td colspan="6" align="center">You have not submitted an enrollment form yet.</td></tr>
 			<?php } ?>
 			<?php while ($f = $forms->fetch_assoc()) {
 				$codes = array_filter(array_map('trim', explode(',', $f['subjects'])));
@@ -86,7 +103,17 @@ if ($student) {
 				<td align="center"><?php echo h($f['ID']); ?></td>
 				<td><?php echo implode('<br>', $lines); ?></td>
 				<td align="center"><?php echo h($f['totalunits']); ?></td>
+				<td align="center"><?php echo h($f['semester'] . ' ' . $f['school_year']); ?></td>
 				<td align="center"><?php echo $status; ?></td>
+				<td align="center" class="no-print">
+					<?php if ($f['approved'] == '0') { ?>
+					<form method="post" action="report.php" style="display:inline" onsubmit="return confirm('Cancel this enrollment form?');">
+						<?php echo csrf_field(); ?>
+						<input type="hidden" name="cancel_form" value="<?php echo (int)$f['ID']; ?>">
+						<button type="submit">Cancel</button>
+					</form>
+					<?php } else { echo '&mdash;'; } ?>
+				</td>
 			</tr>
 			<?php } ?>
 		</table>

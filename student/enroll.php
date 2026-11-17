@@ -104,7 +104,7 @@
 		<div class="footer-navigation">
 		<?php include('includes/menu2.php'); ?>
 		</div>
-		<p class="right">Copyright 2014 | Online Enrollment</p>
+		<p class="right">Copyright <?php echo date("Y"); ?> | Online Enrollment</p>
 		<div class="cl">&nbsp;</div>
 	</div>
 </div>

@@ -77,7 +77,8 @@ include('includes/menu1.php');
 					<td><?php echo h($r['yearlvl']); ?></td>
 					<td><?php echo h($r['course']); ?></td>
 					<td>
-						<form method="post" action="deletecurruser.php" onsubmit="return confirm('Are you sure?');">
+						<a href="edituser.php?id=<?php echo (int)$r['ID']; ?>">EDIT</a> |
+						<form method="post" action="deletecurruser.php" style="display:inline" onsubmit="return confirm('Are you sure? This also deletes the student\'s profile and enrollment forms.');">
 							<input type="hidden" name="accid" value="<?php echo (int)$r['ID']; ?>">
 							<?php echo csrf_field(); ?>
 							<button type="submit" class="link-button">DELETE</button>
@@ -106,7 +107,7 @@ include('includes/menu1.php');
 		
 		<!-- Copyrights --> 
 		<p class="right"> 
-			Copyright 2014 | Online Enrollment
+			Copyright <?php echo date("Y"); ?> | Online Enrollment
 		</p> 
 		<!-- /Copyrights --> 
 		
