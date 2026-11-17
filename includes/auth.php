@@ -42,3 +42,18 @@ function csrf_field() {
 function csrf_valid() {
 	return isset($_POST['token'], $_SESSION['csrf']) && hash_equals($_SESSION['csrf'], (string)$_POST['token']);
 }
+
+// Passwords: stored hashed. Old plain-text passwords still work once and are re-saved as hashes.
+function password_matches($input, $stored) {
+	$stored = (string)$stored;
+	if (preg_match('/^\$(2y|argon2id?)\$/', $stored)) {
+		return password_verify((string)$input, $stored);
+	}
+	return $stored !== '' && hash_equals($stored, (string)$input);
+}
+function password_is_legacy($stored) {
+	return !preg_match('/^\$(2y|argon2id?)\$/', (string)$stored);
+}
+function password_make($plain) {
+	return password_hash((string)$plain, PASSWORD_DEFAULT);
+}

@@ -1,43 +1,32 @@
 <?php
 	require_once(__DIR__ . '/../includes/auth.php');
 	require_role('student');
-	$getID=$_SESSION['userID'];
 	require_once(__DIR__ . '/../config/db.php');
-	
-	
-	$getprofile=$conn->query("SELECT * FROM studenttbl WHERE accountID = '$getID'");
-	$rows=mysqli_fetch_array($getprofile);
-	
-	$getacc=$conn->query("SELECT * FROM usertbl WHERE ID = '$getID'");
-	$rowacc=mysqli_fetch_array($getacc);
-	
-		$username=$rowacc['username'];
-		$password=$rowacc['password'];
-		
-		$course=$rows['course'];
-		$yrlvlsec=$rows['yearlvl'];
-		$snum=$rows['studnum'];
-		
-		$fname=$rows['fname'];
-		$minitial=$rows['minitial'];
-		$lname=$rows['lname'];
-		$fullname= $fname." ".$minitial." ".$lname;
-		
-		$_SESSION['studnum']=$rows['studnum'];
-		
-		
-	
-	
+	require_once(__DIR__ . '/../config/settings.php');
+
+	$stmt = $conn->prepare("SELECT studnum, fname, minitial, lname, course, yearlvl FROM studenttbl WHERE accountID = ? LIMIT 1");
+	$stmt->bind_param("i", $_SESSION['userID']);
+	$stmt->execute();
+	$rows = $stmt->get_result()->fetch_assoc();
+	if (!$rows) {
+		js_alert('Your student profile was not found. Please contact the administrator.');
+		js_redirect('studentindex.php');
+		exit;
+	}
+	$_SESSION['studnum'] = $rows['studnum'];
+
+	// Only the subjects of the student's own course can be chosen.
+	$stmt = $conn->prepare("SELECT subjectcode, subjecttitle, description, numofunits FROM subjecttbl WHERE course_con = ? ORDER BY subjectcode");
+	$stmt->bind_param("s", $rows['course']);
+	$stmt->execute();
+	$subjects = $stmt->get_result();
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta charset="utf-8" />
 <title>John Paul College</title>
-
-
 <link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
-
 </head>
 
 <body class="app">
@@ -46,100 +35,79 @@
 </div>
 	<div align='left'>
 <nav class='container'>
-<?php
-include('includes/menu.php');
-?>
+<?php include('includes/menu.php'); ?>
 </nav>
 </div>
-
-
-
 
 <div id="main">
 	<div class="shell">
 	<center>
-	<form class='cmxform' method='POST' action='showsubs.php'>
-	
-	
-	<fieldset>
+	<form class='cmxform' method='POST' action='showsubs.php' onsubmit="if(!document.querySelector('input[name=&quot;subject[]&quot;]:checked')){alert('Please tick at least one subject.');return false;}">
+		<?php echo csrf_field(); ?>
+		<fieldset>
 			<legend>Student Details</legend>
-			  <ol>
-			  <li>
-				  <label for="name"><b>Year Level:</b>  <?php echo $yrlvlsec; ?> ||</label>
-				  <label for="name"><b>Course:</b>  <?php echo $course; ?></label>
-				  <label for="name"><b>Sem:</b></label><select name='sem'><option value='1st Sem'>1st</option><option value='2nd Sem'>2nd</option></select>
-				  
-				</li>
-				
-  </ol>
+			<ol>
+			<li>
+				<label><b>Year Level:</b> <?php echo h($rows['yearlvl']); ?> ||</label>
+				<label><b>Course:</b> <?php echo h($rows['course']); ?></label>
+				<label><b>Sem:</b></label>
+				<select name='sem'>
+					<?php foreach (SEMESTERS as $s) { echo "<option value='" . h($s) . "'>" . h($s) . "</option>"; } ?>
+				</select>
+			</li>
+			</ol>
 			<div><br></div>
-	</fieldset>
-	<fieldset>	
-			  <legend>List of Subjects</legend>
-			  <ol>
-			  <li>
-					<table border='1'>
-						<thead>
+		</fieldset>
+		<fieldset>
+			<legend>List of Subjects</legend>
+			<ol>
+			<li>
+				<table border='1'>
+					<thead>
+						<tr>
 							<th>Subject Code</th>
 							<th>Subject Title</th>
 							<th>Description</th>
 							<th>Number of Units</th>
 							<th>Select</th>
-						</thead>
-						<tbody>
-							<?php
-								$getsubjects=$conn->query("SELECT * FROM subjecttbl");
-								while($fetchsub=mysqli_fetch_array($getsubjects))
-								{
-									echo"<tr>";
-										echo"<td width='120' align='center'>$fetchsub[subjectcode]</td>";
-										echo"<td width='120' align='center'>$fetchsub[subjecttitle]</td>";
-										echo"<td width='120' align='center'>$fetchsub[description]</td>";
-										echo"<td width='120' align='center'>$fetchsub[numofunits]</td>";
-										echo"<td  width='120' align='center'><input type='checkbox' name='subject[]' value='$fetchsub[subjectcode]'></td>";
-									echo"</tr>";
-								}
-								
-							
-							?>
-						</tbody>
-					</table>
-					<div>  <br></div>
-	 </fieldset>
-				
-
-<div align='center'><input type='submit' name='register' value='Enroll Selected'>&nbsp;&nbsp;
-<input type='reset' name='clear' value='Clear'></div>
-</form>
-</center>
+						</tr>
+					</thead>
+					<tbody>
+					<?php if ($subjects->num_rows == 0) { ?>
+						<tr><td colspan="5" align="center">No subjects have been added for your course yet.</td></tr>
+					<?php }
+					while ($s = $subjects->fetch_assoc()) { ?>
+						<tr>
+							<td width='120' align='center'><?php echo h($s['subjectcode']); ?></td>
+							<td width='120' align='center'><?php echo h($s['subjecttitle']); ?></td>
+							<td width='120' align='center'><?php echo h($s['description']); ?></td>
+							<td width='120' align='center'><?php echo h($s['numofunits']); ?></td>
+							<td width='120' align='center'><input type='checkbox' name='subject[]' value="<?php echo h($s['subjectcode']); ?>"></td>
+						</tr>
+					<?php } ?>
+					</tbody>
+				</table>
+				<div><br></div>
+			</li>
+			</ol>
+		</fieldset>
+		<div align='center'><input type='submit' name='register' value='Enroll Selected'>&nbsp;&nbsp;
+		<input type='reset' name='clear' value='Clear'></div>
+	</form>
+	</center>
 	</div>
 	<div><br></div>
 </div>
-<!-- /Main -->
 
-<!-- Footer -->
 <div id="footer">
 	<div class="shell">
-		<!-- Mini Nav --> 
-		<div class="footer-navigation"> 
-		<?php
-			include('includes/menu2.php');
-		?>
-		</div> 
-		<!-- /Mini Nav --> 
-		
-		<!-- Copyrights --> 
-		<p class="right"> 
-			Copyright 2014 | Online Enrollment
-		</p> 
-		<!-- /Copyrights --> 
-		
-		<div class="cl">&nbsp;</div> 
+		<div class="footer-navigation">
+		<?php include('includes/menu2.php'); ?>
+		</div>
+		<p class="right">Copyright 2014 | Online Enrollment</p>
+		<div class="cl">&nbsp;</div>
 	</div>
 </div>
-
-
-
 
 </body>
 </html>

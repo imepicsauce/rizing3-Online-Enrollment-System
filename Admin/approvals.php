@@ -1,0 +1,99 @@
+<?php
+require_once(__DIR__ . '/../includes/auth.php');
+require_role('admin');
+require_once(__DIR__ . '/../config/db.php');
+
+// Approve or un-approve one enrollment form.
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+	if (!csrf_valid()) {
+		js_alert('Your session expired. Please try again.');
+	} else {
+		$formID = (int)($_POST['form_id'] ?? 0);
+		$approve = (($_POST['action'] ?? '') === 'approve') ? 1 : 0;
+		$stmt = $conn->prepare("UPDATE student_subject SET approved = ? WHERE ID = ?");
+		$stmt->bind_param("ii", $approve, $formID);
+		$stmt->execute();
+		js_alert($approve ? 'Enrollment form approved.' : 'Enrollment form set back to pending.');
+	}
+	js_redirect('approvals.php');
+	exit;
+}
+
+$forms = $conn->query("
+	SELECT ss.ID, ss.studentID, ss.subjects, ss.totalunits, ss.approved,
+	       s.fname, s.minitial, s.lname, s.course, s.yearlvl
+	FROM student_subject ss
+	LEFT JOIN studenttbl s ON s.studnum = ss.studentID
+	ORDER BY ss.approved ASC, ss.ID DESC");
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>John Paul College</title>
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
+</head>
+
+<body class="app">
+
+<div class='header'>
+</div>
+
+<nav class='container'>
+<?php include('includes/menu1.php'); ?>
+</nav>
+
+<div id="main">
+	<div class="shell">
+		<center><b><h1>Enrollment Forms</h1></b></center>
+		<div class="niceform">
+		<table class="data-table" border="1" width="100%">
+			<thead>
+				<tr>
+					<th>Form</th><th>Student No.</th><th>Name</th><th>Course / Year</th><th>Subjects</th><th>Units</th><th>Status</th><th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php if ($forms->num_rows == 0) { ?>
+				<tr><td colspan="8" align="center">No enrollment forms have been submitted yet.</td></tr>
+			<?php }
+			while ($f = $forms->fetch_assoc()) {
+				$isApproved = ((int)$f['approved'] === 1);
+				$subjects = implode(', ', array_filter(array_map('trim', explode(',', $f['subjects'])))); ?>
+				<tr>
+					<td align="center"><?php echo (int)$f['ID']; ?></td>
+					<td><?php echo h($f['studentID']); ?></td>
+					<td><?php echo h(trim($f['fname'] . ' ' . $f['minitial'] . ' ' . $f['lname'])); ?></td>
+					<td><?php echo h($f['course'] . ' / ' . $f['yearlvl']); ?></td>
+					<td><?php echo h($subjects); ?></td>
+					<td align="center"><?php echo (int)$f['totalunits']; ?></td>
+					<td align="center"><?php echo $isApproved ? 'Approved' : 'Pending'; ?></td>
+					<td align="center">
+						<form method="POST" action="approvals.php" style="display:inline">
+							<?php echo csrf_field(); ?>
+							<input type="hidden" name="form_id" value="<?php echo (int)$f['ID']; ?>">
+							<input type="hidden" name="action" value="<?php echo $isApproved ? 'pending' : 'approve'; ?>">
+							<button type="submit" class="link-button"><?php echo $isApproved ? 'Set to pending' : 'Approve'; ?></button>
+						</form>
+					</td>
+				</tr>
+			<?php } ?>
+			</tbody>
+		</table>
+		</div>
+	</div>
+	<div><br></div>
+</div>
+
+<div id="footer">
+	<div class="shell">
+		<div class="footer-navigation">
+		<?php include('includes/menu2.php'); ?>
+		</div>
+		<p class="right">Copyright 2014 | Online Enrollment</p>
+		<div class="cl">&nbsp;</div>
+	</div>
+</div>
+
+</body>
+</html>

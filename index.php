@@ -12,9 +12,16 @@ if (isset($_POST['submit'])) {
 	$stmt->execute();
 	$row = $stmt->get_result()->fetch_assoc();
 
-	if (!$row || !hash_equals((string)$row['password'], $password)) {
+	if (!$row || !password_matches($password, $row['password'])) {
 		js_alert("User doesn't exist please try again.");
 	} else {
+		// Old plain-text passwords are upgraded to a hash the first time their owner logs in.
+		if (password_is_legacy($row['password'])) {
+			$up = $conn->prepare("UPDATE usertbl SET password = ? WHERE ID = ?");
+			$hash = password_make($password);
+			$up->bind_param("si", $hash, $row['ID']);
+			$up->execute();
+		}
 		session_regenerate_id(true);
 		$_SESSION['username'] = $row['username'];
 		$_SESSION['userID']   = (int)$row['ID'];

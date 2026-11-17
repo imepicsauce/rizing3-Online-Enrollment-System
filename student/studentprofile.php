@@ -8,44 +8,45 @@ require_once(__DIR__ . '/../config/db.php');
 	$stmt->bind_param("i", $getID);
 	$stmt->execute();
 	$rows = $stmt->get_result()->fetch_assoc();
+	if (!$rows) { header('Location: studentindex.php'); exit; }
 
 	$stmt = $conn->prepare("SELECT username FROM usertbl WHERE ID = ?");
 	$stmt->bind_param("i", $getID);
 	$stmt->execute();
 	$rowacc = $stmt->get_result()->fetch_assoc();
-$username=$rowacc['username'];
+$username=h($rowacc['username']);
 		
-		$course=$rows['course'];
-		$yrlvlsec=$rows['yearlvl'];
-		$snum=$rows['studnum'];
+		$course=h($rows['course']);
+		$yrlvlsec=h($rows['yearlvl']);
+		$snum=h($rows['studnum']);
 		
-		$fname=$rows['fname'];
-		$minitial=$rows['minitial'];
-		$lname=$rows['lname'];
+		$fname=h($rows['fname']);
+		$minitial=h($rows['minitial']);
+		$lname=h($rows['lname']);
 		$fullname= $fname." ".$minitial." ".$lname;
 		
-		$gender=$rows['gender'];
-		$bdate=$rows['birthdate'];
+		$gender=h($rows['gender']);
+		$bdate=h($rows['birthdate']);
 		
-		$address=$rows['address'];
-		$cnum=$rows['contact'];
-		$email=$rows['emailaddress'];
+		$address=h($rows['address']);
+		$cnum=h($rows['contact']);
+		$email=h($rows['emailaddress']);
 		
 		
-		$fathername=$rows['fathername'];
-		$mothername=$rows['mothername'];
-		$guardianname=$rows['guardianname'];
+		$fathername=h($rows['fathername']);
+		$mothername=h($rows['mothername']);
+		$guardianname=h($rows['guardianname']);
 		
-		$civilstatus=$rows['civilstatus'];
-		$bplace=$rows['birthplace'];
+		$civilstatus=h($rows['civilstatus']);
+		$bplace=h($rows['birthplace']);
 		
-		$elemschool=$rows['elemschool'];
-		$yrelem=$rows['dategradelem'];
-		$hsschool=$rows['hsschool'];
-		$yrgradhs=$rows['datehsgrad'];
-		$lastschool=$rows['lastgrad'];
-		$yrlast=$rows['datelastgrad'];
-		$gradaddresslast=$rows['addresslastgrad'];
+		$elemschool=h($rows['elemschool']);
+		$yrelem=h($rows['dategradelem']);
+		$hsschool=h($rows['hsschool']);
+		$yrgradhs=h($rows['datehsgrad']);
+		$lastschool=h($rows['lastgrad']);
+		$yrlast=h($rows['datelastgrad']);
+		$gradaddresslast=h($rows['addresslastgrad']);
 	
 	
 ?>

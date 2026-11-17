@@ -9,13 +9,20 @@ if (isset($_POST['register'])) {
 	$username = trim($_POST['username'] ?? '');
 	$password = (string)($_POST['password'] ?? '');
 
-	if ($username === '' || $password === '') {
-		js_alert('Username and password are required.');
+	if ($username === '') {
+		js_alert('Username is required.');
 	} else {
 		try {
 			// Only the logged-in administrator's own account is changed.
-			$stmt = $conn->prepare("UPDATE usertbl SET username = ?, password = ? WHERE ID = ? AND user_type = 'admin'");
-			$stmt->bind_param("ssi", $username, $password, $adminID);
+			if ($password === '') {
+				// Blank password box = keep the current password.
+				$stmt = $conn->prepare("UPDATE usertbl SET username = ? WHERE ID = ? AND user_type = 'admin'");
+				$stmt->bind_param("si", $username, $adminID);
+			} else {
+				$stmt = $conn->prepare("UPDATE usertbl SET username = ?, password = ? WHERE ID = ? AND user_type = 'admin'");
+				$hash = password_make($password);
+				$stmt->bind_param("ssi", $username, $hash, $adminID);
+			}
 			$stmt->execute();
 			$_SESSION['username'] = $username;
 			js_alert('Successfully updated the admin account');
@@ -27,7 +34,7 @@ if (isset($_POST['register'])) {
 	}
 }
 
-$stmt = $conn->prepare("SELECT username, password FROM usertbl WHERE ID = ? AND user_type = 'admin' LIMIT 1");
+$stmt = $conn->prepare("SELECT username FROM usertbl WHERE ID = ? AND user_type = 'admin' LIMIT 1");
 $stmt->bind_param("i", $adminID);
 $stmt->execute();
 $rowfetch = $stmt->get_result()->fetch_assoc();
@@ -72,8 +79,8 @@ include('includes/menu1.php');
 			  <li>
 				  <label for="name">UserName<em>*</em></label>
 				  <input type='text' required='required' maxlength='50' id="name" name='username' value="<?php echo h($rowfetch['username']); ?>"/>
-				  <label for="name">Password<em>*</em></label>
-				  <input type='text' required='required' maxlength='50' id="name" name='password' value="<?php echo h($rowfetch['password']); ?>"/>
+				  <label for="name">New Password</label>
+				  <input type='password' maxlength='50' id="name" name='password' value="" placeholder="Leave blank to keep current" autocomplete="new-password"/>
 				</li>
 				
   </ol>

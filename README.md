@@ -39,3 +39,9 @@ Done:
 - Report Generator + Student Curriculum/Report
 - All pages working (DOUBLE CHECK)
 ```
+
+## Notes on passwords and settings
+
+- Passwords are stored hashed. The sample accounts in `database/online_enroll.sql` still have plain-text passwords; each is converted to a hash automatically the first time that user logs in.
+- School year, per-unit fee, entrance/internet/misc/lab/tutorial fees and the semester names are in `config/settings.php`.
+- Admins approve student enrollment forms from the **Approvals** page.

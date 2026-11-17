@@ -23,7 +23,8 @@ if (isset($_POST['register'])) {
 			$conn->begin_transaction();
 
 			$stmt = $conn->prepare("INSERT INTO usertbl (username, password, fullname, user_type) VALUES (?, ?, ?, 'student')");
-			$stmt->bind_param("sss", $username, $password, $fullname);
+			$passwordHash = password_make($password);
+			$stmt->bind_param("sss", $username, $passwordHash, $fullname);
 			$stmt->execute();
 			$accountID = $conn->insert_id;
 
