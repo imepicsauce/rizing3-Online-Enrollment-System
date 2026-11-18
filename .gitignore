@@ -5,3 +5,5 @@ _notes/
 .vscode/
 .idea/
 config/db.local.php
+tests/screenshots/
+__pycache__/
