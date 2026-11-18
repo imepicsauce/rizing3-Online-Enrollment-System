@@ -7,13 +7,19 @@ require_once(__DIR__ . '/../config/db.php');
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if (!csrf_valid()) {
 		js_alert('Your session expired. Please try again.');
+	} elseif (!in_array($_POST['action'] ?? '', ['approve', 'pending'], true)) {
+		js_alert('Please choose a valid enrollment action.');
 	} else {
 		$formID = (int)($_POST['form_id'] ?? 0);
 		$approve = (($_POST['action'] ?? '') === 'approve') ? 1 : 0;
 		$stmt = $conn->prepare("UPDATE student_subject SET approved = ? WHERE ID = ?");
 		$stmt->bind_param("ii", $approve, $formID);
 		$stmt->execute();
-		js_alert($approve ? 'Enrollment form approved.' : 'Enrollment form set back to pending.');
+		if ($stmt->affected_rows === 1) {
+			js_alert($approve ? 'Enrollment form approved.' : 'Enrollment form set back to pending.');
+		} else {
+			js_alert('No change was made. The form was cancelled or its status already changed.');
+		}
 	}
 	js_redirect('approvals.php');
 	exit;
@@ -59,7 +65,7 @@ $forms = $conn->query("
 			<?php }
 			while ($f = $forms->fetch_assoc()) {
 				$isApproved = ((int)$f['approved'] === 1);
-				$subjects = implode(', ', array_filter(array_map('trim', explode(',', $f['subjects'])))); ?>
+				$subjects = implode(', ', array_filter(array_map('trim', explode(',', $f['subjects'])), 'strlen')); ?>
 				<tr>
 					<td align="center"><?php echo (int)$f['ID']; ?></td>
 					<td><?php echo h($f['studentID']); ?></td>

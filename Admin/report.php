@@ -61,7 +61,7 @@ if (!$result) {
 			$totalForms = 0;
 			while ($row = $result->fetch_assoc()) {
 				$totalForms++;
-				$subjects = implode(', ', array_filter(array_map('trim', explode(',', $row['subjects']))));
+				$subjects = implode(', ', array_filter(array_map('trim', explode(',', $row['subjects'])), 'strlen'));
 				$name = trim($row['fname'] . ' ' . $row['minitial'] . ' ' . $row['lname']);
 				if ($name === '') { $name = '(student record not found)'; }
 				$status = ($row['approved'] == '0') ? 'Pending' : 'Approved';

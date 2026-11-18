@@ -6,6 +6,7 @@ function sf_val($v, $k) { return h($v[$k] ?? ''); }
 function sf_year_select($name, $v) {
 	$sel = (string)($v[$name] ?? '');
 	echo "<select name='" . h($name) . "'>";
+	echo "<option value=''>Select year</option>";
 	for ($y = (int)date('Y'); $y >= 1970; $y--) {
 		echo "<option value='$y'" . ((string)$y === $sel ? ' selected' : '') . ">$y</option>";
 	}

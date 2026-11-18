@@ -28,7 +28,7 @@ function subj_val($v, $k) { return h($v[$k] ?? ''); }
 				<?php for ($u = 1; $u <= 6; $u++) { ?>
 				<option value='<?php echo $u; ?>'<?php echo ((int)($v['numunits'] ?? 3) === $u) ? ' selected' : ''; ?>><?php echo $u; ?></option>
 				<?php } ?></select></td></tr>
-			<tr><td><label>Subject Description:</label></td><td align='left'><textarea name='cdescription'><?php echo subj_val($v, 'cdescription'); ?></textarea></td></tr>
+			<tr><td><label>Subject Description:</label></td><td align='left'><textarea name='cdescription' maxlength='100'><?php echo subj_val($v, 'cdescription'); ?></textarea></td></tr>
 			<tr><td><label>Room:</label></td><td align='left'><input type='text' maxlength='100' name='sroom' value="<?php echo subj_val($v, 'sroom'); ?>" /></td></tr>
 			<tr><td><label>Day:</label></td><td align='left'><input type='text' maxlength='100' name='sday' value="<?php echo subj_val($v, 'sday'); ?>" /></td></tr>
 			<tr><td><label>Time:</label></td><td align='left'><input type='text' maxlength='100' name='stime' value="<?php echo subj_val($v, 'stime'); ?>" /></td></tr>

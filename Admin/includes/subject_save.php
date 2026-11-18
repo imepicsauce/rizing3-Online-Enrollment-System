@@ -12,6 +12,7 @@ function subject_input() {
 }
 function subject_validate($v, $courses) {
 	if ($v['scode'] === '' || $v['stitle'] === '') { return 'Subject code and subject title are required.'; }
+	if (strpos($v['scode'], ',') !== false) { return 'Subject codes cannot contain a comma.'; }
 	if ($v['numunits'] < 1 || $v['numunits'] > 6) { return 'Number of units must be from 1 to 6.'; }
 	if (!in_array($v['course'], $courses, true)) { return 'Please select a valid course.'; }
 	return '';

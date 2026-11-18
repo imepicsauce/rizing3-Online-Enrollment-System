@@ -92,7 +92,7 @@ if ($student) {
 				<tr><td colspan="6" align="center">You have not submitted an enrollment form yet.</td></tr>
 			<?php } ?>
 			<?php while ($f = $forms->fetch_assoc()) {
-				$codes = array_filter(array_map('trim', explode(',', $f['subjects'])));
+				$codes = array_filter(array_map('trim', explode(',', $f['subjects'])), 'strlen');
 				$lines = [];
 				foreach ($codes as $c) {
 					$lines[] = h($c) . (isset($titles[$c]) ? ' - ' . h($titles[$c]) : '');
