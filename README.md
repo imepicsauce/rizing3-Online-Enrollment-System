@@ -48,3 +48,7 @@ Done:
 - Admins manage courses from the **Courses** page, and can edit any student (including resetting the password) or subject from the lists.
 - Database login: defaults suit XAMPP (`root`, no password). For other settings copy `config/db.local.example.php` to `config/db.local.php` (git-ignored) and edit it.
 - Login is limited to 5 wrong passwords per username and address, then blocked for 15 minutes (table `login_attempts`).
+
+## Tests
+
+Automated tests live in `tests/`. Run `python tests/run_tests.py` after every change; see `tests/README.md` for setup (XAMPP) and how to read the results. They use a separate throwaway database, never your real one.
