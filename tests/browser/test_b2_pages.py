@@ -12,7 +12,7 @@ B = BASE
 with sync_playwright() as p:
     b=p.chromium.launch(); pg=b.new_context(viewport={"width":1280,"height":900}).new_page()
     dl=[]; pg.on("dialog",lambda d:(dl.append(d.message),d.accept())); errs=[]; pg.on("pageerror",lambda e:errs.append(str(e)))
-    pg.goto(B); pg.fill("input[name=username]","admins"); pg.fill("input[name=password]","admins"); pg.click("input[name=submit]"); pg.wait_for_url("**/adminindex.php")
+    pg.goto(B); pg.click(".portal-link"); pg.fill("input[name=username]","admins"); pg.fill("input[name=password]","admins"); pg.click("input[name=submit]"); pg.wait_for_url("**/adminindex.php")
     pg.click("a.nav-link:has-text('Manage Users')"); pg.wait_for_url("**/userreg.php")
     pg.click("a:has-text('EDIT')"); pg.wait_for_url("**/edituser.php*"); pg.wait_for_timeout(200)
     check("edit student page shows the form exactly once", pg.locator("input[name=username]").count()==1 and pg.locator("form.cmxform").count()==1)
@@ -44,7 +44,7 @@ with sync_playwright() as p:
     pg.click("a.nav-link:has-text('Approvals')"); pg.wait_for_url("**/approvals.php"); pg.screenshot(path=SHOTS+"/b2_approvals.png",full_page=True)
     check("approvals shows semester", "1st Sem 2026 - 2027" in pg.inner_text("body"))
     pg.click("a.nav-link:has-text('Log Out')"); pg.wait_for_url("**/index.php")
-    pg.fill("input[name=username]","dennis"); pg.fill("input[name=password]","brandnew1"); pg.click("input[name=submit]"); pg.wait_for_url("**/studentindex.php")
+    pg.click(".portal-link"); pg.fill("input[name=username]","dennis"); pg.fill("input[name=password]","brandnew1"); pg.click("input[name=submit]"); pg.wait_for_url("**/studentindex.php")
     check("student can log in with the admin-reset password", dl[-1]=="Successfully log in as Student")
     pg.goto(B+"student/report.php"); pg.screenshot(path=SHOTS+"/b2_student_report.png",full_page=True)
     pg.click("button:has-text('Cancel')"); pg.wait_for_timeout(500)

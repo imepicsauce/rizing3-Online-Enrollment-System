@@ -1,0 +1,71 @@
+@font-face {font-family: 'DM Serif Display'; src: url('../fonts/dm-serif-display.ttf') format('truetype'); font-display: swap;}
+:root {
+  --ink: #282925; --paper: #f6f5f1; --accent: #a83c17; --muted: #50534f;
+  --rule: #cbc9c1; --serif: 'DM Serif Display', Georgia, serif;
+}
+* {box-sizing: border-box;}
+body {margin: 0; background: var(--paper); color: var(--ink); font: 1rem/1.55 system-ui, sans-serif;}
+::selection {background: #ffd0aa; color: var(--ink);}
+a {color: inherit; text-underline-offset: .24em;}
+a:hover {color: var(--accent);}
+:focus-visible {outline: 3px solid #dd692e; outline-offset: 4px;}
+.wrap {width: min(1220px, 89%); margin-inline: auto;}
+.skip {position: absolute; left: 1rem; top: -5rem; background: white; padding: .7rem; z-index: 2;}
+.skip:focus {top: .5rem;}
+.mast {border-bottom: 1px solid var(--rule);}
+.mast .wrap, footer .wrap, nav, .brand, .actions {display: flex; align-items: center;}
+.mast .wrap, footer .wrap {justify-content: space-between; gap: 1rem; padding-block: 1.1rem;}
+.brand {gap: .75rem; font: 1.45rem var(--serif); letter-spacing: -.025em; text-decoration: none;}
+.mark {display: grid; place-items: center; width: 2.7rem; height: 2.95rem; background: var(--accent); color: white; font: 1.35rem var(--serif); clip-path: polygon(0 0,100% 0,100% 80%,50% 100%,0 80%); padding-bottom: .24rem;}
+nav {gap: 2rem;}
+nav a, .mast > div > a:not(.brand) {font-size: .9rem; font-weight: 600; text-decoration: none;}
+.portal-link {border: 1px solid #777973; padding: .65rem 1rem;}
+.welcome {display: grid; grid-template-columns: 1fr 1.18fr; gap: 5%; align-items: center; padding-block: clamp(2.5rem,5vw,5rem);}
+h1, h2, h3, p {margin: 0;}
+h1, h2 {font-family: var(--serif); font-weight: 400; letter-spacing: -.035em;}
+h1 {font-size: clamp(4rem,7.6vw,6rem); line-height: .97;}
+h1 em {color: var(--accent);}
+h2 {font-size: clamp(2.2rem,3.4vw,3.4rem); line-height: 1.1;}
+h3 {font-size: 1.16rem; line-height: 1.4;}
+p {color: var(--muted); max-width: 62ch;}
+.intro p {max-width: 37ch; margin-block: 1.55rem; font-size: 1.1rem;}
+.actions {gap: 1.4rem; flex-wrap: wrap;}
+.button {display: inline-flex; align-items: center; justify-content: center; padding: .85rem 1.25rem; background: var(--accent); color: white; border: 0; font: 650 1rem/1.4 system-ui, sans-serif; text-decoration: none; cursor: pointer;}
+.button:hover {background: #852b0f; color: white;}
+.arrow::after {content: ''; width: .5rem; height: .5rem; border-top: 2px solid; border-right: 2px solid; transform: rotate(45deg); margin-left: 1.3rem;}
+.textlink {font-size: .93rem; font-weight: 600;}
+.campus {position: relative; padding-bottom: .6rem;}
+.campus::after {content: ''; position: absolute; bottom: 0; right: 0; width: 29%; height: .6rem; background: var(--accent);}
+.campus img {width: 100%; display: block; height: clamp(310px,32vw,450px); object-fit: cover;}
+.guide {background: #292c29; color: #fff; padding-block: clamp(3rem,6vw,5rem);}
+.columns {display: grid; grid-template-columns: .9fr 1.1fr; gap: 10%;}
+.guide p {color: #dddeda;}
+.guide h2 + p {margin-top: 1rem; max-width: 33ch;}
+ol {list-style: none; margin: 0; padding: 0; counter-reset: guide;}
+li {position: relative; padding: 1.2rem 0 1.2rem 3.1rem; border-top: 1px solid #60635d; counter-increment: guide;}
+li:first-child {padding-top: .9rem;}
+li::before {content: counter(guide, decimal-leading-zero); position: absolute; left: 0; color: #ffab78; font: 1.4rem var(--serif);}
+li p {margin-top: .35rem;}
+.guide a:hover {color: #ffab78;}
+.about {padding-block: 4rem;}
+.statements {display: grid; gap: 1.25rem;}
+.statements > div {border-top: 1px solid var(--rule); padding-top: .8rem;}
+footer {border-top: 1px solid var(--rule);}
+footer span {font-family: var(--serif);}
+.signin {width: min(420px,89%); margin: clamp(3rem,8vw,7rem) auto;}
+.signin h1 {font-size: 3rem;}
+.signin p {margin-block: 1rem 1.5rem;}
+.signin form {display: grid; margin-bottom: 1.4rem;}
+.signin label {font-weight: 600; margin-bottom: .3rem;}
+.signin input:not(.button) {font: inherit; border: 1px solid #858780; padding: .7rem; margin-bottom: 1.2rem;}
+@media (max-width: 740px) {
+  .mast .wrap {flex-wrap: wrap;}
+  nav {gap: 1.2rem; flex-wrap: wrap;}
+  .welcome, .columns {grid-template-columns: 1fr; gap: 2rem;}
+  .campus img {height: auto; aspect-ratio: 1.9; object-fit: cover;}
+}
+@media (max-width: 490px) {
+  .mast nav {width: 100%; justify-content: space-between; gap: .5rem;}
+  .mast .wrap {gap: .6rem;}
+  .actions {gap: 1rem;}
+}

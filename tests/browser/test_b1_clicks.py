@@ -19,9 +19,9 @@ with sync_playwright() as pw:
     def where(): return page.url.replace(BASE, "/")
 
     section("wrong password")
-    page.goto(BASE + "index.php"); page.fill("input[name=username]", "admins"); page.fill("input[name=password]", "nope"); page.click("input[name=submit]"); page.wait_for_timeout(400)
+    page.goto(BASE + "index.php"); page.click(".portal-link"); page.fill("input[name=username]", "admins"); page.fill("input[name=password]", "nope"); page.click("input[name=submit]"); page.wait_for_timeout(400)
     check("alert text is exactly: User doesn't exist please try again.", last() == "User doesn't exist please try again.", last())
-    check("stays on the login page", where().endswith("index.php"), where())
+    check("stays on the login page", where().endswith("portal.php"), where())
 
     section("admin session (real clicks)")
     page.fill("input[name=username]", "admins"); page.fill("input[name=password]", "admins"); page.click("input[name=submit]"); page.wait_for_url("**/Admin/adminindex.php")
@@ -58,7 +58,7 @@ with sync_playwright() as pw:
     check("after logout, typing the admin URL sends you back to login", where() == "/index.php", where())
 
     section("student session (real clicks)")
-    page.fill("input[name=username]", "dennis"); page.fill("input[name=password]", "123456"); page.click("input[name=submit]"); page.wait_for_url("**/student/studentindex.php")
+    page.click(".portal-link"); page.fill("input[name=username]", "dennis"); page.fill("input[name=password]", "123456"); page.click("input[name=submit]"); page.wait_for_url("**/student/studentindex.php")
     check("student login alert + lands on student home", last() == "Successfully log in as Student", last())
     page.click("a.nav-link:has-text('Curriculum')"); page.wait_for_url("**/curriculum.php"); page.screenshot(path=SHOTS + "/b1_student_curriculum.png", full_page=True)
     check("Curriculum button shows the BSIT subject list", all(x in page.inner_text("body") for x in ["IT201", "IT202", "Total units"]))

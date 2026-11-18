@@ -5,6 +5,7 @@ from helpers import BASE, check, finish, sql
 
 def sign_in(page, username, password, destination):
     page.goto(BASE)
+    page.get_by_role("link", name="Portal sign in", exact=True).click()
     page.fill("[name=username]", username)
     page.fill("[name=password]", password)
     page.click("[name=submit]")
