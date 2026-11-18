@@ -3,59 +3,53 @@ require_once(__DIR__ . '/../includes/auth.php');
 require_role('admin');
 require_once(__DIR__ . '/../config/db.php');
 
-$result = $conn->query("
-	SELECT ss.ID, ss.studentID, ss.subjects, ss.totalunits, ss.approved, ss.semester, ss.school_year,
-	       s.fname, s.minitial, s.lname, s.course, s.yearlvl
-	FROM student_subject ss
-	LEFT JOIN studenttbl s ON s.studnum = ss.studentID
-	ORDER BY ss.ID DESC
-");
-if (!$result) {
-	die("Query error: " . $conn->error);
-}
+$years = array_column($conn->query("SELECT DISTINCT school_year FROM student_subject ORDER BY school_year DESC")->fetch_all(MYSQLI_ASSOC), 'school_year');
+$semesters = array_column($conn->query("SELECT DISTINCT semester FROM student_subject ORDER BY semester")->fetch_all(MYSQLI_ASSOC), 'semester');
+$year = in_array($_GET['year'] ?? '', $years, true) ? ($_GET['year'] ?? '') : '';
+$semester = in_array($_GET['semester'] ?? '', $semesters, true) ? ($_GET['semester'] ?? '') : '';
+$statusFilter = $_GET['status'] ?? '';
+$approved = $statusFilter === 'approved' ? 1 : ($statusFilter === 'pending' ? 0 : -1);
+$stmt = $conn->prepare("
+    SELECT ss.ID, ss.studentID, ss.subjects, ss.totalunits, ss.approved, ss.semester, ss.school_year,
+           s.fname, s.minitial, s.lname, s.course, s.yearlvl
+    FROM student_subject ss LEFT JOIN studenttbl s ON s.studnum = ss.studentID
+    WHERE (? = '' OR ss.school_year = ?) AND (? = '' OR ss.semester = ?) AND (? = -1 OR ss.approved = ?)
+    ORDER BY ss.ID DESC");
+$stmt->bind_param('ssssii', $year, $year, $semester, $semester, $approved, $approved);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$pageTitle = 'Enrollment report';
+require __DIR__ . '/../includes/workspace_top.php';
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8" />
-<title>Enrollment Report</title>
-<style>
-	body { font-family: Georgia, "Times New Roman", Times, serif; }
-	table { border-collapse: collapse; }
-	th, td { border: 1px solid #333; padding: 6px 8px; }
-	@media print { .no-print { display: none; } }
-</style>
-</head>
+<form class="toolbar no-print" method="get">
+<label>School year <select name="year"><option value="">All years</option>
+<?php foreach ($years as $value) { ?><option value="<?= h($value) ?>" <?= $value === $year ? 'selected' : '' ?>><?= h($value) ?></option><?php } ?>
+</select></label>
+<label>Semester <select name="semester"><option value="">All semesters</option>
+<?php foreach ($semesters as $value) { ?><option value="<?= h($value) ?>" <?= $value === $semester ? 'selected' : '' ?>><?= h($value) ?></option><?php } ?>
+</select></label>
+<label>Status <select name="status"><option value="">All statuses</option><option value="pending" <?= $approved === 0 ? 'selected' : '' ?>>Pending</option><option value="approved" <?= $approved === 1 ? 'selected' : '' ?>>Approved</option></select></label>
+<button>Apply filters</button><a href="report.php">Clear</a>
+</form>
+<p><?= h($year ?: 'All years') ?> · <?= h($semester ?: 'All semesters') ?> · <?= $approved === -1 ? 'All statuses' : ($approved ? 'Approved' : 'Pending') ?></p>
+<div class="actions no-print"><button class="secondary" onclick="window.print()">Print report</button></div>
+<p>Generated <?= h(date('F j, Y g:i A')) ?></p>
 
-<body>
-
-	<div class="no-print" align="center" style="margin:10px;">
-		<a href="adminindex.php">&larr; Back to Home</a> &nbsp;|&nbsp;
-		<button onclick="window.print()">Print</button>
-	</div>
-
-	<div align="center"><img width="130" height="100" src="../assets/img/logo-login.jpg"></div>
-	<div align="center" style="margin-top:20px;">
-		John Paul College<br>MG ANDAYA COMPOUND<br>Odiong, Roxas, Oriental Mindoro, Philippines
-	</div>
-	<br>
-	<div align="center"><b>ENROLLMENT REPORT</b></div>
-	<div align="center" style="font-size:13px;">Generated <?php echo date('F j, Y g:i A'); ?></div>
-
-	<div align="center" style="margin-top:30px;">
-		<table align="center" width="1000">
-			<tr>
-				<td width="40" align="center"><b>#</b></td>
-				<td width="110" align="center"><b>Student No.</b></td>
-				<td width="220" align="center"><b>Student Name</b></td>
-				<td width="120" align="center"><b>Course / Year</b></td>
-				<td width="280" align="center"><b>Subjects</b></td>
-				<td width="60" align="center"><b>Units</b></td>
-				<td width="110" align="center"><b>Semester</b></td>
-				<td width="90" align="center"><b>Status</b></td>
-			</tr>
+	<div>
+		<div class="scroll"><table>
+			<thead><tr>
+				<th>#</th>
+				<th>Student No.</th>
+				<th>Student Name</th>
+				<th>Course / Year</th>
+				<th>Subjects</th>
+				<th>Units</th>
+				<th>Semester</th>
+				<th>Status</th>
+			</tr></thead><tbody>
 			<?php if ($result->num_rows == 0) { ?>
-				<tr><td colspan="8" align="center">No enrollment forms have been submitted yet.</td></tr>
+				<tr><td colspan="8">No enrollment forms match this selection.</td></tr>
 			<?php } ?>
 			<?php
 			$totalForms = 0;
@@ -67,19 +61,17 @@ if (!$result) {
 				$status = ($row['approved'] == '0') ? 'Pending' : 'Approved';
 			?>
 			<tr>
-				<td align="center"><?php echo h($row['ID']); ?></td>
+				<td><?php echo h($row['ID']); ?></td>
 				<td><?php echo h($row['studentID']); ?></td>
 				<td><?php echo h($name); ?></td>
 				<td><?php echo h(strtoupper($row['course'] ?? '') . ' ' . ($row['yearlvl'] ?? '')); ?></td>
 				<td><?php echo h($subjects); ?></td>
-				<td align="center"><?php echo h($row['totalunits']); ?></td>
-				<td align="center"><?php echo h($row['semester'] . ' ' . $row['school_year']); ?></td>
-				<td align="center"><?php echo $status; ?></td>
+				<td><?php echo h($row['totalunits']); ?></td>
+				<td><?php echo h($row['semester'] . ' ' . $row['school_year']); ?></td>
+				<td><span class="status <?= $status === 'Approved' ? 'approved' : '' ?>"><?= $status ?></span></td>
 			</tr>
 			<?php } ?>
-		</table>
+		</tbody></table></div>
 		<p>Total enrollment forms: <b><?php echo $totalForms; ?></b></p>
 	</div>
-
-</body>
-</html>
+<?php require __DIR__ . '/../includes/workspace_bottom.php'; ?>

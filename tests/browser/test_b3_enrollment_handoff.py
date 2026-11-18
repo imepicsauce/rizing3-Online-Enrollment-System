@@ -14,9 +14,15 @@ def sign_in(page, username, password, destination):
 
 def submit_enrollment(student):
     student.goto(BASE + "student/enroll.php")
+    student.select_option("#sem", label="2nd Sem")
     student.check("input[value='0']")
     student.click("[name=register]")
     check("preview charges three units and one lab fee", "4,638.00" in student.inner_text("body"))
+    student.get_by_role("button", name="Edit selection").click()
+    student.wait_for_url("**/enroll.php")
+    check("editing the review preserves the selected subject and live units",
+          student.input_value("#sem") == "2nd Sem" and student.is_checked("input[value='0']") and "3 units" in student.inner_text("#units"))
+    student.click("[name=register]")
     student.click("[name=reg]")
     student.wait_for_url("**/studentindex.php")
 
@@ -84,5 +90,16 @@ with sync_playwright() as playwright:
     check("registrar report agrees on the subject, units and status",
           row.locator("td").nth(4).inner_text() == "0" and row.locator("td").nth(5).inner_text() == "3"
           and row.locator("td").last.inner_text() == "Approved")
+    admin.select_option("[name=status]", "pending")
+    admin.get_by_role("button", name="Apply filters").click()
+    admin.wait_for_url("**/report.php?**")
+    check("pending filter excludes the approved form", admin.locator("tr", has_text="QA-01").count() == 0)
+    admin.select_option("[name=status]", "approved")
+    admin.select_option("[name=semester]", label="2nd Sem")
+    admin.get_by_role("button", name="Apply filters").click()
+    admin.locator("tr", has_text="QA-01").wait_for()
+    admin.emulate_media(media="print")
+    check("printed report retains its filter context", "2nd Sem · Approved" in admin.inner_text("main")
+          and not admin.get_by_role("button", name="Apply filters").is_visible())
     browser.close()
 finish()

@@ -16,38 +16,16 @@ if ($student) {
 	$stmt->execute();
 	$subjects = $stmt->get_result();
 }
+
+$pageTitle = 'Curriculum';
+require __DIR__ . '/../includes/workspace_top.php';
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>John Paul College</title>
-
-<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
-
-</head>
-
-<body class="app">
-
-<div class='header'>
-</div>
-
-<nav class='container'>
-<?php
-include('includes/menu.php');
-?>
-</nav>
-
-<div id="main">
-	<div class="shell">
-	<center>
-	<h2>Curriculum</h2>
-	<?php if (!$student) { ?>
+<?php if (!$student) { ?>
 		<p>No student record is linked to this account yet.</p>
 	<?php } else { ?>
 		<p><b><?php echo h(trim($student['fname'] . ' ' . $student['minitial'] . ' ' . $student['lname'])); ?></b>
 		&mdash; <?php echo h(strtoupper($student['course'])); ?>, <?php echo h($student['yearlvl']); ?></p>
-		<table class="data-table" width="700">
+		<div class="scroll"><table>
 			<tr>
 				<th align="left">Code</th>
 				<th align="left">Title</th>
@@ -75,34 +53,6 @@ include('includes/menu.php');
 				<td align="center"><b><?php echo $total; ?></b></td>
 				<td colspan="2"></td>
 			</tr>
-		</table>
+		</table></div>
 	<?php } ?>
-	</center>
-	</div>
-	<div><br></div>
-</div>
-<!-- /Main -->
-
-<!-- Footer -->
-<div id="footer">
-	<div class="shell">
-		<!-- Mini Nav -->
-		<div class="footer-navigation">
-		<?php
-			include('includes/menu2.php');
-		?>
-		</div>
-		<!-- /Mini Nav -->
-
-		<!-- Copyrights -->
-		<p class="right">
-			Copyright <?php echo date("Y"); ?> | Online Enrollment
-		</p>
-		<!-- /Copyrights -->
-
-		<div class="cl">&nbsp;</div>
-	</div>
-</div>
-
-</body>
-</html>
+<?php require __DIR__ . '/../includes/workspace_bottom.php'; ?>

@@ -14,212 +14,27 @@ require_once(__DIR__ . '/../config/db.php');
 	$stmt->bind_param("i", $getID);
 	$stmt->execute();
 	$rowacc = $stmt->get_result()->fetch_assoc();
-$username=h($rowacc['username']);
-		
-		$course=h($rows['course']);
-		$yrlvlsec=h($rows['yearlvl']);
-		$snum=h($rows['studnum']);
-		
-		$fname=h($rows['fname']);
-		$minitial=h($rows['minitial']);
-		$lname=h($rows['lname']);
-		$fullname= $fname." ".$minitial." ".$lname;
-		
-		$gender=h($rows['gender']);
-		$bdate=h($rows['birthdate']);
-		
-		$address=h($rows['address']);
-		$cnum=h($rows['contact']);
-		$email=h($rows['emailaddress']);
-		
-		
-		$fathername=h($rows['fathername']);
-		$mothername=h($rows['mothername']);
-		$guardianname=h($rows['guardianname']);
-		
-		$civilstatus=h($rows['civilstatus']);
-		$bplace=h($rows['birthplace']);
-		
-		$elemschool=h($rows['elemschool']);
-		$yrelem=h($rows['dategradelem']);
-		$hsschool=h($rows['hsschool']);
-		$yrgradhs=h($rows['datehsgrad']);
-		$lastschool=h($rows['lastgrad']);
-		$yrlast=h($rows['datelastgrad']);
-		$gradaddresslast=h($rows['addresslastgrad']);
-	
-	
+$rows['username'] = $rowacc['username'];
+$sections = [
+    'Personal and contact details' => ['username'=>'Username','gender'=>'Gender','birthdate'=>'Birth date','birthplace'=>'Birthplace','civilstatus'=>'Civil status','address'=>'Address','contact'=>'Phone','emailaddress'=>'Email'],
+    'Family information' => ['guardianname'=>'Guardian','fathername'=>'Father','mothername'=>'Mother'],
+    'Education history' => ['elemschool'=>'Elementary school','dategradelem'=>'Elementary graduation','hsschool'=>'High school','datehsgrad'=>'High school graduation','lastgrad'=>'Last school attended','datelastgrad'=>'Graduation year','addresslastgrad'=>'School address']
+];
+$pageTitle = 'Student profile';
+require __DIR__ . '/../includes/workspace_top.php';
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>John Paul College</title>
-
-
-<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
-
-</head>
-
-<body class="app">
-
-<div class='header'>
+<section class="profile">
+<div class="feature"><h2><?= h(trim($rows['fname'].' '.$rows['minitial'].' '.$rows['lname'])) ?></h2>
+<p><?= h($rows['studnum']) ?> · <?= h(strtoupper($rows['course'])) ?> · <?= h($rows['yearlvl']) ?></p></div>
+<div class="actions no-print">
+<input type="button" value="Print Profile" onclick="window.print()">
+<a class="btn secondary" href="changepass.php">Change Password</a>
+<a class="btn secondary" href="report.php">My Enrollment Report</a>
+<a class="btn secondary" href="studentindex.php">Back to Home</a>
 </div>
-	
-<nav class='container'>
-<?php
-include('includes/menu.php');
-?>
-</nav>
-
-
-
-
-
-<div id="main">
-	<div class="shell">
-	<center>
-	<form class='cmxform' method='POST'>
-	<fieldset>
-			<legend><h4>Account Details</h4></legend>
-			  <ol>
-			  <li>
-				  <label for="name"> &nbsp;&nbsp; UserName: </label>
-				  <?php echo"<b>$username</b>";?>&nbsp;&nbsp; <a href='changepass.php'>Change Password</a>
-				</li>
-				
-  </ol>
-			
-	</fieldset>
-	
-	<fieldset>
-			<legend><h4>College Details</h4></legend>
-			  <ol>
-			  <li>
-				  <label for="name">Student Number: </label>
-				  <?php echo "<b>$snum</b>";  ?>
-				  <label for="name">Course: </label>
-				  <?php echo "<b>" . strtoupper($course) . "</b>";  ?>
-				  <label for="name">Section/Year Level: </label>
-				  <?php echo "<b>$yrlvlsec</b>";  ?>
-				</li>
-				
-			</ol>
-			
-	</fieldset>
-	
-	<fieldset>	
-			  <legend><h4>Personal Details</h4></legend>
-			  <ol>
-			  <li>
-					<table align='center'>
-						<tr>
-							<td>First Name: </td><td><?php echo "<b>$fname</b>&nbsp&nbsp&nbsp&nbsp&nbsp";  ?></td><td>Civil Status: </td>
-							<td><?php echo "<b>$civilstatus</b>";  ?></td>
-																																				
-						</tr>
-						<tr>
-							<td>Middle Initial: </td><td align='left'><?php echo "<b>$minitial</b>";  ?></td>
-							<td>Guardian's Name: </td><td align='left'><?php echo "<b>$guardianname</b>";  ?></td>
-						</tr>
-						<tr>
-							<td>Last Name: </td><td><?php echo "<b>$lname</b>";  ?></td>
-							<td>Father's Name:</td><td align='left'><?php echo "<b>$fathername</b>";  ?></td>
-						</tr>
-						<tr>
-							<td><label>Gender: </label></td><td align='left'><?php echo "<b>$gender</b>";  ?></td>
-							<td>Mother's Name:</td><td align='left'><?php echo "<b>$mothername</b>";  ?></td>
-						</tr>
-						<tr>
-							<td>BirthDate: </td><td><?php echo "<b>$bdate</b>";  ?></td><td>Birth Place:</td><td align='left'><?php echo "<b>$bplace</b>";  ?></td>
-						</tr>
-					</table>
-					
-				</li>
-						
-				
-			  <li>
-				  <label for="address1">Address: </label>
-				  <textarea readonly="readonly" name='address' height='500' width='200'><?php echo $address; ?></textarea>
-			</li>
-			  <li>
-				  <label for="address2">Contact Number: </label>
-				  <?php echo "<b>$cnum</b>";  ?>
-				</li>
-			  <li>
-				  <label for="town-city">Email Address</label>
-				  <?php echo "<b>$email</b>";  ?>
-				</li>
-				  </ol>
-				  </fieldset>
-				<fieldset>
-		<legend><h4>Educational Background</h4></legend>
-			  <ol>
-			  <li>
-				  <table>
-			
-						<tr>
-							<td>Elementary School: </td><td align='left'><?php echo "<b>$elemschool</b>";  ?></td>
-							<td>Year Graduated:</td><td align='left'><?php echo "<b>$yrelem</b>";  ?></td>
-						</tr>
-						<tr>
-							<td>High School:</td><td><?php echo "<b>$hsschool</b>";  ?></td>
-							<td>Year Graduated:</td><td align='left'><?php echo "<b>$yrgradhs</b>";  ?></td>
-						</tr>
-						<tr>
-							<td>School Last Attended:</td><td><?php echo "<b>$lastschool</b>";  ?></td>
-							<td>Year Graduated:</td><td align='left'><?php echo "<b>$yrlast</b>";  ?></td>
-						</tr>
-						<tr>
-							<td colspan='4' align='center'><label for="address1">Address<em>*</em></label>
-				  <textarea name='address2' height='500' width='200' readonly="readonly"><?php echo  $gradaddresslast; ?></textarea></td>
-						</tr>
-					</table>
-			</li>
-				
-			</ol>
-			
-	</fieldset>
-			  
-			  
-
-
-<div align='center' class='no-print'>
-	<input type='button' value='Print Profile' onclick="window.print()">&nbsp;&nbsp;
-	<input type='button' value='Change Password' onclick="window.location='changepass.php'">&nbsp;&nbsp;
-	<input type='button' value='My Enrollment Report' onclick="window.location='report.php'">&nbsp;&nbsp;
-	<input type='button' value='Back to Home' onclick="window.location='studentindex.php'">
-</div>
-</form>
-</center>
-	</div>
-	<div><br></div>
-</div>
-<!-- /Main -->
-
-<!-- Footer -->
-<div id="footer">
-	<div class="shell">
-		<!-- Mini Nav --> 
-		<div class="footer-navigation"> 
-		<?php
-			include('includes/menu2.php');
-		?>
-		</div> 
-		<!-- /Mini Nav --> 
-		
-		<!-- Copyrights --> 
-		<p class="right"> 
-			Copyright <?php echo date("Y"); ?> | Online Enrollment
-		</p> 
-		<!-- /Copyrights --> 
-		
-		<div class="cl">&nbsp;</div> 
-	</div>
-</div>
-
-
-
-
-</body>
-</html>
+<?php foreach ($sections as $heading => $fields) { ?>
+<h2><?= h($heading) ?></h2><dl>
+<?php foreach ($fields as $field => $label) { ?><div><dt><?= h($label) ?></dt><dd><?= h($rows[$field] === '' ? '—' : $rows[$field]) ?></dd></div><?php } ?>
+</dl><?php } ?>
+</section>
+<?php require __DIR__ . '/../includes/workspace_bottom.php'; ?>

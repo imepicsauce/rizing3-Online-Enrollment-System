@@ -54,7 +54,7 @@ check("an example settings file ships with the project", os.path.isfile(os.path.
 
 section("home pages")
 s,h,_=a("Admin/adminindex.php"); pend=sql("select count(*) from student_subject where approved=0")
-check("admin home: no lorem ipsum, shows the real pending count, no warnings", "Nam scelerisque" not in h and ("%s form(s) are waiting"%pend) in h and not warns(h), warns(h))
+check("admin home: no lorem ipsum, shows the real pending count, no warnings", "Nam scelerisque" not in h and ("%s pending form"%pend) in h and not warns(h), warns(h))
 d=client(); LOGIN(d,"dennis","123456"); s,h,_=d("student/studentindex.php")
 check("student home: how-to-enroll steps with working links", "How to Enroll" in h and 'href="curriculum.php"' in h and 'href="enroll.php"' in h and 'href="report.php"' in h and "Nam scelerisque" not in h and 'href="#"' not in h)
 check("footer shows the current year", ("Copyright %s"%datetime.date.today().year) in h)

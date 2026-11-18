@@ -36,94 +36,14 @@ if (isset($_POST['cpass'])) {
 		exit;
 	}
 }
+
+$pageTitle = 'Change password';
+require __DIR__ . '/../includes/workspace_top.php';
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>John Paul College</title>
-
-
-<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
-
-</head>
-
-<body class="app">
-
-<div class='header'>
-</div>
-	
-<nav class='container'>
-<?php
-include('includes/menu.php');
-?>
-</nav>
-
-
-
-
-
-<div id="main">
-	<div class="shell">
-	<center>
-	<form class='cmxform' method='POST'>
-	<fieldset>
-			<legend><h4>Account Details</h4></legend>
-			  <ol>
-			  <li>
-			  <table>
-			  <tr>
-				<td align='right'><label for="name" > Input Old Password: </label></td>
-				<td><input type='password' name='opassword'></td>
-			  </tr>
-			  <tr>
-				<td align='right'><label for="name" > Input New Password: </label></td>
-				<td><input type='password' name='password'></td>
-			  </tr>
-			  <tr>
-				<td align='right'><label for="name"> Input Password Again: </label></td>
-				<td><input type='password' name='password2'></td>
-			  </tr>
-					</table>
-				</li>
-				
-  </ol>
-			
-	</fieldset>
-	<br>
-	
-<div align='center'><input type='submit' name='cpass' value='Change Password'>&nbsp;&nbsp;
-<input type='reset' name='clear' value='Clear'></div>
+<form class="stack" method="post">
+<label for="current">Current password</label><input id="current" type="password" autocomplete="current-password" name="opassword" required>
+<label for="new">New password</label><input id="new" type="password" autocomplete="new-password" name="password" required>
+<label for="repeat">Confirm new password</label><input id="repeat" type="password" autocomplete="new-password" name="password2" required>
+<div class="actions"><input type="submit" name="cpass" value="Change password"><a href="studentprofile.php">Return to profile</a></div>
 </form>
-</center>
-	</div>
-	<div><br></div>
-</div>
-<!-- /Main -->
-
-<!-- Footer -->
-<div id="footer">
-	<div class="shell">
-		<!-- Mini Nav --> 
-		<div class="footer-navigation"> 
-		<?php
-			include('includes/menu2.php');
-		?>
-		</div> 
-		<!-- /Mini Nav --> 
-		
-		<!-- Copyrights --> 
-		<p class="right"> 
-			Copyright <?php echo date("Y"); ?> | Online Enrollment
-		</p> 
-		<!-- /Copyrights --> 
-		
-		<div class="cl">&nbsp;</div> 
-	</div>
-</div>
-
-
-
-
-</body>
-</html>
+<?php require __DIR__ . '/../includes/workspace_bottom.php'; ?>

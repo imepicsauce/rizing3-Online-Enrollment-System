@@ -31,29 +31,11 @@ $forms = $conn->query("
 	FROM student_subject ss
 	LEFT JOIN studenttbl s ON s.studnum = ss.studentID
 	ORDER BY ss.approved ASC, ss.ID DESC");
+
+$pageTitle = 'Enrollment approvals';
+require __DIR__ . '/../includes/workspace_top.php';
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8" />
-<title>John Paul College</title>
-<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
-</head>
-
-<body class="app">
-
-<div class='header'>
-</div>
-
-<nav class='container'>
-<?php include('includes/menu1.php'); ?>
-</nav>
-
-<div id="main">
-	<div class="shell">
-		<center><b><h1>Enrollment Forms</h1></b></center>
-		<div class="niceform">
-		<table class="data-table" border="1" width="100%">
+<p>Pending forms appear first. Review the subjects and units before approving a form.</p><div class="scroll"><table class="data-table">
 			<thead>
 				<tr>
 					<th>Form</th><th>Student No.</th><th>Name</th><th>Course / Year</th><th>Subjects</th><th>Units</th><th>Semester</th><th>Status</th><th>Action</th>
@@ -74,7 +56,7 @@ $forms = $conn->query("
 					<td><?php echo h($subjects); ?></td>
 					<td align="center"><?php echo (int)$f['totalunits']; ?></td>
 					<td><?php echo h($f['semester'] . ' ' . $f['school_year']); ?></td>
-					<td align="center"><?php echo $isApproved ? 'Approved' : 'Pending'; ?></td>
+					<td align="center"><span class="status <?= $isApproved ? 'approved' : '' ?>"><?= $isApproved ? 'Approved' : 'Pending' ?></span></td>
 					<td align="center">
 						<form method="POST" action="approvals.php" style="display:inline">
 							<?php echo csrf_field(); ?>
@@ -86,21 +68,5 @@ $forms = $conn->query("
 				</tr>
 			<?php } ?>
 			</tbody>
-		</table>
-		</div>
-	</div>
-	<div><br></div>
-</div>
-
-<div id="footer">
-	<div class="shell">
-		<div class="footer-navigation">
-		<?php include('includes/menu2.php'); ?>
-		</div>
-		<p class="right">Copyright <?php echo date("Y"); ?> | Online Enrollment</p>
-		<div class="cl">&nbsp;</div>
-	</div>
-</div>
-
-</body>
-</html>
+		</table></div>
+<?php require __DIR__ . '/../includes/workspace_bottom.php'; ?>

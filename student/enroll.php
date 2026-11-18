@@ -20,94 +20,36 @@
 	$stmt->bind_param("s", $rows['course']);
 	$stmt->execute();
 	$subjects = $stmt->get_result();
+$semester = $_POST['sem'] ?? $_GET['sem'] ?? SEMESTERS[0];
+$selected = is_array($_POST['subject'] ?? null) ? $_POST['subject'] : [];
+$pageTitle = 'Select your subjects';
+require __DIR__ . '/../includes/workspace_top.php';
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8" />
-<title>John Paul College</title>
-<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
-</head>
-
-<body class="app">
-
-<div class='header'>
-</div>
-	<div align='left'>
-<nav class='container'>
-<?php include('includes/menu.php'); ?>
-</nav>
-</div>
-
-<div id="main">
-	<div class="shell">
-	<center>
-	<form class='cmxform' method='POST' action='showsubs.php' onsubmit="if(!document.querySelector('input[name=&quot;subject[]&quot;]:checked')){alert('Please tick at least one subject.');return false;}">
-		<?php echo csrf_field(); ?>
-		<fieldset>
-			<legend>Student Details</legend>
-			<ol>
-			<li>
-				<label><b>Year Level:</b> <?php echo h($rows['yearlvl']); ?> ||</label>
-				<label><b>Course:</b> <?php echo h($rows['course']); ?></label>
-				<label><b>Sem:</b></label>
-				<select name='sem'>
-					<?php foreach (SEMESTERS as $s) { echo "<option value='" . h($s) . "'>" . h($s) . "</option>"; } ?>
-				</select>
-			</li>
-			</ol>
-			<div><br></div>
-		</fieldset>
-		<fieldset>
-			<legend>List of Subjects</legend>
-			<ol>
-			<li>
-				<table border='1'>
-					<thead>
-						<tr>
-							<th>Subject Code</th>
-							<th>Subject Title</th>
-							<th>Description</th>
-							<th>Number of Units</th>
-							<th>Select</th>
-						</tr>
-					</thead>
-					<tbody>
-					<?php if ($subjects->num_rows == 0) { ?>
-						<tr><td colspan="5" align="center">No subjects have been added for your course yet.</td></tr>
-					<?php }
-					while ($s = $subjects->fetch_assoc()) { ?>
-						<tr>
-							<td width='120' align='center'><?php echo h($s['subjectcode']); ?></td>
-							<td width='120' align='center'><?php echo h($s['subjecttitle']); ?></td>
-							<td width='120' align='center'><?php echo h($s['description']); ?></td>
-							<td width='120' align='center'><?php echo h($s['numofunits']); ?></td>
-							<td width='120' align='center'><input type='checkbox' name='subject[]' value="<?php echo h($s['subjectcode']); ?>"></td>
-						</tr>
-					<?php } ?>
-					</tbody>
-				</table>
-				<div><br></div>
-			</li>
-			</ol>
-		</fieldset>
-		<div align='center'><input type='submit' name='register' value='Enroll Selected'>&nbsp;&nbsp;
-		<input type='reset' name='clear' value='Clear'></div>
-	</form>
-	</center>
-	</div>
-	<div><br></div>
-</div>
-
-<div id="footer">
-	<div class="shell">
-		<div class="footer-navigation">
-		<?php include('includes/menu2.php'); ?>
-		</div>
-		<p class="right">Copyright <?php echo date("Y"); ?> | Online Enrollment</p>
-		<div class="cl">&nbsp;</div>
-	</div>
-</div>
-
-</body>
-</html>
+<form id="selection" method="post" action="showsubs.php">
+<?= csrf_field() ?>
+<div class="toolbar"><strong><?= h(strtoupper($rows['course'])) ?> · <?= h($rows['yearlvl']) ?></strong>
+<label for="sem">Semester</label><select id="sem" name="sem">
+<?php foreach (SEMESTERS as $s) { ?><option <?= $s === $semester ? 'selected' : '' ?>><?= h($s) ?></option><?php } ?>
+</select></div>
+<p>Select the subjects you want to take. You can review the fees before you submit.</p>
+<div class="scroll"><table><thead><tr><th>Select</th><th>Subject code</th><th>Subject title</th><th>Description</th><th>Units</th></tr></thead><tbody>
+<?php if (!$subjects->num_rows) { ?><tr><td colspan="5">No subjects have been added for your course yet.</td></tr><?php } ?>
+<?php while ($s = $subjects->fetch_assoc()) { ?>
+<tr><td><input type="checkbox" name="subject[]" aria-label="Select <?= h($s['subjectcode']) ?>" value="<?= h($s['subjectcode']) ?>" data-units="<?= (int)$s['numofunits'] ?>" <?= in_array($s['subjectcode'], $selected, true) ? 'checked' : '' ?>></td><td><?= h($s['subjectcode']) ?></td><td><?= h($s['subjecttitle']) ?></td><td><?= h($s['description']) ?></td><td><?= (int)$s['numofunits'] ?></td></tr>
+<?php } ?></tbody></table></div>
+<div class="summary"><output id="units" aria-live="polite"></output><input type="submit" name="register" value="Review enrollment" <?= !$subjects->num_rows ? 'disabled' : '' ?>></div>
+</form>
+<script>
+const selection = document.getElementById('selection');
+const boxes = Array.from(selection.querySelectorAll('[data-units]'));
+function updateUnits() {
+    const selected = boxes.filter(box => box.checked);
+    const units = selected.reduce((sum, box) => sum + Number(box.dataset.units), 0);
+    document.getElementById('units').textContent = selected.length + ' selected · ' + units + ' units';
+    selection.elements.register.disabled = selected.length === 0;
+}
+selection.addEventListener('change', updateUnits);
+window.addEventListener('pageshow', updateUnits);
+updateUnits();
+</script>
+<?php require __DIR__ . '/../includes/workspace_bottom.php'; ?>
