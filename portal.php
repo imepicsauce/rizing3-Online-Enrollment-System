@@ -2,6 +2,9 @@
 require_once(__DIR__ . '/includes/auth.php');   // starts the session
 
 
+$username = $_SESSION['new_student_id'] ?? '';
+unset($_SESSION['new_student_id']);
+
 // Too many wrong passwords for one username from one address: wait before trying again.
 const LOGIN_MAX_FAILS = 5;
 const LOGIN_WINDOW_MINUTES = 15;
@@ -23,15 +26,15 @@ if (isset($_POST['submit'])) {
 
 	$row = null;
 	if ($recentFails < LOGIN_MAX_FAILS) {
-		$stmt = $conn->prepare("SELECT ID, username, password, user_type FROM usertbl WHERE username = ? LIMIT 1");
-		$stmt->bind_param("s", $username);
+		$stmt = $conn->prepare("SELECT u.ID,u.username,u.password,u.user_type,u.must_change_password FROM usertbl u LEFT JOIN studenttbl s ON s.accountID=u.ID AND u.user_type='student' WHERE u.username=? OR s.studnum=? ORDER BY u.username=? DESC LIMIT 1");
+		$stmt->bind_param("sss", $username, $username, $username);
 		$stmt->execute();
 		$row = $stmt->get_result()->fetch_assoc();
 	}
 
 	if ($recentFails >= LOGIN_MAX_FAILS) {
 		notify_user("Too many failed attempts. Please wait " . LOGIN_WINDOW_MINUTES . " minutes and try again.");
-	} elseif (!$row || !password_matches($password, $row['password'])) {
+	} elseif (!$row || !in_array($row['user_type'], ['admin', 'faculty', 'student'], true) || !password_matches($password, $row['password'])) {
 		$ins = $conn->prepare("INSERT INTO login_attempts (username, ip) VALUES (?, ?)");
 		$ins->bind_param("ss", $attemptName, $ip);
 		$ins->execute();
@@ -53,13 +56,22 @@ if (isset($_POST['submit'])) {
 		$_SESSION['userID']   = (int)$row['ID'];
 		$_SESSION['logcheck'] = 1;
 
-		if ($row['user_type'] == 'admin') {
+		$_SESSION['must_change_password'] = (bool)$row['must_change_password'];
+        if ($row['user_type'] === 'faculty') {
+            $_SESSION['type'] = 'faculty';
+            redirect_to('faculty/index.php');
+        }
+        if ($row['user_type'] == 'admin') {
 			$_SESSION['type'] = 'admin';
 			notify_user('Successfully log in as Administrator', true);
 			redirect_to('Admin/adminindex.php');
 		} else {
 			$_SESSION['type'] = 'student';
-			notify_user('Successfully log in as Student', true);
+			if ($_SESSION['must_change_password']) {
+                notify_user('Choose a private password to replace your birthdate.');
+                redirect_to('student/changepass.php');
+            }
+            notify_user('Successfully log in as Student', true);
 			redirect_to('student/studentindex.php');
 		}
 		exit;
@@ -80,15 +92,15 @@ if (isset($_POST['submit'])) {
 <main class="login-spread">
 <section class="signin" aria-labelledby="login-title">
 <h1 id="login-title">Portal sign in</h1>
-<p>Students and staff, sign in with the account issued by the registrar.</p>
+<p>Students sign in with their student ID and current password. New students use their birthdate (YYYY-MM-DD) for the first sign-in. Staff use their assigned username.</p>
 <?php render_notices(); ?>
 <form method="post" action="portal.php">
-<label for="username">Username</label><input id="username" name="username" value="<?= h($username ?? '') ?>" autocapitalize="none" spellcheck="false" autocomplete="username" required>
+<label for="username">Student ID or staff username</label><input id="username" name="username" value="<?= h($username ?? '') ?>" autocapitalize="none" spellcheck="false" autocomplete="username" required>
 <label for="password">Password</label><div class="password-input"><input id="password" name="password" type="password" autocomplete="current-password" required>
 <button type="button" id="visibility" aria-controls="password" hidden>Show password</button></div>
 <input class="button" type="submit" name="submit" value="Sign in">
 </form>
-<div class="account-help">New to Rizing? <a href="./#enrollment">How to get an account</a></div>
+<div class="account-help">New to Rizing? <a href="register.php">Create student account</a></div>
 </section>
 <aside class="login-photo" aria-label="Rizing University library illustration">
 <img src="assets/img/library.webp" alt="">

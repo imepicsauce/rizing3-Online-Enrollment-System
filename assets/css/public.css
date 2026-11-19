@@ -127,3 +127,8 @@ footer span {font-family: var(--serif);}
   .steps li + li {border-left: 0; padding: 1.2rem 0 0; border-top: 1px solid var(--rule);}
   .about-layout {gap: 2rem;}
 }
+
+.public-calendar {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));gap:1.5rem;margin-top:1.25rem}
+.public-calendar > div {border-left:3px solid var(--accent);padding:.35rem 1rem}
+.public-calendar span {margin-left:.7rem;color:var(--accent);font-weight:600}
+.public-calendar p {margin:.35rem 0 0}

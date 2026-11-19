@@ -4,10 +4,6 @@
 --  WARNING: this file DROPS and recreates every table, so
 --  importing it replaces all existing data in `online_enroll`.
 --
---  Column names and column ORDER are unchanged for usertbl,
---  studenttbl, subjecttbl and student_subject, because the PHP
---  pages use INSERT ... VALUES (...) without column names.
---
 --  Relationships
 --    usertbl.ID            <- studenttbl.accountID        (CASCADE)
 --    studenttbl.studnum    <- student_subject.studentID   (CASCADE)
@@ -25,6 +21,7 @@ USE `online_enroll`;
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS faculty_subject, enrollment_window;
 DROP TABLE IF EXISTS `login_attempts`;
 DROP TABLE IF EXISTS `sched_tbl`;
 DROP TABLE IF EXISTS `student_subject`;
@@ -216,3 +213,25 @@ CREATE TABLE `login_attempts` (
   PRIMARY KEY (`ID`),
   KEY `idx_login_lookup` (`username`, `ip`, `attempted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Portal roles and enrollment windows.
+ALTER TABLE usertbl ADD COLUMN must_change_password TINYINT NOT NULL DEFAULT 0;
+CREATE TABLE faculty_subject (
+    subjectID INT PRIMARY KEY,
+    facultyID INT NOT NULL,
+    FOREIGN KEY (subjectID) REFERENCES subjecttbl(ID) ON DELETE CASCADE,
+    FOREIGN KEY (facultyID) REFERENCES usertbl(ID) ON DELETE CASCADE
+) ENGINE=InnoDB;
+CREATE TABLE enrollment_window (
+    school_year VARCHAR(20) NOT NULL,
+    semester VARCHAR(10) NOT NULL,
+    starts DATE NOT NULL,
+    adjustment DATE NOT NULL,
+    ends DATE NOT NULL,
+    PRIMARY KEY (school_year, semester)
+) ENGINE=InnoDB;
+
+-- Demonstration dates for the sample campus. Registrars can replace these in Enrollment schedule.
+INSERT INTO enrollment_window (school_year, semester, starts, adjustment, ends) VALUES
+('2026 - 2027', '1st Sem', '2026-07-20', '2026-08-03', '2026-08-14'),
+('2026 - 2027', '2nd Sem', '2026-11-16', '2026-11-30', '2026-12-11');

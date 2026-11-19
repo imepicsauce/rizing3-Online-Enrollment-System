@@ -2,7 +2,8 @@
 require_once(__DIR__ . '/../includes/auth.php');
 require_role('student');
 require_once __DIR__ . '/../config/db.php';
-require_once __DIR__ . '/../config/settings.php';
+require_once __DIR__ . '/../includes/enrollment_calendar.php';
+$windows = term_windows($conn);
 $stmt = $conn->prepare("SELECT studnum, fname, course, yearlvl FROM studenttbl WHERE accountID = ?");
 $stmt->bind_param("i", $_SESSION['userID']);
 $stmt->execute();
@@ -23,12 +24,12 @@ require __DIR__ . '/../includes/workspace_top.php';
 <?php } else { ?>
 <section class="feature"><h2><?= h($record['fname']) ?>’s enrollment</h2>
 <p><?= h(strtoupper($record['course'])) ?> · Year and section <?= h($record['yearlvl']) ?></p>
-<a class="btn" href="report.php">View enrollment records</a></section>
+<a class="btn" href="enroll.php"><?= array_filter($windows, 'enrollment_open') ? 'Enroll in subjects' : 'View enrollment calendar' ?></a> &nbsp; <a href="report.php">View enrollment records</a></section>
 <h2>Semester status</h2>
 <?php foreach (SEMESTERS as $semester) {
     $submitted = array_key_exists($semester, $forms); ?>
-<div class="term"><strong><?= h($semester) ?></strong><span><?= $submitted ? ($forms[$semester] ? 'Approved' : 'Pending approval') : 'No form submitted' ?></span>
-<?php if ($submitted) { ?><a href="report.php">View form</a><?php } else { ?><a href="enroll.php?sem=<?= rawurlencode($semester) ?>">Start enrollment</a><?php } ?></div>
+<div class="term"><strong><?= h($semester) ?></strong><span><?= $submitted ? ($forms[$semester] ? 'Approved' : 'Pending approval') : h(enrollment_phase($windows[$semester] ?? null)) ?></span>
+<?php if ($submitted) { ?><a href="report.php">View form</a><?php } elseif (enrollment_open($windows[$semester] ?? null)) { ?><a href="enroll.php?sem=<?= rawurlencode($semester) ?>">Start enrollment</a><?php } ?></div>
 <?php } } ?>
 <h2>How to Enroll</h2><p>Check your <a href="curriculum.php">curriculum</a>, select subjects in <a href="enroll.php">Enroll Now</a>, then review the fees and submit your form for approval.</p>
 <?php require __DIR__ . '/../includes/workspace_bottom.php'; ?>

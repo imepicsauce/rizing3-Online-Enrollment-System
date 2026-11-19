@@ -17,6 +17,9 @@ start_secure_session();
 
 // Send visitors without the right role back to the login page, and stop the page from running.
 function require_role($role) {
+    if ($role === 'student' && ($_SESSION['type'] ?? '') === 'student' && !empty($_SESSION['must_change_password']) && basename($_SERVER['SCRIPT_NAME']) !== 'changepass.php') {
+        redirect_to('changepass.php');
+    }
 	if (empty($_SESSION['logcheck']) || ($_SESSION['type'] ?? '') !== $role) {
 		header('Location: ../index.php');
 		exit;

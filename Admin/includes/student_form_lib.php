@@ -27,7 +27,7 @@ function student_validate($v) {
 	if ($v['email'] !== '' && !filter_var($v['email'], FILTER_VALIDATE_EMAIL)) { return 'That email address is not valid.'; }
 	if ($v['cnumber'] !== '' && !preg_match('/^[0-9]{7,11}$/', $v['cnumber'])) { return 'The contact number must be 7 to 11 digits (numbers only).'; }
 	if ($v['bdate'] !== '') {
-		$d = DateTime::createFromFormat('Y-m-d', $v['bdate']);
+		$d = DateTime::createFromFormat('!Y-m-d', $v['bdate']);
 		if (!$d || $d->format('Y-m-d') !== $v['bdate'] || $d > new DateTime('today')) { return 'Please enter a valid birth date (not in the future).'; }
 	}
 	return '';

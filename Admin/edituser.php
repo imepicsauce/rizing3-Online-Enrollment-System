@@ -17,6 +17,7 @@ if (!$row) {
 }
 $accountID = (int)$row['accountID'];
 $isEdit = true;
+$fixedID = $row['studnum'] === sprintf('RU-%08d', $row['ID']) && $row['username'] === $row['studnum'];
 
 $v = [
 	'username' => $row['username'], 'course' => $row['course'], 'yrlvlsec' => $row['yearlvl'], 'snum' => $row['studnum'],
@@ -30,7 +31,10 @@ $v = [
 
 if (isset($_POST['save'])) {
 	foreach (STUDENT_FIELDS as $k) { $v[$k] = trim($_POST[$k] ?? ''); }
-	$newPassword = (string)($_POST['password'] ?? '');
+	if ($fixedID) {
+        $v['username'] = $v['snum'] = $row['studnum'];
+    }
+    $newPassword = (string)($_POST['password'] ?? '');
 	$fullname = trim($v['fname'] . " " . $v['minitial'] . " " . $v['lname']);
 
 	if (!csrf_valid()) {

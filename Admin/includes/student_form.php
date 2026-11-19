@@ -6,27 +6,27 @@
 // Field names the pages read: see STUDENT_FIELDS in student_form_lib.php
 ?>
 <?php echo csrf_field(); ?>
+<?php if ($isEdit) { ?>
 <fieldset>
     <legend>Account details</legend>
     <div class="fields">
         <label>Username *
-            <input type='text' required='required' maxlength='50' id="username" name='username' value="<?php echo sf_val($v, 'username'); ?>"/>
+            <input type='text' required='required' maxlength='50' <?= $fixedID ? 'readonly' : '' ?> id="username"  name='username' value="<?php echo sf_val($v, 'username'); ?>"/>
         </label>
-        <label><?= $isEdit ? 'Reset Password (leave blank to keep current)' : 'Password *' ?>
-            <?php if ($isEdit) { ?>
-			<input type='password' maxlength='50' id="password" name='password' value="" placeholder="Leave blank to keep current" autocomplete="new-password"/>
-		<?php } else { ?>
-			<input type='password' required='required' maxlength='50' id="password" name='password' autocomplete="new-password" />
-		<?php } ?>
+        <label>Reset Password (leave blank to keep current)
+            <input type='password' maxlength='50' id="password" name='password' autocomplete="new-password"/>
         </label>
     </div>
 </fieldset>
+<?php } ?>
 <fieldset>
     <legend>Academic record</legend>
     <div class="fields">
+        <?php if ($isEdit) { ?>
         <label>Student number *
-            <input type='text' maxlength='20' id="snum" required='required' name='snum' value="<?php echo sf_val($v, 'snum'); ?>" />
+            <input type='text' maxlength='20' <?= $fixedID ? 'readonly' : '' ?> id="snum"  required='required' name='snum' value="<?php echo sf_val($v, 'snum'); ?>" />
         </label>
+        <?php } ?>
         <label>Course *
             <select name='course' id="course">
 			<?php foreach ($courses as $c) { ?>
@@ -34,8 +34,8 @@
 			<?php } ?>
 		</select>
         </label>
-        <label>Section / year level *
-            <input type='text' required='required' maxlength='50' id="yrlvlsec" name='yrlvlsec' value="<?php echo sf_val($v, 'yrlvlsec'); ?>" />
+        <label><?= empty($publicRegistration) ? 'Section / year level *' : 'Year and section (if assigned)' ?>
+            <input type='text' <?= empty($publicRegistration) ? 'required' : '' ?> maxlength='50' id="yrlvlsec" name='yrlvlsec' value="<?php echo sf_val($v, 'yrlvlsec'); ?>" />
         </label>
     </div>
 </fieldset>
@@ -60,8 +60,8 @@
 					<?php } ?>
 				</select>
         </label>
-        <label>Birth date
-            <input type="date" name="bdate" value="<?php echo sf_val($v, 'bdate'); ?>" />
+        <label>Birth date<?= $isEdit ? '' : ' *' ?>
+            <input type="date" name="bdate" <?= $isEdit ? '' : 'required' ?> value="<?php echo sf_val($v, 'bdate'); ?>" />
         </label>
         <label>Birthplace
             <input type='text' maxlength='50' name='bplace' value="<?php echo sf_val($v, 'bplace'); ?>" />
@@ -82,6 +82,7 @@
         </label>
     </div>
 </fieldset>
+<?php if (empty($publicRegistration)) { ?>
 <fieldset>
     <legend>Family information</legend>
     <div class="fields">
@@ -122,3 +123,4 @@
         </label>
     </div>
 </fieldset>
+<?php } ?>

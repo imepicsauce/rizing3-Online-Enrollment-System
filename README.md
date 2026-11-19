@@ -1,6 +1,6 @@
-# Online Enrollment System (John Paul College)
+# Rizing University enrollment portal
 
-PHP + MySQL (mysqli) enrollment system with an Admin area and a student area.
+PHP and MySQL enrollment portal for students, faculty, and the registrar.
 
 ## Setup (XAMPP)
 1. Copy this folder into `htdocs`.
@@ -11,9 +11,23 @@ PHP + MySQL (mysqli) enrollment system with an Admin area and a student area.
 
 Database settings live in one place: `config/db.php`.
 
+## Upgrading an existing installation
+
+Select the existing enrollment database and run `database/migrations/2026-enrollment-access.sql` once before serving the updated PHP pages. In the registrar workspace, open **Enrollment schedule** and publish the registration, adjustment, and closing dates for each semester. Existing installations start with unpublished dates. A fresh sample installation includes illustrative dates for 2026–27.
+
+## Accounts and enrollment
+
+- **Students** can create an account from the homepage. The system assigns a student ID such as `RU-00000003`. Sign in with that ID and the birthdate entered during registration, in `YYYY-MM-DD` format. The first sign-in opens the password change page. Returning students can use their existing ID and current password.
+- **Faculty** sign in with accounts issued under **Faculty access**. They can view the subject, program, units, room and meeting time for each assigned class.
+- **Registrars** publish the dates in Manila time. Registration and adjustment both allow submissions through the last day inclusive. During these windows students can replace a pending form. Changes to approved forms go through the registrar.
+- The sample calendar adapts the phased registration and adjustment approach used by [UC Berkeley](https://registrar.berkeley.edu/registration/enrollment/). Rizing sets its own deadlines.
+
 ## Folder structure
 ```
-index.php            login page
+index.php            university homepage
+portal.php           portal sign-in
+register.php         student registration
+faculty/             faculty teaching schedule
 config/db.php        the one database connection
 includes/            code shared by Admin and student (auth.php: login/role/CSRF helpers, logout.php)
 assets/css/          style.css (the one stylesheet) + vendor/ (DataTables, jQuery UI)

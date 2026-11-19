@@ -84,6 +84,13 @@ def main():
     assert "`online_enroll`" in schema
     schema = schema.replace("`online_enroll`", "`%s`" % args.db)
 
+    # Most workflow suites exercise open enrollment irrespective of today's date.
+    schema += """
+REPLACE INTO enrollment_window (school_year, semester, starts, adjustment, ends)
+VALUES ('2026 - 2027','1st Sem','2000-01-01','2099-01-01','2099-01-31'),
+       ('2026 - 2027','2nd Sem','2000-01-01','2099-01-01','2099-01-31');
+"""
+
     base = "http://127.0.0.1:%d/" % args.http_port
     env = dict(os.environ, E2E_BASE=base, ENROLL_MYSQL=args.mysql_bin, ENROLL_DB_HOST=args.host, ENROLL_DB_PORT=str(args.port),
                ENROLL_DB_USER=args.user, ENROLL_DB_PASS=args.password, ENROLL_DB_NAME=args.db, PYTHONIOENCODING="utf-8", PYTHONPATH=HERE)

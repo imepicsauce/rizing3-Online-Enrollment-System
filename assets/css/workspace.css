@@ -86,3 +86,6 @@ tr:has(input:checked) {background:#fbefdf}
 .directory .dataTables_paginate a {padding:.3rem .55rem;background:white;border:1px solid var(--line);cursor:pointer}
 .directory .paginate_active {font-weight:700;color:var(--ink)}
 .directory .paginate_button_disabled {opacity:.55}
+
+.registration {width:min(94%,65rem);margin:auto}
+table caption {text-align:left;padding:0 0 .75rem;color:var(--muted)}

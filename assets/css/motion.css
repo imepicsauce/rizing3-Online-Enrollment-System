@@ -8,4 +8,6 @@
     a, button, input[type="submit"], input[type="button"], summary {
         transition: background-color 150ms ease-out, color 150ms ease-out, border-color 150ms ease-out;
     }
+    html {scroll-behavior:smooth;}
+    section[id] {scroll-margin-top:1rem;}
 }

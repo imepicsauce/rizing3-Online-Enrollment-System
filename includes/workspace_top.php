@@ -4,8 +4,13 @@ $registrar = $_SESSION['type'] === 'admin';
 $workspaceName = $registrar ? 'Registrar workspace' : 'Student portal';
 $home = $registrar ? 'adminindex.php' : 'studentindex.php';
 $navigation = $registrar
-    ? [$home => 'Home', 'approvals.php' => 'Approvals', 'userreg.php' => 'Manage Users', 'subjectreg.php' => 'Manage Subjects', 'courses.php' => 'Courses', 'report.php' => 'Generate Report']
+    ? [$home => 'Home', 'approvals.php' => 'Approvals', 'userreg.php' => 'Manage Users', 'subjectreg.php' => 'Manage Subjects', 'courses.php' => 'Courses', 'calendar.php' => 'Enrollment schedule', 'faculty.php' => 'Faculty access', 'report.php' => 'Generate Report']
     : [$home => 'Home', 'enroll.php' => 'Enroll Now', 'report.php' => 'My Enrollment Report', 'curriculum.php' => 'Curriculum', 'studentprofile.php' => 'Profile'];
+if ($_SESSION['type'] === 'faculty') {
+    $workspaceName = 'Faculty portal';
+    $home = 'index.php';
+    $navigation = [$home => 'Teaching schedule'];
+}
 $current = basename($_SERVER['SCRIPT_NAME']);
 $parentPages = ['showsubs.php'=>'enroll.php', 'changepass.php'=>'studentprofile.php',
     'addnewuser.php'=>'userreg.php', 'edituser.php'=>'userreg.php',

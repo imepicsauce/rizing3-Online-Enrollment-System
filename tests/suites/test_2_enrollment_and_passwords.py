@@ -26,16 +26,17 @@ a=client(); LOGIN(a,"admins","newadmin1")
 # ---- add user hashed
 section("add student")
 nu={"username":"tester2","password":"pw2222","snum":"2026-002","course":"bsit","yrlvlsec":"I-1","fname":"T","minitial":"T","lname":"Two","gender":"male","bdate":"2004-05-06","address":"x","cnumber":"09123456789","email":"t@e.com","fathername":"F","mothername":"M","guardianname":"G","bplace":"x","cstatus":"single","elemschool":"E","yrgradelem":"2016","hschool":"H","yrgradhs":"2020","lastschool":"L","yrlast":"2022","address2":"x","register":"Add new user"}
-nu["token"]=token(a("Admin/addnewuser.php")[1]); s,h,_=a("Admin/addnewuser.php",nu); check("add user works, no PHP warnings", "Successfully" in "".join(al(h)) and not warns(h), (al(h),warns(h)))
-check("new student's password stored hashed", sql("select password from usertbl where username='tester2'").startswith("$2y$"))
-t=client(); s,h,_=LOGIN(t,"tester2","pw2222"); check("new student can log in", "Student" in h)
-
-# ---- change password
-section("change password")
-s,h,_=t("student/changepass.php",{"opassword":"pw2222","password":"n3w","password2":"n3w","cpass":"x"}); check("change with hashed old password works", "Successfully" in "".join(al(h)), al(h))
-check("new stored hash", sql("select password from usertbl where username='tester2'").startswith("$2y$"))
-s,h,_=t("student/changepass.php",{"opassword":"pw2222","password":"z","password2":"z","cpass":"x"}); check("old password no longer accepted", "wrong" in "".join(al(h)))
-s,h,_=LOGIN(client(),"tester2","n3w"); check("login with changed password", "Student" in h)
+nu["token"] = token(a("Admin/addnewuser.php")[1])
+s,h,_ = a("Admin/addnewuser.php",nu)
+student_id = re.search(r"Student ID: (RU-[0-9]+)", al(h)).group(1)
+check("new student's initial password is hashed", sql(f"select password from usertbl where username='{student_id}'").startswith("$2y$"))
+t = client()
+s,h,loc = LOGIN(t,student_id,nu["bdate"])
+check("new student must replace the birthdate at first login", loc == "student/changepass.php")
+s,h,_ = t("student/changepass.php", {"opassword":nu["bdate"],"password":"new-private-pass","password2":"new-private-pass","cpass":"x","token":token(h)})
+check("change with hashed initial password works", "Successfully" in al(h), al(h))
+check("old birthdate no longer works", "doesn't exist" in al(LOGIN(client(),student_id,nu["bdate"])[1]))
+check("student ID with new password opens dashboard", LOGIN(client(),student_id,"new-private-pass")[2] == "student/studentindex.php")
 
 # ---- enrollment
 section("enrollment")

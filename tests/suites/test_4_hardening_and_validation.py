@@ -38,8 +38,10 @@ for name,kw,msg in [("bad email",{"email":"not-an-email"},"email address is not 
     ("future birth date",{"bdate":"2999-01-01"},"valid birth date"),("impossible date",{"bdate":"2005-02-31"},"valid birth date"),("no first name",{"fname":""},"First name"),("no address",{"address":""},"Address is required"),
     ("no gender",{"gender":""},"gender"),("bad civil status",{"cstatus":"x"},"civil status"),("no year level",{"yrlvlsec":""},"Year Level")]:
     ok,m=tryadd(msg,**kw); check("rejected: "+name,ok,m)
-s,h,_=a("Admin/addnewuser.php",sp(token=tk,email="",cnumber="",bdate="")); check("empty optional fields (email, phone, birth date) are accepted", "Successfully Created" in al(h), al(h))
-sid=sql("select ID from studenttbl where studnum='2026-101'")
+s,h,_=a("Admin/addnewuser.php",sp(token=tk,email="",cnumber="",bdate="")); check("birthdate is required", "Enter a birthdate" in al(h), al(h))
+s,h,_=a("Admin/addnewuser.php",sp(token=tk,email="",cnumber="")); check("email and phone are optional", "Student ID:" in al(h), al(h))
+student_id = re.search(r"Student ID: (RU-[0-9]+)", al(h)).group(1)
+sid=sql(f"select ID from studenttbl where studnum='{student_id}'")
 e=token(a("Admin/edituser.php?id="+sid)[1])
 s,h,_=a("Admin/edituser.php",sp(id=sid,save="x",token=e,email="bad@",password="")); check("edit page applies the same rules", "email address is not valid" in al(h))
 s,h,_=a("Admin/edituser.php",sp(id=sid,save="x",token=e,email="ok@e.com",password="")); check("valid edit still saves", "updated" in al(h))

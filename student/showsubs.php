@@ -2,7 +2,7 @@
 require_once(__DIR__ . '/../includes/auth.php');
 require_role('student');
 require_once(__DIR__ . '/../config/db.php');
-require_once(__DIR__ . '/../config/settings.php');
+require_once(__DIR__ . '/../includes/enrollment_calendar.php');
 
 // This page only works when reached from the enrollment form.
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -33,6 +33,10 @@ if (!in_array($sem, SEMESTERS, true)) {
 	back_to_enroll('Please choose a semester.');
 }
 
+if (!enrollment_open(term_windows($conn)[$sem] ?? null)) {
+    back_to_enroll('Enrollment is closed for this semester. Check the enrollment calendar for published dates.');
+}
+
 // One enrollment form per student per semester and school year.
 $chk = $conn->prepare("SELECT approved FROM student_subject WHERE studentID = ? AND semester = ? AND school_year = ? LIMIT 1");
 $chk->bind_param("sss", $rows['studnum'], $sem, $schoolYear);
@@ -54,7 +58,7 @@ if (count($codes) === 0) {
 
 // Everything on the form is re-read from the database. Nothing about units or fees is trusted from the browser.
 $subs = [];
-$stmt = $conn->prepare("SELECT subjectcode, numofunits, room, day, time, instructor, islab, istutorial FROM subjecttbl WHERE subjectcode = ? AND course_con = ?");
+$stmt = $conn->prepare("SELECT subjectcode, numofunits, room, day, time, COALESCE(u.fullname, s.instructor) AS instructor, islab, istutorial FROM subjecttbl s LEFT JOIN faculty_subject f ON f.subjectID=s.ID LEFT JOIN usertbl u ON u.ID=f.facultyID WHERE subjectcode = ? AND course_con = ?");
 foreach ($codes as $code) {
 	$stmt->bind_param("ss", $code, $rows['course']);
 	$stmt->execute();
@@ -81,11 +85,17 @@ $total = ($totalunits * PER_UNIT_FEE) + ENTRANCE_FEE + INTERNET_FEE + MISC_FEE +
 if (isset($_POST['reg'])) {
 	$stid = $rows['studnum'];
 	try {
-		$ins = $conn->prepare("INSERT INTO student_subject (studentID, subjects, totalunits, approved, semester, school_year) VALUES (?, ?, ?, 0, ?, ?)");
-		$ins->bind_param("ssiss", $stid, $subjectList, $totalunits, $sem, $schoolYear);
+		$ins = $conn->prepare("INSERT INTO student_subject (studentID, subjects, totalunits, approved, semester, school_year) SELECT ?, ?, ?, 0, semester, school_year FROM enrollment_window
+            WHERE semester=? AND school_year=? AND ? BETWEEN starts AND ends");
+		$today = enrollment_today();
+        $ins->bind_param("ssisss", $stid, $subjectList, $totalunits, $sem, $schoolYear, $today);
 		$ins->execute();
+        if ($ins->affected_rows !== 1) {
+            back_to_enroll('Enrollment has closed for this semester. Your form was not submitted.');
+        }
 	} catch (mysqli_sql_exception $e) {
-		// Two quick clicks: the database allows only one form per semester.
+		if ($e->getCode() !== 1062) { throw $e; }
+        // The database allows only one form per semester.
 		back_to_enroll("You already have an enrollment form for $sem, $schoolYear.");
 	}
 	notify_user('Enrollment form was successfully sent to the system', true);

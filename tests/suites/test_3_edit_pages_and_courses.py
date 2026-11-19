@@ -17,7 +17,12 @@ s,h,_=a("Admin/addnewuser.php"); tk=token(h)
 check("add form renders, course list from database, no warnings", s==200 and "value=\"bsit\"" in h and "value=\"bscs\"" in h and not warns(h), warns(h))
 s,h,_=a("Admin/addnewuser.php",student_post()); check("add without token rejected", "expired" in al(h) and sql("select count(*) from usertbl where username='tester3'")=="0", al(h))
 s,h,_=a("Admin/addnewuser.php",student_post(token=tk,course="nope")); check("invalid course rejected", "valid course" in al(h))
-s,h,_=a("Admin/addnewuser.php",student_post(token=tk)); check("add with token works", "Successfully Created" in al(h) and sql("select count(*) from usertbl where username='tester3'")=="1", al(h))
+s,h,_=a("Admin/addnewuser.php",student_post(token=tk))
+assigned_id = re.search(r"Student ID: (RU-[0-9]+)", al(h)).group(1)
+check("registrar receives assigned ID", sql(f"select count(*) from usertbl where username='{assigned_id}'")=="1")
+# These edit tests cover pre-migration records with independently editable account and student IDs.
+sql(f"update usertbl set username='tester3', must_change_password=0 where username='{assigned_id}'")
+sql(f"update studenttbl set studnum='2026-003' where studnum='{assigned_id}'")
 sid=sql("select ID from studenttbl where studnum='2026-003'")
 s,h,_=a("Admin/userreg.php"); check("user list has EDIT link for the new student, no warnings", f"edituser.php?id={sid}" in h and not warns(h), warns(h))
 

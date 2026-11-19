@@ -1,4 +1,5 @@
 """Exercise a new student's enrollment and a registrar acting on a stale approval page."""
+import re
 from playwright.sync_api import sync_playwright
 from helpers import BASE, check, finish, sql
 
@@ -40,16 +41,24 @@ with sync_playwright() as playwright:
     admin.on("dialog", accept_admin_dialog)
     student.on("dialog", lambda dialog: dialog.accept())
     sign_in(admin, "admins", "admins", "adminindex.php")
-    admin.goto(BASE + "Admin/addnewuser.php")
-    for field, value in {"username": "registrant", "password": "sample123", "snum": "QA-01",
-                         "yrlvlsec": "I-1", "fname": "Sam", "lname": "Rivera", "address": "Roxas"}.items():
-        admin.fill("[name=" + field + "]", value)
-    admin.select_option("[name=course]", "bsit")
-    admin.check("input[value=female]")
-    admin.click("[name=register]")
-    admin.wait_for_url("**/userreg.php")
+    student.goto(BASE)
+    student.emulate_media(reduced_motion="no-preference")
+    student.get_by_role("link", name="Enrollment guide", exact=True).click()
+    student.wait_for_url("**/#enrollment")
+    check("enrollment guide anchor uses smooth scrolling", student.evaluate("getComputedStyle(document.documentElement).scrollBehavior") == "smooth")
+    student.emulate_media(reduced_motion="reduce")
+    check("reduced motion uses immediate anchor navigation", student.evaluate("getComputedStyle(document.documentElement).scrollBehavior") == "auto")
+    student.get_by_role("link", name="Create student account", exact=True).click()
+    for field, value in {"bdate":"2004-05-06", "yrlvlsec":"I-1", "fname":"Sam", "lname":"Rivera", "address":"Roxas"}.items():
+        student.fill("[name=" + field + "]", value)
+    student.select_option("[name=course]", "bsit")
+    student.check("input[value=female]")
+    student.click("[name=register]")
+    student.wait_for_url("**/portal.php")
+    student_id = re.search(r"Student ID: (RU-[0-9]+)", student.locator(".portal-notice").inner_text()).group(1)
+    check("student ID is ready to use at sign-in", student.input_value("[name=username]") == student_id)
     check("registration preserves unknown graduation years", sql(
-        "SELECT COUNT(*) FROM studenttbl WHERE studnum='QA-01' AND dategradelem='' AND datehsgrad='' AND datelastgrad=''"
+        f"SELECT COUNT(*) FROM studenttbl WHERE studnum='{student_id}' AND dategradelem='' AND datehsgrad='' AND datelastgrad=''"
     ) == "1")
 
     admin.goto(BASE + "Admin/addnewsubj.php")
@@ -65,10 +74,15 @@ with sync_playwright() as playwright:
     admin.click("[name=register]")
     admin.wait_for_url("**/subjectreg.php")
 
-    sign_in(student, "registrant", "sample123", "studentindex.php")
+    sign_in(student, student_id, "2004-05-06", "changepass.php")
+    student.fill("[name=opassword]", "2004-05-06")
+    student.fill("[name=password]", "my-private-password")
+    student.fill("[name=password2]", "my-private-password")
+    student.click("[name=cpass]")
+    student.wait_for_url("**/studentindex.php")
     submit_enrollment(student)
     admin.goto(BASE + "Admin/approvals.php")
-    row = admin.locator("tr", has_text="QA-01")
+    row = admin.locator("tr", has_text=student_id)
     check("approval queue keeps the complete subject code", row.locator("td").nth(4).inner_text() == "0")
     student.goto(BASE + "student/report.php")
     check("student report resolves the subject title", "0 - Introductory lab" in student.inner_text("body"))
@@ -89,18 +103,18 @@ with sync_playwright() as playwright:
     check("student sees approval and cancellation is locked",
           "Approved" in student.inner_text("body") and student.locator(".confirm-action").count() == 0)
     admin.goto(BASE + "Admin/report.php")
-    row = admin.locator("tr", has_text="QA-01")
+    row = admin.locator("tr", has_text=student_id)
     check("registrar report agrees on the subject, units and status",
           row.locator("td").nth(4).inner_text() == "0" and row.locator("td").nth(5).inner_text() == "3"
           and row.locator("td").last.inner_text() == "Approved")
     admin.select_option("[name=status]", "pending")
     admin.get_by_role("button", name="Apply filters").click()
     admin.wait_for_url("**/report.php?**")
-    check("pending filter excludes the approved form", admin.locator("tr", has_text="QA-01").count() == 0)
+    check("pending filter excludes the approved form", admin.locator("tr", has_text=student_id).count() == 0)
     admin.select_option("[name=status]", "approved")
     admin.select_option("[name=semester]", label="2nd Sem")
     admin.get_by_role("button", name="Apply filters").click()
-    admin.locator("tr", has_text="QA-01").wait_for()
+    admin.locator("tr", has_text=student_id).wait_for()
     admin.emulate_media(media="print")
     student.emulate_media(media="print")
     for report in (admin, student):

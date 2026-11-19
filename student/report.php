@@ -3,6 +3,8 @@ require_once(__DIR__ . '/../includes/auth.php');
 require_role('student');
 require_once(__DIR__ . '/../config/db.php');
 
+require_once __DIR__ . '/../includes/enrollment_calendar.php';
+$windows = term_windows($conn);
 // This student's record
 $accountID = (string)($_SESSION['userID'] ?? '');
 $stmt = $conn->prepare("SELECT studnum, fname, minitial, lname, course, yearlvl FROM studenttbl WHERE accountID = ? LIMIT 1");
@@ -23,10 +25,12 @@ if ($student && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_fo
 		notify_user('Your session expired. Please try again.');
 	} else {
 		$fid = (int)$_POST['cancel_form'];
-		$del = $conn->prepare("DELETE FROM student_subject WHERE ID = ? AND studentID = ? AND approved = 0");
-		$del->bind_param("is", $fid, $student['studnum']);
+		$del = $conn->prepare("DELETE f FROM student_subject f JOIN enrollment_window w ON w.school_year=f.school_year AND w.semester=f.semester WHERE f.ID=? AND f.studentID=? AND f.approved=0 AND w.school_year=? AND ? BETWEEN w.starts AND w.ends");
+		$year = SCHOOL_YEAR;
+        $today = enrollment_today();
+        $del->bind_param("isss", $fid, $student['studnum'], $year, $today);
 		$del->execute();
-		notify_user($del->affected_rows > 0 ? 'The enrollment form was cancelled. You can submit a new one.' : 'That form cannot be cancelled (it is already approved or no longer exists).', $del->affected_rows > 0);
+		notify_user($del->affected_rows > 0 ? 'The enrollment form was cancelled. You can submit a new one during an open enrollment period.' : 'That form cannot be cancelled (check its approval status and enrollment dates).', $del->affected_rows > 0);
 	}
 	redirect_to('report.php');
 }
@@ -81,7 +85,7 @@ require __DIR__ . '/../includes/workspace_top.php';
 				<td><?php echo h($f['semester'] . ' ' . $f['school_year']); ?></td>
 				<td><span class="status <?= $status === 'Approved' ? 'approved' : '' ?>"><?= $status ?></span></td>
 				<td class="no-print">
-					<?php if ($f['approved'] == '0') { ?>
+					<?php if ($f['approved'] == '0' && $f['school_year'] === SCHOOL_YEAR && enrollment_open($windows[$f['semester']] ?? null)) { ?>
 					<details class="confirm-action"><summary>Cancel</summary>
 <p>Cancel your <?= h($f['semester']) ?> enrollment for <?= h($f['school_year']) ?>?</p>
 <form method="post" action="report.php">

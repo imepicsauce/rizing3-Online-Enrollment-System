@@ -5,12 +5,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/config/settings.php';
+require_once __DIR__ . '/includes/enrollment_calendar.php';
 require_once __DIR__ . '/config/connection.php';
 $programs = null;
+$windows = [];
 try {
     $catalog = enrollment_connection();
     $programs = $catalog->query('SELECT course_code, course_title FROM courses_tbl ORDER BY course_title')->fetch_all(MYSQLI_ASSOC);
+    $windows = term_windows($catalog);
 } catch (mysqli_sql_exception $e) {
     // The public entrance remains usable while the catalog is unavailable.
 }
@@ -43,8 +45,8 @@ try {
             <h1 id="welcome-title">Enrollment at<br>Rizing University</h1>
             <p>Explore the programs at Rizing, plan your semester, and follow your enrollment through approval.</p>
             <div class="actions">
-                <a class="button arrow" href="portal.php">Sign in to the portal</a>
-                <a class="hero-link" href="#enrollment">How to enroll</a>
+                <a class="button arrow" href="portal.php">Enroll / sign in</a>
+                <a class="hero-link" href="register.php">Create student account</a>
             </div>
         </div></div>
     </section>
@@ -64,8 +66,19 @@ try {
             <h2 id="guide-heading">Enrollment guide</h2>
             <p>Academic year <strong><?php echo h(SCHOOL_YEAR); ?></strong></p>
         </div>
+        <?php if ($windows) { ?>
+        <div class="public-calendar" role="region" aria-label="Enrollment dates">
+            <?php foreach (SEMESTERS as $semester) {
+                if (!isset($windows[$semester])) { continue; }
+                $window = $windows[$semester]; ?>
+                <div><strong><?= h($semester) ?></strong><span><?= h(enrollment_phase($window)) ?></span>
+                <p>Registration opens <?= h((new DateTimeImmutable($window['starts']))->format('M j, Y')) ?>.
+                Adjustment runs <?= h((new DateTimeImmutable($window['adjustment']))->format('M j')) ?> through <?= h((new DateTimeImmutable($window['ends']))->format('M j, Y')) ?>.</p></div>
+            <?php } ?>
+        </div>
+        <?php } ?>
         <ol class="steps">
-            <li><h3>Get your account</h3><p>New to Rizing? Ask the registrar for your student account and sign-in details.</p></li>
+            <li><h3>Get your account</h3><p><a href="register.php">Create a student account</a> to receive your ID, then sign in with your birthdate.</p></li>
             <li><h3>Choose your subjects</h3><p><a href="portal.php">Sign in to the portal</a> to select your semester and the subjects offered for your program.</p></li>
             <li><h3>Review and submit</h3><p>Check your units and fees, then submit your form. Track approval in My Enrollment Report.</p></li>
         </ol>
