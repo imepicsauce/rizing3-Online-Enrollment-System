@@ -74,34 +74,25 @@ footer span {font-family: var(--serif);}
 /* Public university homepage */
 .home {--accent: #a84018; background: #faf9f6;}
 .home .wrap {width: min(86%, 1440px);}
-.home .mast {background: #faf9f6; border-top: 4px solid #bc4a1c;}
-.home .mast .wrap {padding-block: 1rem;}
-.home .portal-link {background: var(--accent); color: white; border: 0; padding: .78rem 1.25rem;}
-.home .portal-link:hover {background: #813214;}
-.campus-hero {
-  position: relative;
-  isolation: isolate;
-  display: grid;
-  align-items: end;
-  min-height: clamp(430px, 33vw, 610px);
-  background: #202622;
-  color: white;
-}
-.campus-hero img, .campus-hero::after {position: absolute; inset: 0; width: 100%; height: 100%;}
-.campus-hero img {z-index: -2; object-fit: cover; object-position: center 53%;}
-.campus-hero::after {
-  content: '';
-  z-index: -1;
-  background: linear-gradient(90deg, rgba(17,23,21,.94) 0%, rgba(22,26,24,.79) 32%, rgba(25,29,26,.23) 71%, rgba(25,29,26,.08));
-}
-.campus-hero .wrap {padding-block: clamp(3rem, 4vw, 5rem);}
-.campus-hero h1 {font-size: clamp(3.4rem, 5.7vw, 6rem); line-height: 1.02; letter-spacing: -.035em;}
-.campus-hero h1 span {color: #ff9553;}
-.campus-hero p {margin: 1.15rem 0 1.6rem; max-width: 43ch; color: #faf8f5; font-size: 1.08rem;}
-.campus-hero .button {background: #ff995d; color: #241b15;}
-.campus-hero .button:hover {background: #ffb386;}
-.hero-link {color: white; font-weight: 600; text-decoration-thickness: 1px;}
-.hero-link:hover {color: #ffd5bb;}
+.home .mast {background: #282c29; border-top: 4px solid #ca5827; color: white;}
+.home .mast .wrap {padding-block: 1.35rem;}
+.home .mast .brand {font-size: clamp(1.5rem, 2vw, 2.1rem);}
+.home .mast a:hover {color: #ffd0ae;}
+.home .portal-link {background: #ffad77; color: #211e19; border: 0; padding: .78rem 1.25rem;}
+.home .mast .portal-link:hover {background: #ffc39a; color: #211e19;}
+.campus-hero {position: relative; isolation: isolate; background: #dedfd8; padding: clamp(2.5rem, 4vw, 5rem) 0;}
+.hero-image {position: absolute; inset: 0 0 0 30%; z-index: -1;}
+.hero-image img {width: 100%; height: 100%; object-fit: cover; object-position: center 52%;}
+.hero-panel {width: min(39rem, 56%); background: #faf9f6; border-top: 5px solid var(--accent); padding: clamp(1.7rem, 3.25vw, 4rem);}
+.campus-hero h1 {font-size: clamp(3rem, 4.6vw, 5.7rem); line-height: 1.02;}
+.campus-hero p {margin: 1.25rem 0 1.65rem; max-width: 40ch;}
+.hero-link {font-weight: 600;}
+.programs {display: grid; grid-template-columns: 1fr 1.4fr; gap: 7%; padding-block: clamp(3rem, 5vw, 6rem); border-bottom: 1px solid var(--rule);}
+.programs p {margin-top: 1rem; max-width: 36ch;}
+.program-list {list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink);}
+.program-list li {display: grid; grid-template-columns: minmax(4rem,auto) 1fr; gap: 1rem; padding: 1.25rem 0; border-bottom: 1px solid var(--rule); align-items: baseline;}
+.program-list span {font-weight: 700; color: var(--accent); overflow-wrap: anywhere;}
+.program-list strong {font: 1.4rem/1.25 var(--serif);}
 .guide {padding-block: clamp(2.8rem, 4vw, 5rem);}
 .guide-title {display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .65rem;}
 .guide-title p {font-size: .92rem;}
@@ -129,8 +120,9 @@ footer span {font-family: var(--serif);}
 .home footer a:hover {color: #ffbc94;}
 @media (max-width: 740px) {
   .home .wrap {width: 89%;}
-  .campus-hero {min-height: 400px;}
-  .campus-hero::after {background: linear-gradient(90deg, #18201eeb, #18201ead);}
+  .hero-panel {width: min(100%, 32rem); margin-top: 7rem;}
+  .hero-image {inset: 0;}
+  .programs {grid-template-columns: 1fr; gap: 1.5rem;}
   .steps, .about-layout {grid-template-columns: 1fr;}
   .steps li + li {border-left: 0; padding: 1.2rem 0 0; border-top: 1px solid var(--rule);}
   .about-layout {gap: 2rem;}

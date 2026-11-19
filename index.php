@@ -6,6 +6,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/config/settings.php';
+require_once __DIR__ . '/config/connection.php';
+$programs = null;
+try {
+    $catalog = enrollment_connection();
+    $programs = $catalog->query('SELECT course_code, course_title FROM courses_tbl ORDER BY course_title')->fetch_all(MYSQLI_ASSOC);
+} catch (mysqli_sql_exception $e) {
+    // The public entrance remains usable while the catalog is unavailable.
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -20,7 +28,8 @@ require_once __DIR__ . '/config/settings.php';
     <div class="wrap">
         <a class="brand" href="./"><span class="mark" aria-hidden="true">RU</span><span>Rizing University</span></a>
         <nav aria-label="Main navigation">
-            <a href="#university">About Rizing</a>
+            <a href="#programs">Academics</a>
+            <a href="#university">The university</a>
             <a href="#enrollment">Enrollment guide</a>
             <a class="portal-link" href="portal.php">Portal sign in</a>
         </nav>
@@ -28,15 +37,26 @@ require_once __DIR__ . '/config/settings.php';
 </header>
 <main id="main">
     <section class="campus-hero" aria-labelledby="welcome-title">
-        <img src="assets/img/university-campus.webp" alt="" width="1180" height="773" fetchpriority="high">
-        <div class="wrap">
-            <h1 id="welcome-title">Welcome to<br>Rizing University<span>.</span></h1>
-            <p>Plan your semester, explore your subjects, and follow your enrollment from selection to approval.</p>
+        <div class="hero-image"><img src="assets/img/university-campus.webp" alt="" width="1180" height="773" fetchpriority="high"></div>
+        <div class="wrap"><div class="hero-panel">
+            <h1 id="welcome-title">Enrollment at<br>Rizing University</h1>
+            <p>Explore the programs at Rizing, plan your semester, and follow your enrollment through approval.</p>
             <div class="actions">
                 <a class="button arrow" href="portal.php">Sign in to the portal</a>
                 <a class="hero-link" href="#enrollment">How to enroll</a>
             </div>
-        </div>
+        </div></div>
+    </section>
+    <section class="programs wrap" id="programs" aria-labelledby="program-heading">
+        <div><h2 id="program-heading">Academic programs</h2>
+        <p>Once enrolled in a program, use the student portal to view its curriculum and available subjects.</p></div>
+        <?php if ($programs) { ?>
+        <ul class="program-list">
+        <?php foreach ($programs as $program) { ?>
+            <li><span><?= h(strtoupper($program['course_code'])) ?></span><strong><?= h($program['course_title']) ?></strong></li>
+        <?php } ?>
+        </ul>
+        <?php } else { ?><p><?= $programs === null ? 'The program catalog is temporarily unavailable.' : 'The registrar has not listed any programs yet.' ?></p><?php } ?>
     </section>
     <section class="guide wrap" id="enrollment" aria-labelledby="guide-heading">
         <div class="guide-title">
