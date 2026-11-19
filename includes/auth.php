@@ -28,12 +28,22 @@ function h($v) {
 	return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 }
 
-// Show a JavaScript alert with any text (safely encoded), and optionally go to another page.
-function js_alert($message) {
-	echo "<script>window.alert(" . json_encode((string)$message, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES) . ");</script>";
+// Carry feedback through the redirect and render it once on the destination page.
+function notify_user($message, $success = false) {
+    $_SESSION['notices'][] = ['message' => (string)$message, 'success' => $success];
 }
-function js_redirect($url) {
-	echo "<script>window.location=" . json_encode((string)$url, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES) . ";</script>";
+
+function render_notices() {
+    foreach ($_SESSION['notices'] ?? [] as $notice) {
+        $role = $notice['success'] ? 'status' : 'alert';
+        echo '<p class="portal-notice" role="' . $role . '">' . h($notice['message']) . '</p>';
+    }
+    unset($_SESSION['notices']);
+}
+
+function redirect_to($url) {
+    header('Location: ' . $url, true, 303);
+    exit;
 }
 
 // CSRF protection for forms that change data.

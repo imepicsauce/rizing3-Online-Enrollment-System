@@ -1367,7 +1367,7 @@
                     "cache": false,
                     "error": function (xhr, error, thrown) {
                         if ( error == "parsererror" ) {
-                            alert( "DataTables warning: JSON data from server could not be parsed. "+
+                            console.error( "DataTables warning: JSON data from server could not be parsed. "+
                                 "This is caused by a JSON formatting error." );
                         }
                     }
@@ -6221,7 +6221,7 @@
             {
                 if ( _oExt.sErrMode == 'alert' )
                 {
-                    alert( sAlert );
+                    console.error( sAlert );
                 }
                 else
                 {

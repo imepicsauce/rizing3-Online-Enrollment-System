@@ -13,11 +13,11 @@ v = client(auto_token=True)
 s, h, _ = v("index.php"); clean_page("login page loads without PHP warnings", s, h)
 s, h, _ = login(v, "admins", "WRONG"); a = alerts(h)
 import json
-check("wrong password shows a well-formed alert saying: User doesn't exist please try again.", len(a) == 1 and json.loads(a[0]) == "User doesn't exist please try again.", str(a))
+check("wrong password shows a well-formed alert saying: User doesn't exist please try again.", len(a) == 1 and a[0] == "User doesn't exist please try again.", str(a))
 s, h, loc = login(v, "x' OR '1'='1", "x' OR '1'='1")
-check("SQL-injection login is rejected", "window.location" not in h and len(alerts(h)) == 1, str(alerts(h)))
+check("SQL-injection login is rejected", s == 200 and len(alerts(h)) == 1, str(alerts(h)))
 s, h, loc = login(v, "admins' -- ", "")
-check("SQL-injection (comment) login is rejected", "window.location" not in h)
+check("SQL-injection (comment) login is rejected", s == 200)
 
 before_users, before_subj = sql("select count(*) from usertbl"), sql("select count(*) from subjecttbl")
 for pth in ADMIN_PAGES + STUDENT_PAGES + ["Admin/deletecurruser.php", "Admin/deletecurrsubj.php"]:
@@ -31,7 +31,7 @@ check("...and nothing was deleted", sql("select count(*) from usertbl") == befor
 print("\n=== B. STUDENT (dennis) ===")
 st = client(auto_token=True)
 s, h, loc = login(st, "dennis", "123456")
-check("student login goes to student home", "student/studentindex.php" in h and "Successfully log in as Student" in h)
+check("student login goes to student home", loc == "student/studentindex.php" and "Successfully log in as Student" in h)
 for pth in STUDENT_PAGES:
     s, h, _ = st(pth); clean_page("student page %s" % pth, s, h)
 s, h, _ = st("student/studentprofile.php")
@@ -59,8 +59,8 @@ check("wrong old password -> alert", any("wrong" in x for x in alerts(h)), str(a
 s, h, _ = st("student/changepass.php", {"opassword": "123456", "password": "aaa", "password2": "bbb", "cpass": "x"})
 check("mismatched new passwords -> visible alert (was silent)", any("do not match" in x for x in alerts(h)), str(alerts(h)))
 check("mismatch did not change the password", can_login("dennis", "123456"))
-s, h, _ = st("student/changepass.php", {"opassword": "123456", "password": "newpass1", "password2": "newpass1", "cpass": "x"})
-check("correct change -> alert + clean redirect to profile (no stray ')')", "studentprofile.php" in h and "')</script>" not in h and "window.location=\"studentprofile.php\"" in h, h[-160:])
+s, h, loc = st("student/changepass.php", {"opassword": "123456", "password": "newpass1", "password2": "newpass1", "cpass": "x"})
+check("correct change -> alert + clean redirect to profile (no stray ')')", s == 303 and loc == "studentprofile.php" and "updated" in al(h), loc)
 check("password really changed (new one logs in, old one does not)", can_login("dennis", "newpass1") and not can_login("dennis", "123456"))
 st("student/changepass.php", {"opassword": "newpass1", "password": "123456", "password2": "123456", "cpass": "x"})
 check("password restored for later tests", can_login("dennis", "123456"))
@@ -75,7 +75,7 @@ check("after logout the student pages are locked again", s == 302)
 print("\n=== C. ADMIN ===")
 ad = client(auto_token=True)
 s, h, loc = login(ad, "admins", "admins")
-check("admin login goes to admin home", "Admin/adminindex.php" in h and "Administrator" in h)
+check("admin login goes to admin home", loc == "Admin/adminindex.php" and "Administrator" in h)
 for pth in ADMIN_PAGES:
     s, h, _ = ad(pth); clean_page("admin page %s" % pth, s, h)
 s, h, _ = ad("Admin/addnewuser.php")
@@ -117,7 +117,7 @@ u = {"username": "tester1", "password": "pw1234", "snum": "2026-001", "course": 
      "guardianname": "G", "bplace": "Roxas", "cstatus": "single", "elemschool": "E", "yrgradelem": "2016", "hschool": "H", "yrgradhs": "2020",
      "lastschool": "L", "yrlast": "2022", "address2": "Roxas", "register": "x"}
 s, h, _ = ad("Admin/addnewuser.php", u); check("add user succeeds", "Successfully Created new account" in h and not php_problems(h), str(php_problems(h)[:1]))
-check("success message no longer prints a stray number", "Successfully Created new account '" in h or "Successfully Created new account\"" in h)
+check("account creation shows a clean success message", al(h) == "Successfully Created new account")
 check("account + profile are linked correctly", sql("select count(*) from usertbl u join studenttbl s on s.accountID=u.ID where u.username='tester1' and s.studnum='2026-001' and s.lname='Student' and s.course='bsit' and s.birthdate='2004-05-06'") == "1")
 nu, ns = sql("select count(*) from usertbl"), sql("select count(*) from studenttbl")
 s, h, _ = ad("Admin/addnewuser.php", u); check("duplicate username -> friendly alert, no fatal error", any("username is already taken" in x for x in alerts(h)) and not php_problems(h), str(alerts(h)) + str(php_problems(h)[:1]))

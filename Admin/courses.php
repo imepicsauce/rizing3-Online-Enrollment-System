@@ -8,6 +8,7 @@ $edit = null;   // course being edited, if any
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$action = $_POST['action'] ?? '';
 	$msg = '';
+	$saved = false;
 	if (!csrf_valid()) {
 		$msg = 'Your session expired. Please try again.';
 	} elseif ($action === 'add' || $action === 'save') {
@@ -32,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 					$msg = 'Successfully updated the course';
 				}
 				$stmt->execute();
+				$saved = true;
 			} catch (mysqli_sql_exception $e) {
 				$msg = ($e->getCode() == 1062) ? 'That course code already exists.' : 'The course could not be saved.';
 			}
@@ -55,12 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			$stmt = $conn->prepare("DELETE FROM courses_tbl WHERE course_ID = ?");
 			$stmt->bind_param("i", $cid);
 			$stmt->execute();
+			$saved = true;
 			$msg = 'Successfully deleted the course';
 		}
 	}
-	if ($msg !== '') { js_alert($msg); }
-	js_redirect('courses.php');
-	exit;
+	if ($msg !== '') { notify_user($msg, $saved); }
+	redirect_to('courses.php');
 }
 
 if (isset($_GET['edit'])) {
@@ -97,12 +99,15 @@ include(__DIR__ . '/includes/page_top.php');
 					<td align="center"><?php echo (int)$c['subjects']; ?></td>
 					<td align="center">
 						<a href="courses.php?edit=<?php echo (int)$c['course_ID']; ?>">EDIT</a> |
-						<form method="post" action="courses.php" style="display:inline" onsubmit="return confirm('Are you sure?');">
+						<details class="confirm-action"><summary>Delete</summary>
+<p>Delete course <?= h(strtoupper($c['course_code'])) ?>?</p>
+<form method="post" action="courses.php" style="display:inline">
 							<?php echo csrf_field(); ?>
 							<input type="hidden" name="action" value="delete">
 							<input type="hidden" name="course_id" value="<?php echo (int)$c['course_ID']; ?>">
-							<button type="submit" class="link-button">DELETE</button>
+							<button type="submit" class="link-button">Delete course</button>
 						</form>
+</details>
 					</td>
 				</tr>
 			<?php } ?>

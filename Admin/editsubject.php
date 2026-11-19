@@ -12,9 +12,8 @@ $stmt->bind_param("i", $id);
 $stmt->execute();
 $row = $stmt->get_result()->fetch_assoc();
 if (!$row) {
-	js_alert('That subject was not found.');
-	js_redirect('subjectreg.php');
-	exit;
+	notify_user('That subject was not found.');
+	redirect_to('subjectreg.php');
 }
 $oldCode = $row['subjectcode'];
 $v = ['course' => $row['course_con'], 'scode' => $row['subjectcode'], 'stitle' => $row['subjecttitle'], 'cdescription' => $row['description'],
@@ -43,14 +42,13 @@ if (isset($_POST['save'])) {
 				islab = ?, istutorial = ?, description = ?, course_con = ? WHERE ID = ?");
 			$stmt->bind_param("sssssssiissi", $v['scode'], $v['stitle'], $units, $v['sroom'], $v['stime'], $v['sinstructor'], $v['sday'], $islab, $istut, $v['cdescription'], $v['course'], $id);
 			$stmt->execute();
-			js_alert('Successfully updated the subject');
-			js_redirect('subjectreg.php');
-			exit;
+			notify_user('Successfully updated the subject', true);
+			redirect_to('subjectreg.php');
 		} catch (mysqli_sql_exception $e) {
 			$error = ($e->getCode() == 1062) ? 'That subject code already exists.' : 'The subject could not be saved.';
 		}
 	}
-	js_alert($error);
+	notify_user($error);
 }
 
 include(__DIR__ . '/includes/page_top.php');

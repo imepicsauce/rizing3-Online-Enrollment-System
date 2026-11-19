@@ -1,0 +1,19 @@
+.portal-notice {
+    box-sizing: border-box;
+    max-width: none;
+    margin: 0 0 1rem;
+    padding: .9rem 1.15rem;
+    border: 1px solid #d6c4ae;
+    border-radius: .35rem;
+    color: #442f1f;
+    background: #fbf1e4;
+    font: 550 1rem/1.45 system-ui, sans-serif;
+    text-align: left;
+}
+.confirm-action {display: inline-block; text-align: left;}
+.confirm-action summary {cursor: pointer; color: #953615; text-decoration: underline; text-underline-offset: .2em;}
+.confirm-action[open] {display: block; min-width: 10rem; padding: .65rem; background: #faf2e9;}
+.confirm-action p {margin: .55rem 0; color: #442f1f;}
+.confirm-action form button {cursor: pointer;}
+@media print {.portal-notice,.confirm-action {display:none;}}
+.portal-notice[role="status"] {color:#26472f;background:#eef5ec;border-color:#b6cdb6;}

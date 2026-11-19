@@ -6,9 +6,9 @@ require_once(__DIR__ . '/../config/db.php');
 // Approve or un-approve one enrollment form.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if (!csrf_valid()) {
-		js_alert('Your session expired. Please try again.');
+		notify_user('Your session expired. Please try again.');
 	} elseif (!in_array($_POST['action'] ?? '', ['approve', 'pending'], true)) {
-		js_alert('Please choose a valid enrollment action.');
+		notify_user('Please choose a valid enrollment action.');
 	} else {
 		$formID = (int)($_POST['form_id'] ?? 0);
 		$approve = (($_POST['action'] ?? '') === 'approve') ? 1 : 0;
@@ -16,13 +16,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$stmt->bind_param("ii", $approve, $formID);
 		$stmt->execute();
 		if ($stmt->affected_rows === 1) {
-			js_alert($approve ? 'Enrollment form approved.' : 'Enrollment form set back to pending.');
+			notify_user($approve ? 'Enrollment form approved.' : 'Enrollment form set back to pending.', true);
 		} else {
-			js_alert('No change was made. The form was cancelled or its status already changed.');
+			notify_user('No change was made. The form was cancelled or its status already changed.');
 		}
 	}
-	js_redirect('approvals.php');
-	exit;
+	redirect_to('approvals.php');
 }
 
 $forms = $conn->query("

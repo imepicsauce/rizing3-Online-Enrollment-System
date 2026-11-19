@@ -10,7 +10,7 @@ if (isset($_POST['register'])) {
 	$password = (string)($_POST['password'] ?? '');
 
 	if ($username === '') {
-		js_alert('Username is required.');
+		notify_user('Username is required.');
 	} else {
 		try {
 			// Only the logged-in administrator's own account is changed.
@@ -25,11 +25,10 @@ if (isset($_POST['register'])) {
 			}
 			$stmt->execute();
 			$_SESSION['username'] = $username;
-			js_alert('Successfully updated the admin account');
-			js_redirect('userreg.php');
-			exit;
+			notify_user('Successfully updated the admin account', true);
+			redirect_to('userreg.php');
 		} catch (mysqli_sql_exception $e) {
-			js_alert(($e->getCode() == 1062) ? 'That username is already taken.' : 'The account could not be saved.');
+			notify_user(($e->getCode() == 1062) ? 'That username is already taken.' : 'The account could not be saved.');
 		}
 	}
 }
@@ -52,6 +51,7 @@ if (!$rowfetch) {
 
 <link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
 
+<link rel="stylesheet" href="../assets/css/feedback.css">
 </head>
 
 <body class="app">
@@ -71,6 +71,7 @@ include('includes/menu1.php');
 
 <div id="main">
 	<div class="shell">
+<?php render_notices(); ?>
 	<center>
 	<form class='cmxform' method='POST'>
 	<fieldset>

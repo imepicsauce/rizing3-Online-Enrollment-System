@@ -9,9 +9,8 @@
 	$stmt->execute();
 	$rows = $stmt->get_result()->fetch_assoc();
 	if (!$rows) {
-		js_alert('Your student profile was not found. Please contact the administrator.');
-		js_redirect('studentindex.php');
-		exit;
+		notify_user('Your student profile was not found. Please contact the administrator.');
+		redirect_to('studentindex.php');
 	}
 	$_SESSION['studnum'] = $rows['studnum'];
 

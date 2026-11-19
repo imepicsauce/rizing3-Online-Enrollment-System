@@ -20,16 +20,15 @@ while ($r = $subRes->fetch_assoc()) {
 // Cancel a form that is still waiting for approval (approved forms are locked).
 if ($student && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_form'])) {
 	if (!csrf_valid()) {
-		js_alert('Your session expired. Please try again.');
+		notify_user('Your session expired. Please try again.');
 	} else {
 		$fid = (int)$_POST['cancel_form'];
 		$del = $conn->prepare("DELETE FROM student_subject WHERE ID = ? AND studentID = ? AND approved = 0");
 		$del->bind_param("is", $fid, $student['studnum']);
 		$del->execute();
-		js_alert($del->affected_rows > 0 ? 'The enrollment form was cancelled. You can submit a new one.' : 'That form cannot be cancelled (it is already approved or no longer exists).');
+		notify_user($del->affected_rows > 0 ? 'The enrollment form was cancelled. You can submit a new one.' : 'That form cannot be cancelled (it is already approved or no longer exists).', $del->affected_rows > 0);
 	}
-	js_redirect('report.php');
-	exit;
+	redirect_to('report.php');
 }
 
 // This student's submitted enrollment forms
@@ -83,11 +82,14 @@ require __DIR__ . '/../includes/workspace_top.php';
 				<td><span class="status <?= $status === 'Approved' ? 'approved' : '' ?>"><?= $status ?></span></td>
 				<td class="no-print">
 					<?php if ($f['approved'] == '0') { ?>
-					<form method="post" action="report.php" onsubmit="return confirm('Cancel this enrollment form?');">
+					<details class="confirm-action"><summary>Cancel</summary>
+<p>Cancel your <?= h($f['semester']) ?> enrollment for <?= h($f['school_year']) ?>?</p>
+<form method="post" action="report.php">
 						<?php echo csrf_field(); ?>
 						<input type="hidden" name="cancel_form" value="<?php echo (int)$f['ID']; ?>">
-						<button type="submit">Cancel</button>
+						<button type="submit">Cancel enrollment</button>
 					</form>
+</details>
 					<?php } else { echo '&mdash;'; } ?>
 				</td>
 			</tr>

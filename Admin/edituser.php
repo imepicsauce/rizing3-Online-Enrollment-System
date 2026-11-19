@@ -12,9 +12,8 @@ $stmt->bind_param("i", $id);
 $stmt->execute();
 $row = $stmt->get_result()->fetch_assoc();
 if (!$row) {
-	js_alert('That student account was not found.');
-	js_redirect('userreg.php');
-	exit;
+	notify_user('That student account was not found.');
+	redirect_to('userreg.php');
 }
 $accountID = (int)$row['accountID'];
 $isEdit = true;
@@ -35,13 +34,13 @@ if (isset($_POST['save'])) {
 	$fullname = trim($v['fname'] . " " . $v['minitial'] . " " . $v['lname']);
 
 	if (!csrf_valid()) {
-		js_alert('Your session expired. Please try again.');
+		notify_user('Your session expired. Please try again.');
 	} elseif ($v['username'] === '' || $v['snum'] === '') {
-		js_alert('Username and student number are required.');
+		notify_user('Username and student number are required.');
 	} elseif (!in_array($v['course'], $courses, true)) {
-		js_alert('Please select a valid course.');
+		notify_user('Please select a valid course.');
 	} elseif (($err = student_validate($v)) !== '') {
-		js_alert($err);
+		notify_user($err);
 	} else {
 		try {
 			$conn->begin_transaction();
@@ -65,18 +64,17 @@ if (isset($_POST['save'])) {
 				$v['address2'], $id);
 			$s->execute();
 			$conn->commit();
-			js_alert('Successfully updated the account');
-			js_redirect('userreg.php');
-			exit;
+			notify_user('Successfully updated the account', true);
+			redirect_to('userreg.php');
 		} catch (mysqli_sql_exception $e) {
 			$conn->rollback();
 			$msg = $e->getMessage();
 			if (strpos($msg, 'uq_user_username') !== false) {
-				js_alert('That username is already taken.');
+				notify_user('That username is already taken.');
 			} elseif (strpos($msg, 'uq_student_studnum') !== false) {
-				js_alert('That student number is already registered.');
+				notify_user('That student number is already registered.');
 			} else {
-				js_alert('The account could not be saved. Please check the details and try again.');
+				notify_user('The account could not be saved. Please check the details and try again.');
 			}
 		}
 	}

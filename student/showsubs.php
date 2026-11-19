@@ -11,9 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 function back_to_enroll($msg) {
-	js_alert($msg);
-	js_redirect('enroll.php');
-	exit;
+	notify_user($msg);
+	redirect_to('enroll.php');
 }
 
 if (!csrf_valid()) {
@@ -89,9 +88,8 @@ if (isset($_POST['reg'])) {
 		// Two quick clicks: the database allows only one form per semester.
 		back_to_enroll("You already have an enrollment form for $sem, $schoolYear.");
 	}
-	js_alert('Enrollment form was successfully sent to the system');
-	js_redirect('studentindex.php');
-	exit;
+	notify_user('Enrollment form was successfully sent to the system', true);
+	redirect_to('studentindex.php');
 }
 
 function money($n) { return number_format($n, 2); }
@@ -111,7 +109,7 @@ require __DIR__ . '/../includes/workspace_top.php';
 <form method="post" class="actions no-print" action="showsubs.php">
 <?= csrf_field() ?><input type="hidden" name="sem" value="<?= h($sem) ?>">
 <?php foreach ($codes as $c) { ?><input type="hidden" name="subject[]" value="<?= h($c) ?>"><?php } ?>
-<input type="submit" name="reg" value="Submit enrollment form" onclick="return confirm('Submit this enrollment form for approval?')">
+<input type="submit" name="reg" value="Submit enrollment form">
 <button class="secondary" formaction="enroll.php">Edit selection</button>
 <button type="button" class="secondary" onclick="window.print()">Print</button>
 </form>

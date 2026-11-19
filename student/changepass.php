@@ -21,19 +21,18 @@ if (isset($_POST['cpass'])) {
 	$newpass2 = (string)($_POST['password2'] ?? '');
 
 	if (!$rowaccs || !password_matches($oldpass, $rowaccs['password'])) {
-		js_alert('Inputted password is wrong please try again');
+		notify_user('Inputted password is wrong please try again');
 	} elseif ($newpass === '') {
-		js_alert('The new password cannot be empty.');
+		notify_user('The new password cannot be empty.');
 	} elseif ($newpass !== $newpass2) {
-		js_alert('The new passwords do not match. Please try again.');
+		notify_user('The new passwords do not match. Please try again.');
 	} else {
 		$stmt = $conn->prepare("UPDATE usertbl SET password = ? WHERE ID = ?");
 		$newHash = password_make($newpass);
 		$stmt->bind_param("si", $newHash, $getID);
 		$stmt->execute();
-		js_alert('Successfully updated the password');
-		js_redirect('studentprofile.php');
-		exit;
+		notify_user('Successfully updated the password', true);
+		redirect_to('studentprofile.php');
 	}
 }
 

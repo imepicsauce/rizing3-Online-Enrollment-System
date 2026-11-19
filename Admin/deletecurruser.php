@@ -5,7 +5,7 @@ require_once(__DIR__ . '/../config/db.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accid'])) {
 	if (!csrf_valid()) {
-		js_alert('Your session expired. Please try again.');
+		notify_user('Your session expired. Please try again.');
 	} else {
 		$studentRowID = (int)$_POST['accid'];
 		// Delete the login account of that student. The student profile and enrollment
@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accid'])) {
 		                        WHERE s.ID = ? AND u.user_type = 'student'");
 		$stmt->bind_param("i", $studentRowID);
 		$stmt->execute();
-		js_alert($stmt->affected_rows > 0 ? 'Successfully Removed the selected account' : 'That account no longer exists');
+		notify_user($stmt->affected_rows > 0 ? 'Successfully Removed the selected account' : 'That account no longer exists', $stmt->affected_rows > 0);
 	}
 }
-js_redirect('userreg.php');
+redirect_to('userreg.php');

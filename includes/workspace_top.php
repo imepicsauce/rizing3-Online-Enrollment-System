@@ -14,6 +14,7 @@ $current = basename($_SERVER['SCRIPT_NAME']);
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= h($pageTitle) ?> · Rizing University</title>
 <link rel="stylesheet" href="../assets/css/workspace.css">
+<link rel="stylesheet" href="../assets/css/feedback.css">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -31,3 +32,4 @@ $current = basename($_SERVER['SCRIPT_NAME']);
 <main id="main">
 <div class="context"><?= $workspaceName ?> <span>Academic year <?= h(SCHOOL_YEAR) ?></span></div>
 <h1><?= h($pageTitle) ?></h1>
+<?php render_notices(); ?>

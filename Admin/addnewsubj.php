@@ -20,14 +20,13 @@ if (isset($_POST['register'])) {
 				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			$stmt->bind_param("sssssssiiss", $v['scode'], $v['stitle'], $units, $v['sroom'], $v['stime'], $v['sinstructor'], $v['sday'], $islab, $istut, $v['cdescription'], $v['course']);
 			$stmt->execute();
-			js_alert('Successfully Created new Subject');
-			js_redirect('subjectreg.php');
-			exit;
+			notify_user('Successfully Created new Subject', true);
+			redirect_to('subjectreg.php');
 		} catch (mysqli_sql_exception $e) {
 			$error = ($e->getCode() == 1062) ? 'That subject code already exists.' : 'The subject could not be saved.';
 		}
 	}
-	js_alert($error);
+	notify_user($error);
 }
 
 include(__DIR__ . '/includes/page_top.php');

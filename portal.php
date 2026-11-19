@@ -30,13 +30,13 @@ if (isset($_POST['submit'])) {
 	}
 
 	if ($recentFails >= LOGIN_MAX_FAILS) {
-		js_alert("Too many failed attempts. Please wait " . LOGIN_WINDOW_MINUTES . " minutes and try again.");
+		notify_user("Too many failed attempts. Please wait " . LOGIN_WINDOW_MINUTES . " minutes and try again.");
 	} elseif (!$row || !password_matches($password, $row['password'])) {
 		$ins = $conn->prepare("INSERT INTO login_attempts (username, ip) VALUES (?, ?)");
 		$ins->bind_param("ss", $attemptName, $ip);
 		$ins->execute();
 		$conn->query("DELETE FROM login_attempts WHERE attempted_at < (NOW() - INTERVAL 1 DAY)");
-		js_alert("User doesn't exist please try again.");
+		notify_user("User doesn't exist please try again.");
 	} else {
 		$clr = $conn->prepare("DELETE FROM login_attempts WHERE username = ? AND ip = ?");
 		$clr->bind_param("ss", $attemptName, $ip);
@@ -55,12 +55,12 @@ if (isset($_POST['submit'])) {
 
 		if ($row['user_type'] == 'admin') {
 			$_SESSION['type'] = 'admin';
-			js_alert('Successfully log in as Administrator');
-			js_redirect('Admin/adminindex.php');
+			notify_user('Successfully log in as Administrator', true);
+			redirect_to('Admin/adminindex.php');
 		} else {
 			$_SESSION['type'] = 'student';
-			js_alert('Successfully log in as Student');
-			js_redirect('student/studentindex.php');
+			notify_user('Successfully log in as Student', true);
+			redirect_to('student/studentindex.php');
 		}
 		exit;
 	}
@@ -72,6 +72,7 @@ if (isset($_POST['submit'])) {
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Portal sign in · Rizing University</title>
 <link rel="stylesheet" href="assets/css/public.css">
+<link rel="stylesheet" href="assets/css/feedback.css">
 </head>
 <body class="portal">
 <header class="mast"><div class="wrap"><a class="brand" href="./"><span class="mark" aria-hidden="true">RU</span>Rizing University</a><a href="./">University home</a></div></header>
@@ -79,6 +80,7 @@ if (isset($_POST['submit'])) {
 <section class="signin" aria-labelledby="login-title">
 <h1 id="login-title">Portal sign in</h1>
 <p>Students and staff, sign in with the account issued by the registrar.</p>
+<?php render_notices(); ?>
 <form method="post" action="portal.php">
 <label for="username">Username</label><input id="username" name="username" value="<?= h($username ?? '') ?>" autocapitalize="none" spellcheck="false" autocomplete="username" required>
 <label for="password">Password</label><div class="password-input"><input id="password" name="password" type="password" autocomplete="current-password" required>

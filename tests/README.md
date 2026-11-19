@@ -61,7 +61,7 @@ Windows PowerShell: `python tests\run_tests.py | Select-String FAIL`. To see onl
 | `suites/test_2_enrollment_and_passwords.py` | Password hashing (and the automatic upgrade of old plain-text passwords), enrollment form checks (course filter, tampered units, bad semester), server-side totals, approvals page, HTML escaping |
 | `suites/test_3_edit_pages_and_courses.py` | Edit student/subject, admin password reset, semester saved, one form per semester, cancel rules, subjects used in forms, the Courses page |
 | `suites/test_4_hardening_and_validation.py` | Session cookie flags, the 5-wrong-passwords limit, student field validation (email, phone, birth date...), database settings file, home pages |
-| `browser/test_b1_clicks.py`, `browser/test_b2_pages.py` | The same flows with a real Chrome-like browser, clicking buttons and answering the "Are you sure?" pop-ups. Also catches JavaScript errors and saves screenshots to `tests/screenshots/` |
+| `browser/test_b1_clicks.py`, `browser/test_b2_pages.py` | The same flows with a real Chrome-like browser, clicking buttons, checking inline feedback and confirming destructive actions in the affected row. Also catches JavaScript errors and saves screenshots to `tests/screenshots/` |
 
 The browser tests are optional. To enable them once:
 
@@ -89,7 +89,7 @@ Open any file in `tests/suites/` and copy a pattern. The helpers (in `tests/help
 a = client(); login(a, "admins", "admins")        # a browser-like session, logged in as admin
 status, html, location = a("Admin/courses.php")   # open a page   (add a dict to POST: a(path, {"field": "value"}))
 token(html)                                       # the hidden security token on a page
-al(html)                                          # the pop-up (alert) messages on a page
+al(html)                                          # the inline feedback messages on a page
 warns(html)                                       # PHP warnings/errors that leaked into the page
 sql("select count(*) from usertbl")               # look at the TEST database
 check("what should be true", condition)           # prints PASS/FAIL

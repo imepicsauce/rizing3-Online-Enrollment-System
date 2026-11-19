@@ -5,6 +5,7 @@ The runner (run_tests.py) sets these environment variables before starting a sui
   ENROLL_MYSQL    path to the mysql/mariadb command-line client
   ENROLL_DB_HOST / ENROLL_DB_PORT / ENROLL_DB_USER / ENROLL_DB_PASS / ENROLL_DB_NAME   (the TEST database)
 """
+from html import unescape
 import http.cookiejar, json, os, re, subprocess, sys, urllib.error, urllib.parse, urllib.request
 
 BASE = os.environ["E2E_BASE"]
@@ -57,6 +58,10 @@ def client(auto_token=False):
             status, text, hdr = e.code, e.read().decode("utf-8", "ignore"), e.headers
         loc = Loc(hdr.get("Location") or "")
         loc.headers = hdr
+        if status == 303:
+            target = urllib.parse.urljoin(BASE + path, loc)
+            with op.open(target) as result:
+                text = result.read().decode("utf-8")
         return status, text, loc
     return req
 
@@ -68,7 +73,7 @@ def login(c, user, password):
 def can_login(user, password):
     """True if these credentials log in (checked with a fresh session)."""
     s, h, _ = login(client(), user, password)
-    return "window.location" in h and "Successfully log in" in h
+    return s == 303 and "Successfully log in" in h
 
 
 # ---------- reading pages ----------
@@ -83,19 +88,11 @@ def token(html):
 
 
 def alerts(html):
-    """The raw JavaScript alert() arguments in a page, as a list."""
-    return re.findall(r"window\.alert\((.*?)\);?\s*</script>", html)
+    return [unescape(message) for message in re.findall(r'<p class="portal-notice" role="(?:alert|status)">(.*?)</p>', html, re.S)]
 
 
 def al(html):
-    """All alert messages in a page, decoded and joined with ' | '."""
-    out = []
-    for a in alerts(html):
-        try:
-            out.append(json.loads(a))
-        except ValueError:
-            out.append(a)
-    return " | ".join(out)
+    return " | ".join(alerts(html))
 
 
 # ---------- reporting ----------

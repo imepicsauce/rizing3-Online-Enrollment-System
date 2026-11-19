@@ -31,6 +31,7 @@ require_once(__DIR__ . '/../config/db.php');
                 });
             })
         </script>
+<link rel="stylesheet" href="../assets/css/feedback.css">
 </head>
 
 <?php
@@ -54,6 +55,7 @@ include('includes/menu1.php');
 
 <div id="main">
 	<div class="shell">
+<?php render_notices(); ?>
 	<div style='float:left; margin-left: 350px;'><center><b><h1>Subjects List</h1></b></center></div>
 	<div style='float:right; margin-right:25px; margin-bottom:20px;'><a href='addnewsubj.php'><img src='../assets/img/iconadd2.png' width='50' ></a></div>
 		<div class="niceform">
@@ -79,11 +81,14 @@ include('includes/menu1.php');
 					<td><?php echo h($r['numofunits']); ?></td>
 					<td>
 						<a href="editsubject.php?id=<?php echo (int)$r['ID']; ?>">EDIT</a> |
-						<form method="post" action="deletecurrsubj.php" style="display:inline" onsubmit="return confirm('Are you sure?');">
+						<details class="confirm-action"><summary>Delete</summary>
+<p>Delete subject <?= h($r['subjectcode']) ?>?</p>
+<form method="post" action="deletecurrsubj.php" style="display:inline">
 							<input type="hidden" name="accid" value="<?php echo (int)$r['ID']; ?>">
 							<?php echo csrf_field(); ?>
-							<button type="submit" class="link-button">DELETE</button>
+							<button type="submit" class="link-button">Delete subject</button>
 						</form>
+</details>
 					</td>
 				</tr>
 				<?php } ?>

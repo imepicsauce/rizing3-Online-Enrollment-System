@@ -5,7 +5,7 @@ require_once(__DIR__ . '/../config/db.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accid'])) {
 	if (!csrf_valid()) {
-		js_alert('Your session expired. Please try again.');
+		notify_user('Your session expired. Please try again.');
 	} else {
 		$subjectID = (int)$_POST['accid'];
 		// Enrollment forms keep subject codes as text, so check them before deleting.
@@ -16,13 +16,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accid'])) {
 		$stmt->fetch();
 		$stmt->close();
 		if ($used > 0) {
-			js_alert("This subject is used in $used enrollment form(s), so it cannot be deleted. Remove or cancel those forms first.");
+			notify_user("This subject is used in $used enrollment form(s), so it cannot be deleted. Remove or cancel those forms first.");
 		} else {
 			$stmt = $conn->prepare("DELETE FROM subjecttbl WHERE ID = ?");
 			$stmt->bind_param("i", $subjectID);
 			$stmt->execute();
-			js_alert($stmt->affected_rows > 0 ? 'Successfully Removed the selected subject' : 'That subject no longer exists');
+			notify_user($stmt->affected_rows > 0 ? 'Successfully Removed the selected subject' : 'That subject no longer exists', $stmt->affected_rows > 0);
 		}
 	}
 }
-js_redirect('subjectreg.php');
+redirect_to('subjectreg.php');
