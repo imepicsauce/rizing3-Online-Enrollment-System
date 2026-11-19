@@ -33,8 +33,8 @@ require_once __DIR__ . '/config/settings.php';
             <h1 id="welcome-title">Welcome to<br>Rizing University<span>.</span></h1>
             <p>Plan your semester, explore your subjects, and follow your enrollment from selection to approval.</p>
             <div class="actions">
-                <a class="button arrow" href="#enrollment">Explore enrollment</a>
-                <a class="hero-link" href="#university">About the university</a>
+                <a class="button arrow" href="portal.php">Sign in to the portal</a>
+                <a class="hero-link" href="#enrollment">How to enroll</a>
             </div>
         </div>
     </section>

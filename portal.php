@@ -75,14 +75,31 @@ if (isset($_POST['submit'])) {
 </head>
 <body class="portal">
 <header class="mast"><div class="wrap"><a class="brand" href="./"><span class="mark" aria-hidden="true">RU</span>Rizing University</a><a href="./">University home</a></div></header>
-<main class="signin">
-<h1>Portal sign in</h1>
-<p>Use the account issued by the registrar to access your student or staff portal.</p>
+<main class="login-spread">
+<section class="signin" aria-labelledby="login-title">
+<h1 id="login-title">Portal sign in</h1>
+<p>Students and staff, sign in with the account issued by the registrar.</p>
 <form method="post" action="portal.php">
-<label for="username">Username</label><input id="username" name="username" autocomplete="username" required>
-<label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required>
+<label for="username">Username</label><input id="username" name="username" value="<?= h($username ?? '') ?>" autocapitalize="none" spellcheck="false" autocomplete="username" required>
+<label for="password">Password</label><div class="password-input"><input id="password" name="password" type="password" autocomplete="current-password" required>
+<button type="button" id="visibility" aria-controls="password" hidden>Show password</button></div>
 <input class="button" type="submit" name="submit" value="Sign in">
 </form>
-<a href="./#enrollment">How to get an account</a>
+<div class="account-help">New to Rizing? <a href="./#enrollment">How to get an account</a></div>
+</section>
+<aside class="login-photo" aria-label="Rizing University library illustration">
+<img src="assets/img/library.webp" alt="">
+<span>Rizing University</span>
+</aside>
 </main>
+<script>
+const toggle = document.getElementById('visibility');
+const password = document.getElementById('password');
+toggle.hidden = false;
+toggle.addEventListener('click', () => {
+    const reveal = password.type === 'password';
+    password.type = reveal ? 'text' : 'password';
+    toggle.textContent = reveal ? 'Hide password' : 'Show password';
+});
+</script>
 </body></html>

@@ -32,12 +32,35 @@ p {color: var(--muted); max-width: 62ch;}
 .arrow::after {content: ''; width: .5rem; height: .5rem; border-top: 2px solid; border-right: 2px solid; transform: rotate(45deg); margin-left: 1.3rem;}
 footer {border-top: 1px solid var(--rule);}
 footer span {font-family: var(--serif);}
-.signin {width: min(420px,89%); margin: clamp(3rem,8vw,7rem) auto;}
-.signin h1 {font-size: 3rem;}
-.signin p {margin-block: 1rem 1.5rem;}
-.signin form {display: grid; margin-bottom: 1.4rem;}
-.signin label {font-weight: 600; margin-bottom: .3rem;}
-.signin input:not(.button) {font: inherit; border: 1px solid #858780; padding: .7rem; margin-bottom: 1.2rem;}
+/* The form comes first in reading and keyboard order. */
+.portal .mast {border-top: 4px solid var(--accent);}
+.login-spread {
+  width: min(1240px, 90%);
+  margin: clamp(2rem, 5vw, 5rem) auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: white;
+  border: 1px solid var(--rule);
+}
+.signin {align-self: center; padding: clamp(2rem, 4.5vw, 5rem);}
+.signin h1 {font-size: clamp(3rem, 4.7vw, 5rem);}
+.signin p {margin: 1rem 0 2rem; max-width: 36ch;}
+.signin form {display: grid;}
+.signin label {font-weight: 650; margin-bottom: .4rem;}
+.signin input:not(.button) {width: 100%; min-width: 0; font: inherit; border: 1px solid #848b84; padding: .8rem; margin-bottom: 1.1rem;}
+.password-input {position: relative;}
+.password-input input:not(.button) {padding-right: 8.25rem;}
+.password-input button {position: absolute; top: .45rem; right: .45rem; padding: .45rem; color: var(--accent); border: 0; background: white; font: 600 .85rem system-ui; cursor: pointer;}
+.signin .button {min-height: 3.2rem;}
+.account-help {margin-top: 2rem; padding-top: 1.15rem; border-top: 1px solid var(--rule); font-size: .94rem;}
+.account-help a {font-weight: 600;}
+.login-photo {position: relative; overflow: hidden; background: #252b27; border-bottom: .55rem solid var(--accent);}
+.login-photo img {position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;}
+.login-photo span {position: absolute; inset: auto 0 0; color: white; background: linear-gradient(transparent, #1c211ef2); padding: 4rem 2.3rem 2rem; font: clamp(2rem, 3vw, 3.3rem) var(--serif);}
+@media (max-width: 760px) {
+  .login-spread {display: block; max-width: 36rem;}
+  .login-photo {display: none;}
+}
 @media (max-width: 740px) {
   .mast .wrap {flex-wrap: wrap;}
   nav {gap: 1.2rem; flex-wrap: wrap;}
@@ -53,8 +76,8 @@ footer span {font-family: var(--serif);}
 .home .wrap {width: min(86%, 1440px);}
 .home .mast {background: #faf9f6; border-top: 4px solid #bc4a1c;}
 .home .mast .wrap {padding-block: 1rem;}
-.home .portal-link {background: #292d2b; color: white; border: 0; padding: .78rem 1.25rem;}
-.home .portal-link:hover {background: var(--accent);}
+.home .portal-link {background: var(--accent); color: white; border: 0; padding: .78rem 1.25rem;}
+.home .portal-link:hover {background: #813214;}
 .campus-hero {
   position: relative;
   isolation: isolate;
