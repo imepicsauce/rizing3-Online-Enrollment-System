@@ -102,6 +102,10 @@ with sync_playwright() as playwright:
     admin.get_by_role("button", name="Apply filters").click()
     admin.locator("tr", has_text="QA-01").wait_for()
     admin.emulate_media(media="print")
+    student.emulate_media(media="print")
+    for report in (admin, student):
+        check("print view includes the Rizing University masthead",
+              report.locator(".print-mast").is_visible() and "Rizing University" in report.locator(".print-mast").inner_text())
     check("printed report retains its filter context", "2nd Sem · Approved" in admin.inner_text("main")
           and not admin.get_by_role("button", name="Apply filters").is_visible())
     check("registrar workflow uses no native dialogs", not messages)

@@ -80,14 +80,16 @@ if (isset($_POST['save'])) {
 	}
 }
 
-include(__DIR__ . '/includes/page_top.php');
+$pageTitle = 'Edit student';
+require __DIR__ . '/../includes/workspace_top.php';
 ?>
-	<center>
+
+
 	<form class='cmxform' method='POST'>
 		<input type="hidden" name="id" value="<?php echo (int)$id; ?>">
 		<?php include(__DIR__ . '/includes/student_form.php'); ?>
-		<div align='center'><input type='submit' name='save' value='Save changes'>&nbsp;&nbsp;
+		<div class="actions"><input type='submit' name='save' value='Save changes'>&nbsp;&nbsp;
 		<a href="userreg.php">Cancel</a></div>
 	</form>
-	</center>
-<?php include(__DIR__ . '/includes/page_bottom.php'); ?>
+
+<?php require __DIR__ . '/../includes/workspace_bottom.php'; ?>

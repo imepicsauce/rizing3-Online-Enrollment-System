@@ -41,85 +41,15 @@ if (!$rowfetch) {
 	header('Location: ../index.php');
 	exit;
 }
+$pageTitle = 'Registrar account';
+require __DIR__ . '/../includes/workspace_top.php';
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>John Paul College</title>
-
-
-<link href="../assets/css/style.css" rel="stylesheet" type="text/css"/>
-
-<link rel="stylesheet" href="../assets/css/feedback.css">
-</head>
-
-<body class="app">
-
-<div class='header'>
-</div>
-	
-<nav class='container'>
-<?php
-include('includes/menu1.php');
-?>
-</nav>
-
-
-
-
-
-<div id="main">
-	<div class="shell">
-<?php render_notices(); ?>
-	<center>
-	<form class='cmxform' method='POST'>
-	<fieldset>
-			<legend>Account Details</legend>
-			  <ol>
-			  <li>
-				  <label for="name">UserName<em>*</em></label>
-				  <input type='text' required='required' maxlength='50' id="name" name='username' value="<?php echo h($rowfetch['username']); ?>"/>
-				  <label for="name">New Password</label>
-				  <input type='password' maxlength='50' id="name" name='password' value="" placeholder="Leave blank to keep current" autocomplete="new-password"/>
-				</li>
-				
-  </ol>
-			
-	</fieldset>
-	
-	
-<div align='center'><input type='submit' name='register' value='Save changes'></div>
+<form class="stack" method="post">
+<label for="username">Username</label>
+<input type="text" id="username" required maxlength="50" name="username" value="<?= h($rowfetch['username']) ?>">
+<label for="password">New password</label>
+<input type='password' id="password" maxlength="50" name="password" autocomplete="new-password" aria-describedby="password-help">
+<p id="password-help">Leave this blank to keep your current password.</p>
+<div class="actions"><input type="submit" name="register" value="Save changes"><a href="userreg.php">Cancel</a></div>
 </form>
-</center>
-	</div>
-	<div><br></div>
-</div>
-<!-- /Main -->
-
-<!-- Footer -->
-<div id="footer">
-	<div class="shell">
-		<!-- Mini Nav --> 
-		<div class="footer-navigation"> 
-		<?php
-			include('includes/menu2.php');
-		?>
-		</div> 
-		<!-- /Mini Nav --> 
-		
-		<!-- Copyrights --> 
-		<p class="right"> 
-			Copyright <?php echo date("Y"); ?> | Online Enrollment
-		</p> 
-		<!-- /Copyrights --> 
-		
-		<div class="cl">&nbsp;</div> 
-	</div>
-</div>
-
-
-
-
-</body>
-</html>
+<?php require __DIR__ . '/../includes/workspace_bottom.php'; ?>

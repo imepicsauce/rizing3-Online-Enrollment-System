@@ -60,13 +60,15 @@ if (isset($_POST['register'])) {
 	}
 }
 
-include(__DIR__ . '/includes/page_top.php');
+$pageTitle = 'Add student';
+require __DIR__ . '/../includes/workspace_top.php';
 ?>
-	<center>
+
+
 	<form class='cmxform' method='POST'>
 		<?php include(__DIR__ . '/includes/student_form.php'); ?>
-		<div align='center'><input type='submit' name='register' value='Add new user'>&nbsp;&nbsp;
+		<div class="actions"><input type='submit' name='register' value='Add new user'>&nbsp;&nbsp;
 		<a href="userreg.php">Cancel</a></div>
 	</form>
-	</center>
-<?php include(__DIR__ . '/includes/page_bottom.php'); ?>
+
+<?php require __DIR__ . '/../includes/workspace_bottom.php'; ?>

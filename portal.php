@@ -73,6 +73,7 @@ if (isset($_POST['submit'])) {
 <title>Portal sign in · Rizing University</title>
 <link rel="stylesheet" href="assets/css/public.css">
 <link rel="stylesheet" href="assets/css/feedback.css">
+<link rel="stylesheet" href="assets/css/motion.css">
 </head>
 <body class="portal">
 <header class="mast"><div class="wrap"><a class="brand" href="./"><span class="mark" aria-hidden="true">RU</span>Rizing University</a><a href="./">University home</a></div></header>

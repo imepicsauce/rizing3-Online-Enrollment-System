@@ -7,6 +7,10 @@ $navigation = $registrar
     ? [$home => 'Home', 'approvals.php' => 'Approvals', 'userreg.php' => 'Manage Users', 'subjectreg.php' => 'Manage Subjects', 'courses.php' => 'Courses', 'report.php' => 'Generate Report']
     : [$home => 'Home', 'enroll.php' => 'Enroll Now', 'report.php' => 'My Enrollment Report', 'curriculum.php' => 'Curriculum', 'studentprofile.php' => 'Profile'];
 $current = basename($_SERVER['SCRIPT_NAME']);
+$parentPages = ['showsubs.php'=>'enroll.php', 'changepass.php'=>'studentprofile.php',
+    'addnewuser.php'=>'userreg.php', 'edituser.php'=>'userreg.php',
+    'addnewsubj.php'=>'subjectreg.php', 'editsubject.php'=>'subjectreg.php'];
+$activePage = $parentPages[$current] ?? $current;
 ?>
 <!doctype html>
 <html lang="en">
@@ -15,6 +19,7 @@ $current = basename($_SERVER['SCRIPT_NAME']);
 <title><?= h($pageTitle) ?> · Rizing University</title>
 <link rel="stylesheet" href="../assets/css/workspace.css">
 <link rel="stylesheet" href="../assets/css/feedback.css">
+<link rel="stylesheet" href="../assets/css/motion.css">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -26,10 +31,11 @@ $current = basename($_SERVER['SCRIPT_NAME']);
 <nav class="container" aria-label="<?= $workspaceName ?>">
 <strong><?= $workspaceName ?></strong>
 <?php foreach ($navigation as $url => $label) { ?>
-<a class="nav-link" href="<?= $url ?>"<?= ($current === $url || ($current === 'showsubs.php' && $url === 'enroll.php') || ($current === 'changepass.php' && $url === 'studentprofile.php')) ? ' aria-current="location"' : '' ?>><?= $label ?></a>
+<a class="nav-link" href="<?= $url ?>"<?= ($activePage === $url) ? ' aria-current="location"' : '' ?>><?= $label ?></a>
 <?php } ?>
 </nav>
 <main id="main">
+<header class="print-mast"><b>RU</b> Rizing University</header>
 <div class="context"><?= $workspaceName ?> <span>Academic year <?= h(SCHOOL_YEAR) ?></span></div>
 <h1><?= h($pageTitle) ?></h1>
 <?php render_notices(); ?>

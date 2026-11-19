@@ -21,6 +21,7 @@ try {
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rizing University · Enrollment</title>
 <link rel="stylesheet" href="assets/css/public.css">
+<link rel="stylesheet" href="assets/css/motion.css">
 </head>
 <body class="home">
 <a class="skip" href="#main">Skip to content</a>

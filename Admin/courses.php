@@ -78,11 +78,13 @@ $courses = $conn->query("SELECT c.course_ID, c.course_code, c.course_title, c.co
 		(SELECT COUNT(*) FROM subjecttbl j WHERE j.course_con = c.course_code) AS subjects
 	FROM courses_tbl c ORDER BY c.course_code");
 
-include(__DIR__ . '/includes/page_top.php');
+$pageTitle = 'Courses';
+require __DIR__ . '/../includes/workspace_top.php';
 ?>
-	<center><b><h1>Courses</h1></b></center>
-	<div class="niceform">
-		<table class="data-table" border="1" width="100%">
+
+
+	<div class="scroll">
+		<table class="data-table">
 			<thead>
 				<tr><th>Code</th><th>Title</th><th>Description</th><th>Students</th><th>Subjects</th><th>Action</th></tr>
 			</thead>
@@ -98,7 +100,7 @@ include(__DIR__ . '/includes/page_top.php');
 					<td align="center"><?php echo (int)$c['students']; ?></td>
 					<td align="center"><?php echo (int)$c['subjects']; ?></td>
 					<td align="center">
-						<a href="courses.php?edit=<?php echo (int)$c['course_ID']; ?>">EDIT</a> |
+						<a href="courses.php?edit=<?php echo (int)$c['course_ID']; ?>#course-form">EDIT</a> |
 						<details class="confirm-action"><summary>Delete</summary>
 <p>Delete course <?= h(strtoupper($c['course_code'])) ?>?</p>
 <form method="post" action="courses.php" style="display:inline">
@@ -115,28 +117,27 @@ include(__DIR__ . '/includes/page_top.php');
 		</table>
 	</div>
 
-	<center>
-	<form class='cmxform' method='POST' action='courses.php'>
+
+	<form id='course-form' class='cmxform' method='POST' action='courses.php'>
 		<?php echo csrf_field(); ?>
 		<input type="hidden" name="action" value="<?php echo $edit ? 'save' : 'add'; ?>">
 		<?php if ($edit) { ?><input type="hidden" name="course_id" value="<?php echo (int)$edit['course_ID']; ?>"><?php } ?>
 		<fieldset>
 			<legend><?php echo $edit ? 'Edit Course' : 'Add a Course'; ?></legend>
-			<ol>
-			<li>
-				<label for="course_code">Course Code<em>*</em></label>
-				<input type="text" id="course_code" name="course_code" required="required" maxlength="20" value="<?php echo h($edit['course_code'] ?? ''); ?>" />
-				<label for="course_title">Course Title<em>*</em></label>
-				<input type="text" id="course_title" name="course_title" required="required" maxlength="100" value="<?php echo h($edit['course_title'] ?? ''); ?>" />
-			</li>
-			<li>
-				<label for="course_desc">Description</label>
-				<textarea id="course_desc" name="course_desc"><?php echo h($edit['course_desc'] ?? ''); ?></textarea>
-			</li>
-			</ol>
+			<div class="fields">
+            <label>Course code *
+                <input type="text" id="course_code" name="course_code" required="required" maxlength="20" value="<?php echo h($edit['course_code'] ?? ''); ?>" />
+            </label>
+            <label>Course title *
+                <input type="text" id="course_title" name="course_title" required="required" maxlength="100" value="<?php echo h($edit['course_title'] ?? ''); ?>" />
+            </label>
+            <label>Description
+                <textarea id="course_desc" name="course_desc"><?php echo h($edit['course_desc'] ?? ''); ?></textarea>
+            </label>
+        </div>
 		</fieldset>
-		<div align="center"><input type="submit" value="<?php echo $edit ? 'Save changes' : 'Add course'; ?>">
+		<div class="actions"><input type="submit" value="<?php echo $edit ? 'Save changes' : 'Add course'; ?>">
 		<?php if ($edit) { ?>&nbsp;&nbsp;<a href="courses.php">Cancel</a><?php } ?></div>
 	</form>
-	</center>
-<?php include(__DIR__ . '/includes/page_bottom.php'); ?>
+
+<?php require __DIR__ . '/../includes/workspace_bottom.php'; ?>

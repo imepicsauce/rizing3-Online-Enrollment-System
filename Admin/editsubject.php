@@ -51,14 +51,16 @@ if (isset($_POST['save'])) {
 	notify_user($error);
 }
 
-include(__DIR__ . '/includes/page_top.php');
+$pageTitle = 'Edit subject';
+require __DIR__ . '/../includes/workspace_top.php';
 ?>
-	<center>
+
+
 	<form class='cmxform' method='POST'>
 		<input type="hidden" name="id" value="<?php echo (int)$id; ?>">
 		<?php include(__DIR__ . '/includes/subject_form.php'); ?>
-		<div align='center'><input type='submit' name='save' value='Save changes'>&nbsp;&nbsp;
+		<div class="actions"><input type='submit' name='save' value='Save changes'>&nbsp;&nbsp;
 		<a href="subjectreg.php">Cancel</a></div>
 	</form>
-	</center>
-<?php include(__DIR__ . '/includes/page_bottom.php'); ?>
+
+<?php require __DIR__ . '/../includes/workspace_bottom.php'; ?>

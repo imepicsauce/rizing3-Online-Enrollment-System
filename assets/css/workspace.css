@@ -56,7 +56,33 @@ dt {color:var(--muted);font-size:.88rem} dd {margin:0;font-weight:600;overflow-w
 .stack input {margin-bottom:.6rem}
 #footer {color:var(--muted);border-top:1px solid var(--line);padding:1rem 3%;font-size:.85rem}
 @media(max-width:800px){.layout{display:block}.container{display:flex;gap:.2rem;flex-wrap:wrap;border-right:0;border-bottom:1px solid var(--line);padding:.6rem 0}.container strong{display:none}main{padding:1.25rem 0 3rem}.bar{flex-wrap:wrap}}
-@media print {.header,nav.container,#footer,.no-print,.skip,.actions {display:none!important}.layout,main {display:block;width:100%;padding:0}body {background:white;font-size:10pt}.scroll {overflow:visible}td,th {padding:.3rem}tr {break-inside:avoid}h2 {break-after:avoid}.context::before {content:'Rizing University · '}}
+@media print {.header,nav.container,#footer,.no-print,.skip,.actions {display:none!important}.layout,main {display:block;width:100%;padding:0}body {background:white;font-size:10pt}.scroll {overflow:visible}td,th {padding:.3rem}tr {break-inside:avoid}h2 {break-after:avoid}}
 input:disabled {opacity:.58;cursor:default}
 tr:has(input:checked) {background:#fbefdf}
 @media print {.feature,.feature h2,.feature p {background:white;color:black}.feature {padding:.4rem 0}}
+.print-mast {display:none}
+@media print {
+  .print-mast {display:flex;align-items:center;gap:10pt;border-bottom:2pt solid #333;padding-bottom:8pt;margin-bottom:8pt;color:#111;font:22pt var(--serif)}
+  .print-mast b {border:1pt solid #333;padding:3pt;font:13pt var(--serif)}
+}
+.cmxform {max-width:60rem}
+.cmxform fieldset {min-width:0;margin:1.4rem 0;padding:1.25rem;background:white;border:1px solid var(--line)}
+.cmxform legend {font:1.5rem var(--serif);padding:0 .45rem}
+.fields {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:1rem 1.4rem;align-items:start}
+.fields label,.field {display:grid;gap:.35rem;font-weight:550}
+.fields input:not([type=radio]):not([type=checkbox]),.fields select,.fields textarea {min-width:0;width:100%}
+.fields textarea {padding:.65rem;min-height:4.5rem;border:1px solid #919990;font:inherit}
+.fields .choice {display:flex;gap:.5rem;align-items:center}
+.fields em {color:var(--accent)}
+.directory .dataTables_length {float:left}
+.directory .dataTables_filter {text-align:right}
+.directory table {margin:.9rem 0}
+.directory th[class*="sorting"] {cursor:pointer}
+.directory .sorting_asc::after {content:' ↑'}
+.directory .sorting_desc::after {content:' ↓'}
+.directory .dataTables_info {font-size:.9rem;color:var(--muted)}
+.directory .dataTables_paginate {display:flex;justify-content:flex-end;gap:.3rem;align-items:center}
+.directory .dataTables_paginate span {display:inline-flex;gap:.3rem}
+.directory .dataTables_paginate a {padding:.3rem .55rem;background:white;border:1px solid var(--line);cursor:pointer}
+.directory .paginate_active {font-weight:700;color:var(--ink)}
+.directory .paginate_button_disabled {opacity:.55}

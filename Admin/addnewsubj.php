@@ -29,13 +29,15 @@ if (isset($_POST['register'])) {
 	notify_user($error);
 }
 
-include(__DIR__ . '/includes/page_top.php');
+$pageTitle = 'Add subject';
+require __DIR__ . '/../includes/workspace_top.php';
 ?>
-	<center>
+
+
 	<form class='cmxform' method='POST'>
 		<?php include(__DIR__ . '/includes/subject_form.php'); ?>
-		<div align='center'><input type='submit' name='register' value='Add new subject'>&nbsp;&nbsp;
+		<div class="actions"><input type='submit' name='register' value='Add new subject'>&nbsp;&nbsp;
 		<a href="subjectreg.php">Cancel</a></div>
 	</form>
-	</center>
-<?php include(__DIR__ . '/includes/page_bottom.php'); ?>
+
+<?php require __DIR__ . '/../includes/workspace_bottom.php'; ?>
