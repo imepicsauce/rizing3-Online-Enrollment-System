@@ -1,6 +1,7 @@
 """Suite 1: access control, SQL injection, login/logout, add/delete users and subjects, change password, admin edit."""
 from helpers import *
 import json
+from datetime import datetime, timezone, timedelta
 php_problems = warns
 alerts_raw = alerts
 
@@ -117,12 +118,23 @@ u = {"username": "tester1", "password": "pw1234", "snum": "2026-001", "course": 
      "guardianname": "G", "bplace": "Roxas", "cstatus": "single", "elemschool": "E", "yrgradelem": "2016", "hschool": "H", "yrgradhs": "2020",
      "lastschool": "L", "yrlast": "2022", "address2": "Roxas", "register": "x"}
 s, h, _ = ad("Admin/addnewuser.php", u)
-student_id = re.search(r"Student ID: (RU-[0-9]+)", al(h)).group(1)
+student_id = re.search(r"Student ID: ([0-9]{2}-[0-9]{4})\.", al(h)).group(1)
+prefix = datetime.now(timezone(timedelta(hours=8))).strftime("%y-")
+check("first registration gets the first ID of the Manila calendar year", student_id == prefix + "0001")
 check("account and profile share the assigned ID", sql(f"select count(*) from usertbl u join studenttbl s on s.accountID=u.ID where u.username='{student_id}' and s.studnum=u.username and s.birthdate='2004-05-06'") == "1")
 s, h, _ = ad("Admin/addnewuser.php", dict(u, fname="O'Brien"))
-second_id = re.search(r"Student ID: (RU-[0-9]+)", al(h)).group(1)
+second_id = re.search(r"Student ID: ([0-9]{2}-[0-9]{4})\.", al(h)).group(1)
 check("another registration gets the next ID", int(second_id[3:]) == int(student_id[3:]) + 1)
 check("names with quotes are preserved", sql(f"select fname from studenttbl where studnum='{second_id}'") == "O'Brien")
+
+sql(f"insert into usertbl (username,password,fullname,user_type) values ('{prefix}0003','pw','Existing staff','faculty')")
+_, h, _ = ad("Admin/addnewuser.php", u)
+check("registration skips a number already used for sign-in", f"Student ID: {prefix}0004." in al(h))
+sql("update student_id_sequence set last_issued=9999")
+accounts = sql("select count(*) from usertbl")
+_, h, _ = ad("Admin/addnewuser.php", u)
+check("annual limit keeps IDs four digits without creating a partial account",
+      "All student IDs" in al(h) and sql("select count(*) from usertbl") == accounts)
 
 print("-- delete user --")
 sql(f"insert into student_subject (studentID,subjects,totalunits,approved) values ('{student_id}','IT201',2,0)")

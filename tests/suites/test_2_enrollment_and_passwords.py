@@ -28,7 +28,7 @@ section("add student")
 nu={"username":"tester2","password":"pw2222","snum":"2026-002","course":"bsit","yrlvlsec":"I-1","fname":"T","minitial":"T","lname":"Two","gender":"male","bdate":"2004-05-06","address":"x","cnumber":"09123456789","email":"t@e.com","fathername":"F","mothername":"M","guardianname":"G","bplace":"x","cstatus":"single","elemschool":"E","yrgradelem":"2016","hschool":"H","yrgradhs":"2020","lastschool":"L","yrlast":"2022","address2":"x","register":"Add new user"}
 nu["token"] = token(a("Admin/addnewuser.php")[1])
 s,h,_ = a("Admin/addnewuser.php",nu)
-student_id = re.search(r"Student ID: (RU-[0-9]+)", al(h)).group(1)
+student_id = re.search(r"Student ID: ([0-9]{2}-[0-9]{4})\.", al(h)).group(1)
 check("new student's initial password is hashed", sql(f"select password from usertbl where username='{student_id}'").startswith("$2y$"))
 t = client()
 s,h,loc = LOGIN(t,student_id,nu["bdate"])

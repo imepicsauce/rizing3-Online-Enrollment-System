@@ -18,7 +18,7 @@ check("add form renders, course list from database, no warnings", s==200 and "va
 s,h,_=a("Admin/addnewuser.php",student_post()); check("add without token rejected", "expired" in al(h) and sql("select count(*) from usertbl where username='tester3'")=="0", al(h))
 s,h,_=a("Admin/addnewuser.php",student_post(token=tk,course="nope")); check("invalid course rejected", "valid course" in al(h))
 s,h,_=a("Admin/addnewuser.php",student_post(token=tk))
-assigned_id = re.search(r"Student ID: (RU-[0-9]+)", al(h)).group(1)
+assigned_id = re.search(r"Student ID: ([0-9]{2}-[0-9]{4})\.", al(h)).group(1)
 check("registrar receives assigned ID", sql(f"select count(*) from usertbl where username='{assigned_id}'")=="1")
 # These edit tests cover pre-migration records with independently editable account and student IDs.
 sql(f"update usertbl set username='tester3', must_change_password=0 where username='{assigned_id}'")

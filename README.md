@@ -15,9 +15,11 @@ Database settings live in one place: `config/db.php`.
 
 Select the existing enrollment database and run `database/migrations/2026-enrollment-access.sql` once before serving the updated PHP pages. In the registrar workspace, open **Enrollment schedule** and publish the registration, adjustment, and closing dates for each semester. Existing installations start with unpublished dates. A fresh sample installation includes illustrative dates for 2026–27.
 
+For the annual student ID format, apply `database/migrations/2026-student-id-format.sql` to the existing database before updating the PHP application. Previously issued IDs remain valid.
+
 ## Accounts and enrollment
 
-- **Students** can create an account from the homepage. The system assigns a student ID such as `RU-00000003`. Sign in with that ID and the birthdate entered during registration, in `YYYY-MM-DD` format. The first sign-in opens the password change page. Returning students can use their existing ID and current password.
+- **Students** can create an account from the homepage. The system assigns a student ID such as `26-0001`. The first two digits are the registration year in Manila. The four-digit sequence starts at 0001 each year. Sign in with that ID and the birthdate entered during registration, in `YYYY-MM-DD` format. The first sign-in opens the password change page. Returning students can use their existing ID and current password.
 - **Faculty** sign in with accounts issued under **Faculty access**. They can view the subject, program, units, room and meeting time for each assigned class.
 - **Registrars** publish the dates in Manila time. Registration and adjustment both allow submissions through the last day inclusive. During these windows students can replace a pending form. Changes to approved forms go through the registrar.
 - The sample calendar adapts the phased registration and adjustment approach used by [UC Berkeley](https://registrar.berkeley.edu/registration/enrollment/). Rizing sets its own deadlines.

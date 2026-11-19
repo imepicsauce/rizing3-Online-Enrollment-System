@@ -31,6 +31,8 @@ if (isset($_POST['register'])) {
             }
             notify_user("Student ID: $studentID. The initial password is the birthdate in YYYY-MM-DD format.", true);
             redirect_to($registrationDestination);
+        } catch (OverflowException $error) {
+            notify_user($error->getMessage());
         } catch (mysqli_sql_exception $error) {
             notify_user('Registration could not be saved. Check the form or contact the registrar.');
         }

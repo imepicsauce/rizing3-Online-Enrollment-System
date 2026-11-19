@@ -21,7 +21,7 @@ USE `online_enroll`;
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
-DROP TABLE IF EXISTS faculty_subject, enrollment_window;
+DROP TABLE IF EXISTS faculty_subject, enrollment_window, student_id_sequence;
 DROP TABLE IF EXISTS `login_attempts`;
 DROP TABLE IF EXISTS `sched_tbl`;
 DROP TABLE IF EXISTS `student_subject`;
@@ -235,3 +235,8 @@ CREATE TABLE enrollment_window (
 INSERT INTO enrollment_window (school_year, semester, starts, adjustment, ends) VALUES
 ('2026 - 2027', '1st Sem', '2026-07-20', '2026-08-03', '2026-08-14'),
 ('2026 - 2027', '2nd Sem', '2026-11-16', '2026-11-30', '2026-12-11');
+
+CREATE TABLE IF NOT EXISTS student_id_sequence (
+    registration_year SMALLINT UNSIGNED PRIMARY KEY,
+    last_issued SMALLINT UNSIGNED NOT NULL
+) ENGINE=InnoDB;

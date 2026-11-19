@@ -55,7 +55,7 @@ with sync_playwright() as playwright:
     student.check("input[value=female]")
     student.click("[name=register]")
     student.wait_for_url("**/portal.php")
-    student_id = re.search(r"Student ID: (RU-[0-9]+)", student.locator(".portal-notice").inner_text()).group(1)
+    student_id = re.search(r"Student ID: ([0-9]{2}-[0-9]{4})\.", student.locator(".portal-notice").inner_text()).group(1)
     check("student ID is ready to use at sign-in", student.input_value("[name=username]") == student_id)
     check("registration preserves unknown graduation years", sql(
         f"SELECT COUNT(*) FROM studenttbl WHERE studnum='{student_id}' AND dategradelem='' AND datehsgrad='' AND datelastgrad=''"

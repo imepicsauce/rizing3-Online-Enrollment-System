@@ -40,7 +40,7 @@ for name,kw,msg in [("bad email",{"email":"not-an-email"},"email address is not 
     ok,m=tryadd(msg,**kw); check("rejected: "+name,ok,m)
 s,h,_=a("Admin/addnewuser.php",sp(token=tk,email="",cnumber="",bdate="")); check("birthdate is required", "Enter a birthdate" in al(h), al(h))
 s,h,_=a("Admin/addnewuser.php",sp(token=tk,email="",cnumber="")); check("email and phone are optional", "Student ID:" in al(h), al(h))
-student_id = re.search(r"Student ID: (RU-[0-9]+)", al(h)).group(1)
+student_id = re.search(r"Student ID: ([0-9]{2}-[0-9]{4})\.", al(h)).group(1)
 sid=sql(f"select ID from studenttbl where studnum='{student_id}'")
 e=token(a("Admin/edituser.php?id="+sid)[1])
 s,h,_=a("Admin/edituser.php",sp(id=sid,save="x",token=e,email="bad@",password="")); check("edit page applies the same rules", "email address is not valid" in al(h))

@@ -17,7 +17,8 @@ if (!$row) {
 }
 $accountID = (int)$row['accountID'];
 $isEdit = true;
-$fixedID = $row['studnum'] === sprintf('RU-%08d', $row['ID']) && $row['username'] === $row['studnum'];
+$fixedID = $row['username'] === $row['studnum'] &&
+    (preg_match('/^[0-9]{2}-[0-9]{4}$/D', $row['studnum']) || $row['studnum'] === sprintf('RU-%08d', $row['ID']));
 
 $v = [
 	'username' => $row['username'], 'course' => $row['course'], 'yrlvlsec' => $row['yearlvl'], 'snum' => $row['studnum'],
