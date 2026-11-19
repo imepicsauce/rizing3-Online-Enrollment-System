@@ -72,13 +72,13 @@
     <legend>Contact details</legend>
     <div class="fields">
         <label>Address *
-            <textarea name='address' id="address" required='required'><?php echo sf_val($v, 'address'); ?></textarea>
+            <textarea name='address' maxlength="500" id="address" required='required'><?php echo sf_val($v, 'address'); ?></textarea>
         </label>
         <label>Contact number
             <input type='text' name='cnumber' id="cnumber" maxlength='11' inputmode='numeric' pattern='[0-9]{7,11}' title='7 to 11 digits' value="<?php echo sf_val($v, 'cnumber'); ?>"/>
         </label>
         <label>Email address
-            <input type='email' name='email' id="email" value="<?php echo sf_val($v, 'email'); ?>" />
+            <input type='email' name='email' maxlength="100" id="email" value="<?php echo sf_val($v, 'email'); ?>" />
         </label>
     </div>
 </fieldset>

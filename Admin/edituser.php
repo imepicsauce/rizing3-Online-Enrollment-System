@@ -36,7 +36,7 @@ if (isset($_POST['save'])) {
         $v['username'] = $v['snum'] = $row['studnum'];
     }
     $newPassword = (string)($_POST['password'] ?? '');
-	$fullname = trim($v['fname'] . " " . $v['minitial'] . " " . $v['lname']);
+	$fullname = student_fullname($v);
 
 	if (!csrf_valid()) {
 		notify_user('Your session expired. Please try again.');

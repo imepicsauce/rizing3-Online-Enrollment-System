@@ -17,10 +17,18 @@ function sf_year_select($name, $v) {
 	echo "</select>";
 }
 
+function student_fullname($v) {
+    return trim(implode(' ', array_filter([$v['fname'], $v['minitial'], $v['lname']], 'strlen')));
+}
+
 // Check the student fields. Returns an error message, or '' when everything is acceptable.
 function student_validate($v) {
 	if ($v['fname'] === '' || $v['lname'] === '') { return 'First name and last name are required.'; }
-	if ($v['yrlvlsec'] === '') { return 'Section/Year Level is required.'; }
+    // Count Unicode characters, matching the database's VARCHAR limits.
+    if (preg_match('/.{101}/us', student_fullname($v))) { return 'Use 100 characters or fewer for your full name, including spaces.'; }
+    if (preg_match('/.{501}/us', $v['address'])) { return 'Use 500 characters or fewer for your address.'; }
+    if (preg_match('/.{101}/us', $v['email'])) { return 'Use 100 characters or fewer for your email address.'; }
+    if ($v['yrlvlsec'] === '') { return 'Section/Year Level is required.'; }
 	if ($v['address'] === '') { return 'Address is required.'; }
 	if (!in_array($v['gender'], ['male', 'female'], true)) { return 'Please choose a gender.'; }
 	if (!in_array($v['cstatus'], ['single', 'married', 'widow'], true)) { return 'Please choose a civil status.'; }

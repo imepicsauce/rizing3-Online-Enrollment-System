@@ -48,6 +48,8 @@ with sync_playwright() as playwright:
     check("enrollment guide anchor uses smooth scrolling", student.evaluate("getComputedStyle(document.documentElement).scrollBehavior") == "smooth")
     student.emulate_media(reduced_motion="reduce")
     check("reduced motion uses immediate anchor navigation", student.evaluate("getComputedStyle(document.documentElement).scrollBehavior") == "auto")
+    # Reproduce an installation that has the enrollment portal but predates the ID migration.
+    sql("DROP TABLE student_id_sequence")
     student.get_by_role("link", name="Create student account", exact=True).click()
     for field, value in {"bdate":"2004-05-06", "yrlvlsec":"I-1", "fname":"Sam", "lname":"Rivera", "address":"Roxas"}.items():
         student.fill("[name=" + field + "]", value)

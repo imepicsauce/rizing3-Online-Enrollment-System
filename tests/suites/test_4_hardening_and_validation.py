@@ -36,6 +36,7 @@ def tryadd(msg,**kw):
     s,h,_=a("Admin/addnewuser.php",sp(token=tk,**kw)); ok=(msg in al(h)) and sql("select count(*) from usertbl where username='val1'")=="0"; return ok,al(h)
 for name,kw,msg in [("bad email",{"email":"not-an-email"},"email address is not valid"),("short phone",{"cnumber":"123"},"7 to 11 digits"),("letters in phone",{"cnumber":"0912abc4567"},"7 to 11 digits"),
     ("future birth date",{"bdate":"2999-01-01"},"valid birth date"),("impossible date",{"bdate":"2005-02-31"},"valid birth date"),("no first name",{"fname":""},"First name"),("no address",{"address":""},"Address is required"),
+    ("long address", {"address":"字"*501}, "500 characters"), ("long full name", {"fname":"a"*50,"lname":"b"*50}, "100 characters"),
     ("no gender",{"gender":""},"gender"),("bad civil status",{"cstatus":"x"},"civil status"),("no year level",{"yrlvlsec":""},"Year Level")]:
     ok,m=tryadd(msg,**kw); check("rejected: "+name,ok,m)
 s,h,_=a("Admin/addnewuser.php",sp(token=tk,email="",cnumber="",bdate="")); check("birthdate is required", "Enter a birthdate" in al(h), al(h))

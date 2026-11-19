@@ -1,6 +1,19 @@
 <?php
 require_once __DIR__ . '/../Admin/includes/student_form_lib.php';
 
+function ensure_student_id_sequence(mysqli $conn): void {
+    try {
+        $conn->query('SELECT last_issued FROM student_id_sequence LIMIT 0');
+    } catch (mysqli_sql_exception $error) {
+        if ($error->getCode() !== 1146) {
+            throw $error;
+        }
+        // This additive migration is safe if two first registrations arrive together.
+        // MySQL commits DDL implicitly, so run it before the account transaction.
+        $conn->query(file_get_contents(__DIR__ . '/../database/migrations/2026-student-id-format.sql'));
+    }
+}
+
 // The caller holds the transaction until both the account and student profile are saved.
 function next_student_id(mysqli $conn): string {
     $year = (int)(new DateTimeImmutable('now', new DateTimeZone('Asia/Manila')))->format('Y');
@@ -31,9 +44,10 @@ function next_student_id(mysqli $conn): string {
 }
 
 function register_student(mysqli $conn, array $v): string {
-    $fullname = trim(implode(' ', array_filter([$v['fname'], $v['minitial'], $v['lname']], 'strlen')));
+    $fullname = student_fullname($v);
     $passwordHash = password_make($v['bdate']);
 
+    ensure_student_id_sequence($conn);
     $conn->begin_transaction();
     try {
         $studentID = next_student_id($conn);

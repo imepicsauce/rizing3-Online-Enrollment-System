@@ -34,7 +34,17 @@ if (isset($_POST['register'])) {
         } catch (OverflowException $error) {
             notify_user($error->getMessage());
         } catch (mysqli_sql_exception $error) {
-            notify_user('Registration could not be saved. Check the form or contact the registrar.');
+            $code = $error->getCode();
+            // Log the location and error number. Database messages can contain student details.
+            error_log(sprintf('Student registration failed (MySQL %d at %s line %d)', $code, basename($error->getFile()), $error->getLine()));
+            if (in_array($code, [1054, 1146, 1142], true)) {
+                $message = empty($publicRegistration)
+                    ? 'Registration is unavailable. Ask the database administrator to check the enrollment migrations and database permissions.'
+                    : 'Registration is temporarily unavailable. Please contact the registrar.';
+            } else {
+                $message = 'We could not save your account. Please try again or contact the registrar.';
+            }
+            notify_user($message . ' Reference: REG-' . $code . '.');
         }
     }
 }
