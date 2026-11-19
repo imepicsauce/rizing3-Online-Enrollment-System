@@ -11,6 +11,15 @@ if ($_SESSION['type'] === 'faculty') {
     $home = 'index.php';
     $navigation = [$home => 'Teaching schedule'];
 }
+$headerStudent = null;
+if ($_SESSION['type'] === 'student') {
+    require_once __DIR__ . '/../Admin/includes/student_form_lib.php';
+    $headerQuery = $conn->prepare('SELECT fname, minitial, lname, studnum FROM studenttbl WHERE accountID = ?');
+    $headerQuery->bind_param('i', $_SESSION['userID']);
+    $headerQuery->execute();
+    $headerStudent = $headerQuery->get_result()->fetch_assoc();
+    $headerQuery->close();
+}
 $current = basename($_SERVER['SCRIPT_NAME']);
 $parentPages = ['showsubs.php'=>'enroll.php', 'changepass.php'=>'studentprofile.php',
     'addnewuser.php'=>'userreg.php', 'edituser.php'=>'userreg.php',
@@ -30,7 +39,11 @@ $activePage = $parentPages[$current] ?? $current;
 <a class="skip" href="#main">Skip to content</a>
 <header class="header"><div class="bar">
 <a class="brand" href="<?= $home ?>"><span class="mark" aria-hidden="true">RU</span>Rizing University</a>
-<span class="identity"><?= h($_SESSION['username']) ?> <a class="nav-link" href="../includes/logout.php">Log Out</a></span>
+<span class="identity">
+<?php if ($headerStudent) { ?>
+<span class="student-identity"><strong><?= h(student_fullname($headerStudent)) ?></strong><span>Student ID <?= h($headerStudent['studnum']) ?></span></span>
+<?php } else { echo h($_SESSION['username']); } ?>
+<a class="nav-link" href="../includes/logout.php">Log Out</a></span>
 </div></header>
 <div class="layout">
 <nav class="container" aria-label="<?= $workspaceName ?>">

@@ -13,7 +13,9 @@ a:hover {text-decoration:underline}
 .brand {display:flex;gap:.7rem;align-items:center;color:white;font:1.55rem var(--serif);text-decoration:none}
 .mark {display:grid;place-items:center;width:2.7rem;height:2.9rem;padding-bottom:.22rem;background:#ab451e;clip-path:polygon(0 0,100% 0,100% 80%,50% 100%,0 80%);font:1.2rem var(--serif)}
 .identity {display:flex;align-items:center;gap:1.4rem;font-size:.92rem}
-.identity a {color:white}
+.identity a {color:white;white-space:nowrap}
+.student-identity {display:grid;text-align:end;line-height:1.35;overflow-wrap:anywhere}
+.student-identity > span {font-size:.85rem;color:#d3d8d3}
 .layout {display:grid;grid-template-columns:clamp(165px,15vw,230px) minmax(0,1fr);min-height:74vh}
 .container {border-right:1px solid var(--line);padding:2.4rem 1rem 2rem 0}
 .container strong {display:block;margin:0 0 1.4rem .65rem}

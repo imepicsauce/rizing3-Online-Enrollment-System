@@ -87,11 +87,16 @@ with sync_playwright() as playwright:
     student.fill("[name=password2]", "my-private-password")
     student.click("[name=cpass]")
     student.wait_for_url("**/studentindex.php")
+    header = student.locator(".header .student-identity")
+    check("dashboard header shows the student name and assigned ID",
+          header.locator("strong").inner_text() == "Sam Rivera" and student_id in header.inner_text())
     submit_enrollment(student)
     admin.goto(BASE + "Admin/approvals.php")
     row = admin.locator("tr", has_text=student_id)
     check("approval queue keeps the complete subject code", row.locator("td").nth(4).inner_text() == "0")
     student.goto(BASE + "student/report.php")
+    check("enrollment report keeps the student name and ID in the header",
+          header.locator("strong").inner_text() == "Sam Rivera" and student_id in header.inner_text())
     check("student report resolves the subject title", "0 - Introductory lab" in student.inner_text("body"))
     student.locator("summary", has_text="Cancel").click()
     student.get_by_role("button", name="Cancel enrollment").click()
