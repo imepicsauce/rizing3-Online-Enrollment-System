@@ -11,6 +11,14 @@ const LOGIN_WINDOW_MINUTES = 15;
 
 if (isset($_POST['submit'])) {
 	require_once __DIR__ . '/config/db.php';
+    require_once __DIR__ . '/includes/enrollment_access_schema.php';
+    try {
+        ensure_enrollment_access($conn);
+    } catch (mysqli_sql_exception $error) {
+        error_log('Enrollment sign-in schema check failed (MySQL ' . $error->getCode() . ')');
+        notify_user('Sign-in is temporarily unavailable. Please contact the registrar. Reference: LOGIN-' . $error->getCode() . '.');
+        redirect_to('portal.php');
+    }
 	$username = trim($_POST['username'] ?? '');
 	$password = (string)($_POST['password'] ?? '');
 	$attemptName = substr($username, 0, 50);

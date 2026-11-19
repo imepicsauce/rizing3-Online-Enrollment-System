@@ -36,7 +36,11 @@ if (isset($_POST['register'])) {
         } catch (mysqli_sql_exception $error) {
             $code = $error->getCode();
             // Log the location and error number. Database messages can contain student details.
-            error_log(sprintf('Student registration failed (MySQL %d at %s line %d)', $code, basename($error->getFile()), $error->getLine()));
+            $detail = '';
+            if ($code === 1054 && preg_match("/Unknown column '([a-zA-Z0-9_.]+)'/", $error->getMessage(), $match)) {
+                $detail = ' missing column ' . $match[1];
+            }
+            error_log(sprintf('Student registration failed (MySQL %d%s at %s line %d)', $code, $detail, basename($error->getFile()), $error->getLine()));
             if (in_array($code, [1054, 1146, 1142], true)) {
                 $message = empty($publicRegistration)
                     ? 'Registration is unavailable. Ask the database administrator to check the enrollment migrations and database permissions.'

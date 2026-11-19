@@ -2,8 +2,12 @@
 from datetime import datetime, timedelta, timezone
 from helpers import al, check, client, finish, login, sql, token
 
+# On an older installation a returning user may sign in before anyone registers.
+sql("DROP TABLE faculty_subject, enrollment_window")
+sql("ALTER TABLE usertbl DROP COLUMN must_change_password")
 admin = client()
-login(admin, "admins", "admins")
+check("registrar can sign in directly after a schema upgrade",
+      login(admin, "admins", "admins")[2] == "Admin/adminindex.php")
 student = client()
 check("returning student can sign in with the existing student ID and password",
       login(student, "2014-052", "123456")[2] == "student/studentindex.php")

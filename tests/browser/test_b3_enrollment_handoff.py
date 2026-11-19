@@ -48,8 +48,9 @@ with sync_playwright() as playwright:
     check("enrollment guide anchor uses smooth scrolling", student.evaluate("getComputedStyle(document.documentElement).scrollBehavior") == "smooth")
     student.emulate_media(reduced_motion="reduce")
     check("reduced motion uses immediate anchor navigation", student.evaluate("getComputedStyle(document.documentElement).scrollBehavior") == "auto")
-    # Reproduce an installation that has the enrollment portal but predates the ID migration.
-    sql("DROP TABLE student_id_sequence")
+    # Preserve the published dates to verify a partial migration, including existing records.
+    sql("DROP TABLE student_id_sequence, faculty_subject")
+    sql("ALTER TABLE usertbl DROP COLUMN must_change_password")
     student.get_by_role("link", name="Create student account", exact=True).click()
     for field, value in {"bdate":"2004-05-06", "yrlvlsec":"I-1", "fname":"Sam", "lname":"Rivera", "address":"Roxas"}.items():
         student.fill("[name=" + field + "]", value)
@@ -58,6 +59,10 @@ with sync_playwright() as playwright:
     student.click("[name=register]")
     student.wait_for_url("**/portal.php")
     student_id = re.search(r"Student ID: ([0-9]{2}-[0-9]{4})\.", student.locator(".portal-notice").inner_text()).group(1)
+    check("registration requires the first password change", sql(
+        f"SELECT must_change_password FROM usertbl WHERE username='{student_id}'") == "1")
+    check("existing accounts keep their credentials", sql(
+        "SELECT must_change_password FROM usertbl WHERE username='admins'") == "0")
     check("student ID is ready to use at sign-in", student.input_value("[name=username]") == student_id)
     check("registration preserves unknown graduation years", sql(
         f"SELECT COUNT(*) FROM studenttbl WHERE studnum='{student_id}' AND dategradelem='' AND datehsgrad='' AND datelastgrad=''"

@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../Admin/includes/student_form_lib.php';
 
+require_once __DIR__ . '/enrollment_access_schema.php';
+
 function ensure_student_id_sequence(mysqli $conn): void {
     try {
         $conn->query('SELECT last_issued FROM student_id_sequence LIMIT 0');
@@ -47,6 +49,7 @@ function register_student(mysqli $conn, array $v): string {
     $fullname = student_fullname($v);
     $passwordHash = password_make($v['bdate']);
 
+    ensure_enrollment_access($conn);
     ensure_student_id_sequence($conn);
     $conn->begin_transaction();
     try {

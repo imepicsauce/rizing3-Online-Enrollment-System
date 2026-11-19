@@ -13,11 +13,11 @@ Database settings live in one place: `config/db.php`.
 
 ## Upgrading an existing installation
 
-Select the existing enrollment database and run `database/migrations/2026-enrollment-access.sql` once before serving the updated PHP pages. In the registrar workspace, open **Enrollment schedule** and publish the registration, adjustment, and closing dates for each semester. Existing installations start with unpublished dates. A fresh sample installation includes illustrative dates for 2026–27.
+Registration and sign-in check for the password-change column and the faculty and enrollment calendar tables. If any are missing, the application applies `database/migrations/2026-enrollment-access.sql` when its database user has schema permissions. On restricted installations, select the existing enrollment database in phpMyAdmin and import that migration with a database administrator account. The migration can be rerun after a partial upgrade. In the registrar workspace, open **Enrollment schedule** and publish the registration, adjustment, and closing dates for each semester. Existing installations start with unpublished dates. A fresh sample installation includes illustrative dates for 2026–27.
 
 The first registration creates the student ID counter if it is missing and the application database user has permission to create tables. If your installation uses a restricted database user, import `database/migrations/2026-student-id-format.sql` into the existing enrollment database using phpMyAdmin or an account with schema permissions. Existing student IDs remain valid.
 
-If a registration displays a `REG-` reference, check the PHP error log for the matching MySQL number and source line. For `REG-1142`, check database permissions and apply the student ID migration with a database administrator account. For `REG-1054`, verify that the enrollment access migration added `usertbl.must_change_password`. The full sample schema resets existing records and is for fresh installations only.
+If a registration displays a `REG-` reference, check the PHP error log for the matching MySQL number and source line. For `REG-1142`, import both migrations listed above with a database administrator account. For `REG-1054` on an older installation, import the enrollment access migration to add `usertbl.must_change_password`. The full sample schema resets existing records and is for fresh installations only.
 
 ## Accounts and enrollment
 
