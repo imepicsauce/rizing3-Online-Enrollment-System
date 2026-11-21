@@ -74,25 +74,29 @@ footer span {font-family: var(--serif);}
 /* Public university homepage */
 .home {--accent: #a84018; background: #faf9f6;}
 .home .wrap {width: min(86%, 1440px);}
-.home .mast {background: #282c29; border-top: 4px solid #ca5827; color: white;}
+.home .mast {background: #292b29; border-top: 2px solid #ca5827; color: white;}
 .home .mast .wrap {padding-block: 1.35rem;}
 .home .mast .brand {font-size: clamp(1.5rem, 2vw, 2.1rem);}
 .home .mast a:hover {color: #ffd0ae;}
-.home .portal-link {background: #ffad77; color: #211e19; border: 0; padding: .78rem 1.25rem;}
-.home .mast .portal-link:hover {background: #ffc39a; color: #211e19;}
-.campus-hero {position: relative; isolation: isolate; background: #dedfd8; padding: clamp(2.5rem, 4vw, 5rem) 0;}
-.hero-image {position: absolute; inset: 0 0 0 30%; z-index: -1;}
-.hero-image img {width: 100%; height: 100%; object-fit: cover; object-position: center 52%;}
-.hero-panel {width: min(39rem, 56%); background: #faf9f6; border-top: 5px solid var(--accent); padding: clamp(1.7rem, 3.25vw, 4rem);}
-.campus-hero h1 {font-size: clamp(3rem, 4.6vw, 5.7rem); line-height: 1.02;}
-.campus-hero p {margin: 1.25rem 0 1.65rem; max-width: 40ch;}
-.hero-link {font-weight: 600;}
+.home .portal-link {border:1px solid #a6a69e; padding:.66rem 1.1rem;}
+.home .mast .portal-link:hover {background:#f8f5ed; color:var(--ink);}
+.campus-hero {position:relative; isolation:isolate; background:#eceae3; padding:clamp(3.5rem,5vw,6rem) 0;}
+.hero-image {position:absolute; inset:0 0 0 38%; z-index:-1;}
+.hero-image img {width:100%; height:100%; object-fit:cover; object-position:center 48%;}
+.hero-panel {position:relative; width:min(43rem,57%); background:#fcfaf5; padding:clamp(2rem,3.7vw,4.2rem);}
+.hero-panel::before {content:""; display:block; width:3.25rem; height:3px; background:var(--accent); margin-bottom:1.5rem;}
+.campus-hero h1 {font-size:clamp(3rem,5.6vw,5.95rem); line-height:1.03; text-wrap:balance;}
+.campus-hero h1 span {display:block; margin-bottom:.3em; font:400 clamp(1.45rem,2.1vw,2.2rem)/1.1 var(--serif); letter-spacing:-.02em;}
+.campus-hero p {margin:1.15rem 0 1.65rem; max-width:40ch;}
+.hero-link {font-weight:600; text-decoration-thickness:1px;}
+.campus-hero .hero-year {display:flex; align-items:center; gap:.9rem; margin:1.8rem 0 0; color:#53564f; font-size:.86rem; font-variant-numeric:tabular-nums;}
+.hero-year::before {content:""; width:2rem; height:1px; background:#aaa69a;}
 .programs {display: grid; grid-template-columns: 1fr 1.4fr; gap: 7%; padding-block: clamp(3rem, 5vw, 6rem); border-bottom: 1px solid var(--rule);}
 .programs p {margin-top: 1rem; max-width: 36ch;}
 .program-list {list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink);}
-.program-list li {display: grid; grid-template-columns: minmax(4rem,auto) 1fr; gap: 1rem; padding: 1.25rem 0; border-bottom: 1px solid var(--rule); align-items: baseline;}
+.program-list li {display: grid; grid-template-columns: minmax(4rem,auto) 1fr; gap: 1rem; padding: 1.5rem 0; border-bottom: 1px solid var(--rule); align-items: baseline;}
 .program-list span {font-weight: 700; color: var(--accent); overflow-wrap: anywhere;}
-.program-list strong {font: 1.4rem/1.25 var(--serif);}
+.program-list strong {font: clamp(1.35rem,1.8vw,1.75rem)/1.2 var(--serif);}
 .guide {padding-block: clamp(2.8rem, 4vw, 5rem);}
 .guide-title {display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .65rem;}
 .guide-title p {font-size: .92rem;}
@@ -128,7 +132,18 @@ footer span {font-family: var(--serif);}
   .about-layout {gap: 2rem;}
 }
 
-.public-calendar {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));gap:1.5rem;margin-top:1.25rem}
-.public-calendar > div {border-left:3px solid var(--accent);padding:.35rem 1rem}
-.public-calendar span {margin-left:.7rem;color:var(--accent);font-weight:600}
-.public-calendar p {margin:.35rem 0 0}
+.public-calendar {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));gap:clamp(1.5rem,4vw,4rem);margin:1.8rem 0 2.5rem;}
+.calendar-term {border-top:2px solid var(--ink);}
+.calendar-term header,.calendar-term dl div {display:flex;align-items:baseline;justify-content:space-between;gap:1rem;}
+.calendar-term header {padding-block:.85rem;border-bottom:1px solid var(--rule);}
+.calendar-term header strong {font:1.6rem var(--serif);}
+.calendar-term header span {color:var(--accent);font-weight:650;}
+.calendar-term dl {margin:.75rem 0 0;}
+.calendar-term dl div {padding:.22rem 0;}
+.calendar-term dt {color:var(--muted);}
+.calendar-term dd {margin:0;font-variant-numeric:tabular-nums;}
+@media (max-width:740px) {
+  .campus-hero {padding:8.5rem 0 1.35rem;}
+  .hero-panel {margin:0;padding:1.6rem;}
+  .hero-image img {object-position:center top;}
+}

@@ -42,12 +42,13 @@ try {
     <section class="campus-hero" aria-labelledby="welcome-title">
         <div class="hero-image"><img src="assets/img/university-campus.webp" alt="" width="1180" height="773" fetchpriority="high"></div>
         <div class="wrap"><div class="hero-panel">
-            <h1 id="welcome-title">Enrollment at<br>Rizing University</h1>
+            <h1 id="welcome-title"><span>Enrollment at</span>Rizing University</h1>
             <p>Explore the programs at Rizing, plan your semester, and follow your enrollment through approval.</p>
             <div class="actions">
-                <a class="button arrow" href="portal.php">Enroll / sign in</a>
+                <a class="button arrow" href="portal.php">Sign in to enroll</a>
                 <a class="hero-link" href="register.php">Create student account</a>
             </div>
+            <p class="hero-year">Academic year <?= h(SCHOOL_YEAR) ?></p>
         </div></div>
     </section>
     <section class="programs wrap" id="programs" aria-labelledby="program-heading">
@@ -71,9 +72,10 @@ try {
             <?php foreach (SEMESTERS as $semester) {
                 if (!isset($windows[$semester])) { continue; }
                 $window = $windows[$semester]; ?>
-                <div><strong><?= h($semester) ?></strong><span><?= h(enrollment_phase($window)) ?></span>
-                <p>Registration opens <?= h((new DateTimeImmutable($window['starts']))->format('M j, Y')) ?>.
-                Adjustment runs <?= h((new DateTimeImmutable($window['adjustment']))->format('M j')) ?> through <?= h((new DateTimeImmutable($window['ends']))->format('M j, Y')) ?>.</p></div>
+                <div class="calendar-term"><header><strong><?= h($semester) ?></strong><span><?= h(enrollment_phase($window)) ?></span></header>
+                <dl><?php foreach (['starts'=>'Registration opens','adjustment'=>'Adjustment begins','ends'=>'Enrollment closes'] as $field=>$label) { ?>
+                    <div><dt><?= $label ?></dt><dd><time datetime="<?= h($window[$field]) ?>"><?= h((new DateTimeImmutable($window[$field]))->format('M j, Y')) ?></time></dd></div>
+                <?php } ?></dl></div>
             <?php } ?>
         </div>
         <?php } ?>
