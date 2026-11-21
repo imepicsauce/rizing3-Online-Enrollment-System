@@ -1,35 +1,38 @@
 <?php
-require_once(__DIR__ . '/../includes/auth.php');
+require_once __DIR__ . '/../includes/auth.php';
 require_role('student');
 require_once __DIR__ . '/../config/db.php';
-require_once __DIR__ . '/../includes/enrollment_calendar.php';
-$windows = term_windows($conn);
-$stmt = $conn->prepare("SELECT studnum, fname, course, yearlvl FROM studenttbl WHERE accountID = ?");
-$stmt->bind_param("i", $_SESSION['userID']);
+require_once __DIR__ . '/../includes/student_enrollment_terms.php';
+$stmt = $conn->prepare('SELECT studnum, course, yearlvl FROM studenttbl WHERE accountID=?');
+$stmt->bind_param('i', $_SESSION['userID']);
 $stmt->execute();
 $record = $stmt->get_result()->fetch_assoc();
-$forms = [];
-if ($record) {
-    $year = SCHOOL_YEAR;
-    $stmt = $conn->prepare("SELECT semester, approved FROM student_subject WHERE studentID = ? AND school_year = ?");
-    $stmt->bind_param("ss", $record['studnum'], $year);
-    $stmt->execute();
-    $forms = array_column($stmt->get_result()->fetch_all(MYSQLI_ASSOC), 'approved', 'semester');
-}
 $pageTitle = 'Enrollment overview';
 require __DIR__ . '/../includes/workspace_top.php';
 ?>
 <?php if (!$record) { ?>
 <p>Ask the registrar to link your student record before enrolling.</p>
-<?php } else { ?>
-<section class="feature"><h2><?= h($record['fname']) ?>’s enrollment</h2>
-<p><?= h(strtoupper($record['course'])) ?> · Year and section <?= h($record['yearlvl']) ?></p>
-<a class="btn" href="enroll.php"><?= array_filter($windows, 'enrollment_open') ? 'Enroll in subjects' : 'View enrollment calendar' ?></a> &nbsp; <a href="report.php">View enrollment records</a></section>
-<h2>Semester status</h2>
-<?php foreach (SEMESTERS as $semester) {
-    $submitted = array_key_exists($semester, $forms); ?>
-<div class="term"><strong><?= h($semester) ?></strong><span><?= $submitted ? ($forms[$semester] ? 'Approved' : 'Pending approval') : h(enrollment_phase($windows[$semester] ?? null)) ?></span>
-<?php if ($submitted) { ?><a href="report.php">View form</a><?php } elseif (enrollment_open($windows[$semester] ?? null)) { ?><a href="enroll.php?sem=<?= rawurlencode($semester) ?>">Start enrollment</a><?php } ?></div>
-<?php } } ?>
-<h2>How to Enroll</h2><p>Check your <a href="curriculum.php">curriculum</a>, select subjects in <a href="enroll.php">Enroll Now</a>, then review the fees and submit your form for approval.</p>
-<?php require __DIR__ . '/../includes/workspace_bottom.php'; ?>
+<?php } else {
+    $terms = student_enrollment_terms($conn, $record['studnum']);
+    $semester = featured_enrollment_term($terms);
+    $term = $terms[$semester];
+    [$label, $url] = student_term_action($semester, $term);
+?>
+<section class="feature enrollment-focus">
+    <div><h2><?= h($semester) ?></h2><span class="term-state"><?= h($term['status']) ?></span></div>
+    <p><?= h(strtoupper($record['course'])) ?> · <?= h($record['yearlvl']) ?></p>
+    <?php if ($term['status'] === 'Pending approval') { ?><p>The registrar is reviewing your submitted subjects.</p>
+    <?php } elseif ($term['status'] === 'Approved') { ?><p>The registrar approved your enrollment for this semester.</p><?php } ?>
+    <p><?= h(student_term_timing($term)) ?></p>
+    <a class="btn" href="<?= h($url) ?>"><?= h($label) ?></a>
+</section>
+<h2>Other semesters</h2>
+<?php foreach ($terms as $name => $item) {
+    if ($name === $semester) { continue; }
+    [$linkText, $link] = student_term_action($name, $item); ?>
+<div class="term"><strong><?= h($name) ?></strong><span><?= h($item['status']) ?></span>
+<a href="<?= h($link) ?>"><?= h($linkText) ?></a></div>
+<?php } ?>
+<details class="enrollment-guide"><summary>How to Enroll</summary>
+<p>Check your <a href="curriculum.php">curriculum</a>, choose subjects during an open semester, then review the fees and submit your form to the registrar.</p></details>
+<?php } require __DIR__ . '/../includes/workspace_bottom.php'; ?>

@@ -58,7 +58,7 @@ if (count($codes) === 0) {
 
 // Everything on the form is re-read from the database. Nothing about units or fees is trusted from the browser.
 $subs = [];
-$stmt = $conn->prepare("SELECT subjectcode, numofunits, room, day, time, COALESCE(u.fullname, s.instructor) AS instructor, islab, istutorial FROM subjecttbl s LEFT JOIN faculty_subject f ON f.subjectID=s.ID LEFT JOIN usertbl u ON u.ID=f.facultyID WHERE subjectcode = ? AND course_con = ?");
+$stmt = $conn->prepare("SELECT subjectcode, subjecttitle, numofunits, room, day, time, COALESCE(u.fullname, s.instructor) AS instructor, islab, istutorial FROM subjecttbl s LEFT JOIN faculty_subject f ON f.subjectID=s.ID LEFT JOIN usertbl u ON u.ID=f.facultyID WHERE subjectcode = ? AND course_con = ?");
 foreach ($codes as $code) {
 	$stmt->bind_param("ss", $code, $rows['course']);
 	$stmt->execute();
@@ -110,17 +110,21 @@ require __DIR__ . '/../includes/workspace_top.php';
 <p><strong>Unofficial enrollment form</strong> · <?= h($sem) ?> · <?= h($schoolYear) ?></p>
 <dl><div><dt>Student</dt><dd><?= h(trim($rows['fname'].' '.$rows['minitial'].' '.$rows['lname'])) ?></dd></div><div><dt>Program</dt><dd><?= h(strtoupper($rows['course'])) ?></dd></div><div><dt>Year and section</dt><dd><?= h($rows['yearlvl']) ?></dd></div></dl>
 <h2>Selected subjects</h2>
-<div class="scroll"><table><thead><tr><th>Code</th><th>Units</th><th>Room</th><th>Day / time</th><th>Instructor</th><th>Tuition</th><th>Lab</th><th>Tutorial</th></tr></thead><tbody>
-<?php foreach ($subs as $s) { ?><tr><td><?= h($s['subjectcode']) ?></td><td><?= (int)$s['numofunits'] ?></td><td><?= h($s['room'] ?: '—') ?></td><td><?= h(trim($s['day'].' '.$s['time']) ?: '—') ?></td><td><?= h($s['instructor'] ?: '—') ?></td><td>₱<?= money($s['numofunits'] * PER_UNIT_FEE) ?></td><td><?= $s['islab'] ? '₱'.money(LAB_FEE) : '—' ?></td><td><?= $s['istutorial'] ? '₱'.money(TUTORIAL_FEE) : '—' ?></td></tr><?php } ?>
+<div class="scroll"><table><thead><tr><th>Subject</th><th>Units</th><th>Room</th><th>Day / time</th><th>Instructor</th><th>Tuition</th><th>Lab</th><th>Tutorial</th></tr></thead><tbody>
+<?php foreach ($subs as $s) { ?><tr><td class="review-subject"><strong><?= h($s['subjecttitle']) ?></strong><small><?= h($s['subjectcode']) ?></small></td><td><?= (int)$s['numofunits'] ?></td><td><?= h($s['room'] ?: '—') ?></td><td><?= h(trim($s['day'].' '.$s['time']) ?: '—') ?></td><td><?= h($s['instructor'] ?: '—') ?></td><td>₱<?= money($s['numofunits'] * PER_UNIT_FEE) ?></td><td><?= $s['islab'] ? '₱'.money(LAB_FEE) : '—' ?></td><td><?= $s['istutorial'] ? '₱'.money(TUTORIAL_FEE) : '—' ?></td></tr><?php } ?>
 </tbody></table></div>
+<section class="fee-review"><div>
 <h2>Fee breakdown</h2>
 <dl><?php foreach (['Tuition (₱'.money(PER_UNIT_FEE).' per unit)'=>$totalunits*PER_UNIT_FEE,'Entrance'=>ENTRANCE_FEE,'Internet'=>INTERNET_FEE,'Miscellaneous'=>MISC_FEE,'Lab and tutorial'=>$extras] as $label=>$amount) { ?><div><dt><?= h($label) ?></dt><dd>₱<?= money($amount) ?></dd></div><?php } ?></dl>
-<div class="summary"><span>Total for <?= $totalunits ?> units</span><strong>₱<?= money($total) ?></strong></div>
-<form method="post" class="actions no-print" action="showsubs.php">
+</div><div class="fee-decision">
+<h2>Enrollment total</h2><p><?= count($subs) ?> <?= count($subs) === 1 ? 'subject' : 'subjects' ?> · <?= $totalunits ?> units</p>
+<strong class="fee-total">₱<?= money($total) ?></strong>
+<p>Your form goes to the registrar for approval.</p>
+<form method="post" class="fee-actions no-print" action="showsubs.php">
 <?= csrf_field() ?><input type="hidden" name="sem" value="<?= h($sem) ?>">
 <?php foreach ($codes as $c) { ?><input type="hidden" name="subject[]" value="<?= h($c) ?>"><?php } ?>
 <input type="submit" name="reg" value="Submit enrollment form">
 <button class="secondary" formaction="enroll.php">Edit selection</button>
 <button type="button" class="secondary" onclick="window.print()">Print</button>
-</form>
+</form></div></section>
 <?php require __DIR__ . '/../includes/workspace_bottom.php'; ?>

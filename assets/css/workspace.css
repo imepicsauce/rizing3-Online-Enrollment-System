@@ -91,3 +91,31 @@ tr:has(input:checked) {background:#fbefdf}
 
 .registration {width:min(94%,65rem);margin:auto}
 table caption {text-align:left;padding:0 0 .75rem;color:var(--muted)}
+
+/* Student enrollment */
+.enrollment-focus > div,.enrollment-context > div:first-child {display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+.enrollment-focus h2 {margin:0}
+.term-state {display:inline-block;font-weight:650;font-size:.87rem;padding:.15rem .55rem;background:#eee9dd;color:#59391d}
+.enrollment-focus .term-state {background:#f9dfc6;color:#553019}
+.enrollment-focus .btn {margin-top:.35rem}
+.enrollment-guide {margin-top:1.4rem}
+.enrollment-controls {display:flex;gap:.65rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
+.enrollment-controls label,.enrollment-guide summary,.term-calendar summary {font-weight:600}
+.enrollment-controls [hidden] {display:none}
+.enrollment-context {padding:.85rem 1.15rem;border-left:3px solid var(--accent);background:#f0ede6}
+.enrollment-context p {margin:.35rem 0}
+.term-calendar summary,.enrollment-guide summary {cursor:pointer;color:var(--accent);width:fit-content}
+.term-calendar[open] summary {margin-bottom:.75rem}
+.review-subject strong,.review-subject small {display:block}
+.review-subject small {color:var(--muted)}
+.fee-review {display:grid;grid-template-columns:minmax(0,1.5fr) minmax(17rem,1fr);gap:clamp(1rem,3vw,2.5rem);margin-top:1.5rem}
+.fee-review h2 {margin-top:0}
+.fee-review dl {display:block}
+.fee-review dl div {display:flex;justify-content:space-between;gap:1rem;padding:.55rem 0;border-bottom:1px solid var(--line)}
+.fee-decision {padding:1.25rem;background:#edeae2;border-top:3px solid var(--accent)}
+.fee-total {font:2rem var(--serif);font-variant-numeric:tabular-nums}
+.fee-actions {display:flex;gap:.55rem;flex-wrap:wrap}
+.fee-actions input[type=submit] {width:100%}
+tr[id^="form-"]:target {background:#fbefdf;outline:2px solid var(--accent);outline-offset:-2px}
+@media(max-width:800px){.fee-review {grid-template-columns:1fr}}
+@media print {.fee-review {display:block}.fee-decision {background:white;break-inside:avoid}}

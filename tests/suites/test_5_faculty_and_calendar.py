@@ -52,6 +52,9 @@ sql("DELETE FROM enrollment_window")
 check("unpublished semester shows a waiting state", "Awaiting schedule" in student("student/enroll.php")[1])
 request = {"sem":"1st Sem", "subject[]":["IT201"], "token":token(student("student/enroll.php")[1])}
 review = "student/showsubs.php"
+check("dashboard explains unpublished dates and links to an expanded calendar",
+      "hasn’t published enrollment dates" in student("student/studentindex.php")[1]
+      and 'calendar=1#calendar' in student("student/studentindex.php")[1])
 check("unpublished semester blocks submission", "closed" in al(student(review, dict(request, reg="1"))[1]))
 check("invalid date order is rejected", "valid dates" in al(publish(3, 2, 1)))
 for start, adjustment, end, phase in [(1, 3, 4, "Upcoming"), (0, 1, 2, "Registration"), (-2, 0, 0, "Adjustment"), (-4, -3, -1, "Closed")]:
@@ -65,6 +68,16 @@ publish(-2, -1, 0)
 student(review, dict(request, reg="1"))
 check("closing day accepts submissions", sql("SELECT COUNT(*) FROM student_subject") == "1")
 record = sql("SELECT ID FROM student_subject")
+home = "student/studentindex.php"
+check("pending student gets a direct form link as the main action",
+      f'class="btn" href="report.php#form-{record}">View submitted form' in student(home)[1])
+sql("UPDATE student_subject SET approved=1")
+check("approved student sees their approved enrollment",
+      f'class="btn" href="report.php#form-{record}">View approved enrollment' in student(home)[1])
+sql("UPDATE student_subject SET approved=0")
+admin(calendar, {"semester":"2nd Sem", "starts":offset(-2), "adjustment":offset(-1), "ends":offset(2), "token":calendar_token})
+check("another eligible semester takes priority over an already submitted semester",
+      'class="btn" href="enroll.php?sem=2nd%20Sem">Choose subjects' in student(home)[1])
 publish(-5, -3, -1)
 report = "student/report.php"
 student(report, {"token":token(student(report)[1]), "cancel_form":record})

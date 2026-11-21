@@ -16,8 +16,11 @@ def sign_in(page, username, password, destination):
 def submit_enrollment(student):
     student.goto(BASE + "student/enroll.php")
     student.select_option("#sem", label="2nd Sem")
+    student.wait_for_url("**/enroll.php?sem=2nd+Sem")
+    check("calendar is collapsed above the subject picker", not student.locator("#calendar").evaluate("(el) => el.open"))
     student.check("input[value='0']")
     student.click("[name=register]")
+    check("review identifies the selected subject by title and code", student.locator(".review-subject").inner_text().splitlines() == ["Introductory lab", "0"])
     check("preview charges three units and one lab fee", "4,638.00" in student.inner_text("body"))
     student.get_by_role("button", name="Edit selection").click()
     student.wait_for_url("**/enroll.php")

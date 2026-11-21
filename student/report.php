@@ -78,7 +78,7 @@ require __DIR__ . '/../includes/workspace_top.php';
 				}
 				$status = ($f['approved'] == '0') ? 'Pending' : 'Approved';
 			?>
-			<tr>
+			<tr id="form-<?= (int)$f['ID'] ?>">
 				<td><?php echo h($f['ID']); ?></td>
 				<td><?php echo implode('<br>', $lines); ?></td>
 				<td><?php echo h($f['totalunits']); ?></td>
