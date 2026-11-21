@@ -119,3 +119,10 @@ table caption {text-align:left;padding:0 0 .75rem;color:var(--muted)}
 tr[id^="form-"]:target {background:#fbefdf;outline:2px solid var(--accent);outline-offset:-2px}
 @media(max-width:800px){.fee-review {grid-template-columns:1fr}}
 @media print {.fee-review {display:block}.fee-decision {background:white;break-inside:avoid}}
+
+.nav-group {display:block;margin:1.2rem .75rem .25rem;color:var(--muted);font-size:.8rem;font-weight:650}
+.registrar-filters {padding:1rem;background:#f0ede6;border-left:3px solid var(--accent);align-items:end}
+.registrar-filters label {display:grid;gap:.3rem;font-size:.9rem;font-weight:550}
+@media(max-width:800px){.nav-group {display:none}}
+.faculty-assignment {justify-content:flex-start}
+.faculty-assignment label {display:grid;gap:.25rem;min-width:min(100%,21rem)}

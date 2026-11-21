@@ -94,9 +94,9 @@ with sync_playwright() as playwright:
     check("dashboard header shows the student name and assigned ID",
           header.locator("strong").inner_text() == "Sam Rivera" and student_id in header.inner_text())
     submit_enrollment(student)
-    admin.goto(BASE + "Admin/approvals.php")
+    admin.goto(BASE + "Admin/approvals.php?semester=&status=all")
     row = admin.locator("tr", has_text=student_id)
-    check("approval queue keeps the complete subject code", row.locator("td").nth(4).inner_text() == "0")
+    check("approval queue keeps the complete subject code", row.locator("td").nth(4).inner_text() == "0 · Introductory lab")
     student.goto(BASE + "student/report.php")
     check("enrollment report keeps the student name and ID in the header",
           header.locator("strong").inner_text() == "Sam Rivera" and student_id in header.inner_text())

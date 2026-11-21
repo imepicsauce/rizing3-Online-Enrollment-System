@@ -29,7 +29,7 @@ require __DIR__ . '/../includes/workspace_top.php';
 ?>
 <p>Publish dates for <?= h(SCHOOL_YEAR) ?>. Students can submit during registration and adjustment, through the closing date in Manila time.</p>
 <?php foreach (SEMESTERS as $sem) { $w = $windows[$sem] ?? []; ?>
-<h2><?= h($sem) ?></h2><form class="toolbar" method="post"><?= csrf_field() ?>
+<h2><?= h($sem) ?></h2><form class="toolbar registrar-filters" method="post"><?= csrf_field() ?>
 <input type="hidden" name="semester" value="<?= h($sem) ?>">
 <?php foreach (['starts'=>'Registration opens','adjustment'=>'Adjustment begins','ends'=>'Closes'] as $key=>$label) { ?>
 <label><?= $label ?><input type="date" required name="<?= $key ?>" value="<?= h($w[$key] ?? '') ?>"></label>

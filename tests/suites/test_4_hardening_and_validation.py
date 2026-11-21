@@ -56,8 +56,11 @@ check("config/db.local.php is git-ignored", "config/db.local.php" in open(os.pat
 check("an example settings file ships with the project", os.path.isfile(os.path.join(REPO, "config", "db.local.example.php")))
 
 section("home pages")
-s,h,_=a("Admin/adminindex.php"); pend=sql("select count(*) from student_subject where approved=0")
+s,h,_=a("Admin/adminindex.php"); pend=sql("select count(*) from student_subject where approved=0 and school_year='2026 - 2027'")
 check("admin home: no lorem ipsum, shows the real pending count, no warnings", "Nam scelerisque" not in h and ("%s pending form"%pend) in h and not warns(h), warns(h))
+check("default approvals exclude the historical pending form", "2014-052" not in a("Admin/approvals.php")[1])
+check("historical forms can be found by ID across years", "File Organization" in a("Admin/approvals.php?year=&semester=&q=2014-052")[1])
+check("queue search can return an empty result", "No forms match" in a("Admin/approvals.php?year=&semester=&q=missing-student")[1])
 d=client(); LOGIN(d,"dennis","123456"); s,h,_=d("student/studentindex.php")
 check("student home: how-to-enroll steps with working links", "How to Enroll" in h and 'href="curriculum.php"' in h and 'href="enroll.php"' in h and 'href="report.php"' in h and "Nam scelerisque" not in h and 'href="#"' not in h)
 check("footer shows the current year", ("Copyright %s"%datetime.date.today().year) in h)

@@ -85,7 +85,7 @@ oid=sql("select ID from student_subject where studentID='2026-003'")
 s,h,_=d("student/report.php",{"cancel_form":oid,"token":ctk}); check("a student cannot cancel someone else's form", sql("select count(*) from student_subject where ID=%s"%oid)=="1")
 s,h,_=d("student/report.php",{"cancel_form":id2,"token":ctk}); check("pending form can be cancelled", sql("select count(*) from student_subject where ID=%s"%id2)=="0" and "cancelled" in al(h), al(h))
 s,h,_=d("student/showsubs.php",{"subject[]":["IT202"],"sem":"2nd Sem","reg":"x","token":tk if False else token(d("student/enroll.php")[1])}); check("after cancelling, a new form for that semester can be submitted", sql("select count(*) from student_subject where studentID='2014-052' and semester='2nd Sem'")=="1", al(h))
-s,h,_=a("Admin/approvals.php",{"form_id":id1,"action":"pending","token":token(a("Admin/approvals.php")[1])}); 
+s,h,_=a("Admin/approvals.php",{"form_id":id1,"action":"pending","token":token(a("Admin/approvals.php?status=approved")[1])});
 s,h,_=d("student/report.php"); check("admin can set approved form back to pending, then student may cancel it", "cancel_form" in h and h.count('name="cancel_form"')==2)
 s,h,_=a("Admin/report.php"); check("admin report shows semester, no warnings", "1st Sem 2026 - 2027" in h and "Semester" in h and not warns(h), warns(h))
 

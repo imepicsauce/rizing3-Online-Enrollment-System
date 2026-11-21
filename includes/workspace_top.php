@@ -4,7 +4,7 @@ $registrar = $_SESSION['type'] === 'admin';
 $workspaceName = $registrar ? 'Registrar workspace' : 'Student portal';
 $home = $registrar ? 'adminindex.php' : 'studentindex.php';
 $navigation = $registrar
-    ? [$home => 'Home', 'approvals.php' => 'Approvals', 'userreg.php' => 'Manage Users', 'subjectreg.php' => 'Manage Subjects', 'courses.php' => 'Courses', 'calendar.php' => 'Enrollment schedule', 'faculty.php' => 'Faculty access', 'report.php' => 'Generate Report']
+    ? [$home => 'Home', 'approvals.php' => 'Approvals', 'calendar.php' => 'Enrollment schedule', 'report.php' => 'Enrollment report', 'userreg.php' => 'Students', 'subjectreg.php' => 'Subjects', 'courses.php' => 'Courses', 'faculty.php' => 'Faculty access']
     : [$home => 'Home', 'enroll.php' => 'Enroll Now', 'report.php' => 'My Enrollment Report', 'curriculum.php' => 'Curriculum', 'studentprofile.php' => 'Profile'];
 if ($_SESSION['type'] === 'faculty') {
     $workspaceName = 'Faculty portal';
@@ -48,7 +48,11 @@ $activePage = $parentPages[$current] ?? $current;
 <div class="layout">
 <nav class="container" aria-label="<?= $workspaceName ?>">
 <strong><?= $workspaceName ?></strong>
-<?php foreach ($navigation as $url => $label) { ?>
+<?php if ($registrar) {
+    $groups = ['adminindex.php'=>'Enrollment', 'userreg.php'=>'Academic records', 'faculty.php'=>'Access'];
+}
+foreach ($navigation as $url => $label) {
+    if ($registrar && isset($groups[$url])) { ?><span class="nav-group"><?= h($groups[$url]) ?></span><?php } ?>
 <a class="nav-link" href="<?= $url ?>"<?= ($activePage === $url) ? ' aria-current="location"' : '' ?>><?= $label ?></a>
 <?php } ?>
 </nav>

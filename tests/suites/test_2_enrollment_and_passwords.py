@@ -76,7 +76,7 @@ s,h,_=a("Admin/approvals.php",{"form_id":fid,"action":"approve"}); check("approv
 s,h,_=a("Admin/approvals.php",{"form_id":fid,"action":"approve","token":tk}); check("approve with token works", sql("select approved from student_subject")=="1")
 s,h,_=d("student/report.php"); check("student now sees Approved", "Approved" in h)
 s,h,_=a("Admin/report.php"); check("admin report shows Approved", "Approved" in h and not warns(h))
-s,h,_=a("Admin/approvals.php"); s2,h2,_=a("Admin/approvals.php",{"form_id":fid,"action":"pending","token":token(h)}); check("can be set back to pending", sql("select approved from student_subject")=="0")
+s,h,_=a("Admin/approvals.php?status=approved"); s2,h2,_=a("Admin/approvals.php",{"form_id":fid,"action":"pending","token":token(h)}); check("can be set back to pending", sql("select approved from student_subject")=="0")
 s,h,_=a("Admin/adminindex.php"); check("admin menu links to Approvals; home has no dead # links", "approvals.php" in h and 'href="#"' not in h)
 s,h,_=d("student/studentindex.php"); check("student home has no dead # links", 'href="#"' not in h)
 

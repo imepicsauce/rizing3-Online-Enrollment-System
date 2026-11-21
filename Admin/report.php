@@ -22,7 +22,7 @@ $result = $stmt->get_result();
 $pageTitle = 'Enrollment report';
 require __DIR__ . '/../includes/workspace_top.php';
 ?>
-<form class="toolbar no-print" method="get">
+<form class="toolbar registrar-filters no-print" method="get">
 <label>School year <select name="year"><option value="">All years</option>
 <?php foreach ($years as $value) { ?><option value="<?= h($value) ?>" <?= $value === $year ? 'selected' : '' ?>><?= h($value) ?></option><?php } ?>
 </select></label>
