@@ -80,17 +80,41 @@ footer span {font-family: var(--serif);}
 .home .mast a:hover {color: #ffd0ae;}
 .home .portal-link {border:1px solid #a6a69e; padding:.66rem 1.1rem;}
 .home .mast .portal-link:hover {background:#f8f5ed; color:var(--ink);}
-.campus-hero {position:relative; isolation:isolate; background:#eceae3; padding:clamp(3.5rem,5vw,6rem) 0;}
-.hero-image {position:absolute; inset:0 0 0 38%; z-index:-1;}
-.hero-image img {width:100%; height:100%; object-fit:cover; object-position:center 48%;}
-.hero-panel {position:relative; width:min(43rem,57%); background:#fcfaf5; padding:clamp(2rem,3.7vw,4.2rem);}
-.hero-panel::before {content:""; display:block; width:3.25rem; height:3px; background:var(--accent); margin-bottom:1.5rem;}
-.campus-hero h1 {font-size:clamp(3rem,5.6vw,5.95rem); line-height:1.03; text-wrap:balance;}
-.campus-hero h1 span {display:block; margin-bottom:.3em; font:400 clamp(1.45rem,2.1vw,2.2rem)/1.1 var(--serif); letter-spacing:-.02em;}
-.campus-hero p {margin:1.15rem 0 1.65rem; max-width:40ch;}
-.hero-link {font-weight:600; text-decoration-thickness:1px;}
-.campus-hero .hero-year {display:flex; align-items:center; gap:.9rem; margin:1.8rem 0 0; color:#53564f; font-size:.86rem; font-variant-numeric:tabular-nums;}
-.hero-year::before {content:""; width:2rem; height:1px; background:#aaa69a;}
+.campus-hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  background: #292b29;
+  color: #faf8f2;
+  min-height: clamp(34rem, calc(100svh - 5.8rem), 58rem);
+}
+.hero-image {position: absolute; inset: 0; z-index: -1; overflow: hidden;}
+.hero-image img {width: 100%; height: 100%; object-fit: cover; object-position: center 48%; filter: grayscale(.9);}
+.hero-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, #1618159c, transparent 32%, #171917c9 67%, #171917fa);
+}
+.hero-panel {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  grid-template-rows: 1fr auto;
+  gap: 2rem 5%;
+  padding-block: 2rem clamp(2rem, 4vw, 4.5rem);
+}
+.hero-year {grid-column: 1 / -1; color: white; font-size: .9rem; font-variant-numeric: tabular-nums;}
+.hero-year::before {content: ""; display: inline-block; width: 2rem; height: 2px; margin-right: .7rem; vertical-align: middle; background: #ffa36b;}
+.campus-hero h1 {align-self: end; font-size: clamp(4rem, 8.8vw, 10rem); line-height: .92;}
+.hero-intro {display: block; margin-bottom: .85rem; font: 500 clamp(1rem, 1.5vw, 1.45rem)/1.2 system-ui, sans-serif; letter-spacing: 0;}
+.hero-name {display: block; padding-left: .55em;}
+.hero-enrollment {align-self: end; padding: 1rem 0 .3rem clamp(1.2rem, 2.4vw, 3rem); border-left: 1px solid #b5b5a9;}
+.hero-enrollment p {max-width: 37ch; color: #faf8f2; font-size: clamp(1rem, 1.3vw, 1.25rem); line-height: 1.45;}
+.hero-enrollment .actions {margin-top: 1.5rem; gap: 1rem 1.35rem;}
+.hero-enrollment .button {background: #ffa36b; color: #232420;}
+.hero-enrollment .button:hover {background: #ffc39c;}
+.hero-link {color: white; font-weight: 600; text-underline-offset: .3em;}
+.hero-link:hover {color: #ffc39c;}
 .programs {display: grid; grid-template-columns: 1fr 1.4fr; gap: 7%; padding-block: clamp(3rem, 5vw, 6rem); border-bottom: 1px solid var(--rule);}
 .programs p {margin-top: 1rem; max-width: 36ch;}
 .program-list {list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink);}
@@ -124,8 +148,11 @@ footer span {font-family: var(--serif);}
 .home footer a:hover {color: #ffbc94;}
 @media (max-width: 740px) {
   .home .wrap {width: 89%;}
-  .hero-panel {width: min(100%, 32rem); margin-top: 7rem;}
-  .hero-image {inset: 0;}
+  .hero-panel {grid-template-columns: 1fr; grid-template-rows: 1fr auto auto; gap: 1.5rem; padding-block: 1.5rem 2rem;}
+  .hero-name {padding-left: 0;}
+  .campus-hero h1 {font-size: clamp(3.3rem, 13vw, 5.8rem);}
+  .hero-enrollment {border-left: 0; border-top: 1px solid #b5b5a9; padding: 1rem 0 0;}
+  .hero-enrollment .actions {margin-top: 1rem;}
   .programs {grid-template-columns: 1fr; gap: 1.5rem;}
   .steps, .about-layout {grid-template-columns: 1fr;}
   .steps li + li {border-left: 0; padding: 1.2rem 0 0; border-top: 1px solid var(--rule);}
@@ -142,8 +169,3 @@ footer span {font-family: var(--serif);}
 .calendar-term dl div {padding:.22rem 0;}
 .calendar-term dt {color:var(--muted);}
 .calendar-term dd {margin:0;font-variant-numeric:tabular-nums;}
-@media (max-width:740px) {
-  .campus-hero {padding:8.5rem 0 1.35rem;}
-  .hero-panel {margin:0;padding:1.6rem;}
-  .hero-image img {object-position:center top;}
-}

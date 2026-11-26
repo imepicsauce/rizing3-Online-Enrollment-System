@@ -41,15 +41,17 @@ try {
 <main id="main">
     <section class="campus-hero" aria-labelledby="welcome-title">
         <div class="hero-image"><img src="assets/img/university-campus.webp" alt="" width="1180" height="773" fetchpriority="high"></div>
-        <div class="wrap"><div class="hero-panel">
-            <h1 id="welcome-title"><span>Enrollment at</span>Rizing University</h1>
-            <p>Explore the programs at Rizing, plan your semester, and follow your enrollment through approval.</p>
-            <div class="actions">
-                <a class="button arrow" href="portal.php">Sign in to enroll</a>
-                <a class="hero-link" href="register.php">Create student account</a>
-            </div>
+        <div class="wrap hero-panel">
             <p class="hero-year">Academic year <?= h(SCHOOL_YEAR) ?></p>
-        </div></div>
+            <h1 id="welcome-title"><span class="hero-intro">Enrollment at</span>Rizing <span class="hero-name">University</span></h1>
+            <div class="hero-enrollment">
+                <p>Explore the programs at Rizing, plan your semester, and follow your enrollment through approval.</p>
+                <div class="actions">
+                    <a class="button arrow" href="portal.php">Sign in to enroll</a>
+                    <a class="hero-link" href="register.php">Create student account</a>
+                </div>
+            </div>
+        </div>
     </section>
     <section class="programs wrap" id="programs" aria-labelledby="program-heading">
         <div><h2 id="program-heading">Academic programs</h2>
