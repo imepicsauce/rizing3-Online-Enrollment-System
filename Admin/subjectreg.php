@@ -11,17 +11,17 @@ require __DIR__ . '/../includes/workspace_top.php';
              <thead><tr>
 				<th>Subject Code</th>
              	<th>Subject Name</th>
-             	<th># of Units</th>
+                <th>Semester</th><th># of Units</th>
 				<th>Action</th>
               </tr></thead>    
               <tbody>
 			  <?php
-				$getsubjects = $conn->query("SELECT ID, subjectcode, subjecttitle, numofunits FROM subjecttbl");
+				$getsubjects = $conn->query("SELECT ID, subjectcode, subjecttitle, semester, numofunits FROM subjecttbl");
 				while ($r = $getsubjects->fetch_assoc()) { ?>
 				<tr>
 					<td><?php echo h($r['subjectcode']); ?></td>
 					<td><?php echo h($r['subjecttitle']); ?></td>
-					<td><?php echo h($r['numofunits']); ?></td>
+					<td><?= h($r['semester'] ?: 'Both semesters') ?></td><td><?php echo h($r['numofunits']); ?></td>
 					<td>
 						<a href="editsubject.php?id=<?php echo (int)$r['ID']; ?>">EDIT</a> |
 						<details class="confirm-action"><summary>Delete</summary>

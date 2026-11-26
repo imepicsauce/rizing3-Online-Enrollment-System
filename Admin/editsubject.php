@@ -16,7 +16,7 @@ if (!$row) {
 	redirect_to('subjectreg.php');
 }
 $oldCode = $row['subjectcode'];
-$v = ['course' => $row['course_con'], 'scode' => $row['subjectcode'], 'stitle' => $row['subjecttitle'], 'cdescription' => $row['description'],
+$v = ['semester' => $row['semester'], 'course' => $row['course_con'], 'scode' => $row['subjectcode'], 'stitle' => $row['subjecttitle'], 'cdescription' => $row['description'],
       'numunits' => (int)$row['numofunits'], 'sroom' => $row['room'], 'stime' => $row['time'], 'sday' => $row['day'],
       'sinstructor' => $row['instructor'], 'islab' => (int)$row['islab'], 'istutorial' => (int)$row['istutorial']];
 
@@ -39,8 +39,8 @@ if (isset($_POST['save'])) {
 			$units = (string)$v['numunits'];
 			$islab = $v['islab']; $istut = $v['istutorial'];
 			$stmt = $conn->prepare("UPDATE subjecttbl SET subjectcode = ?, subjecttitle = ?, numofunits = ?, room = ?, time = ?, instructor = ?, day = ?,
-				islab = ?, istutorial = ?, description = ?, course_con = ? WHERE ID = ?");
-			$stmt->bind_param("sssssssiissi", $v['scode'], $v['stitle'], $units, $v['sroom'], $v['stime'], $v['sinstructor'], $v['sday'], $islab, $istut, $v['cdescription'], $v['course'], $id);
+				islab = ?, istutorial = ?, description = ?, course_con = ?, semester = ? WHERE ID = ?");
+			$stmt->bind_param("sssssssiisssi", $v['scode'], $v['stitle'], $units, $v['sroom'], $v['stime'], $v['sinstructor'], $v['sday'], $islab, $istut, $v['cdescription'], $v['course'], $v['semester'], $id);
 			$stmt->execute();
 			notify_user('Successfully updated the subject', true);
 			redirect_to('subjectreg.php');

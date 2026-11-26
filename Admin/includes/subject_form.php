@@ -13,6 +13,13 @@ function subj_val($v, $k) { return h($v[$k] ?? ''); }
 			<?php } ?>
 		</select>
         </label>
+        <label>Semester
+            <select name="semester">
+                <?php foreach (['' => 'Both semesters', '1st Sem' => '1st Sem', '2nd Sem' => '2nd Sem', 'Archived' => 'Archived'] as $value => $label) { ?>
+                <option value="<?= h($value) ?>" <?= ($v['semester'] ?? '') === $value ? 'selected' : '' ?>><?= h($label) ?></option>
+                <?php } ?>
+            </select>
+        </label>
         <label>Subject code *
             <input type='text' required='required' maxlength='50' name='scode' value="<?php echo subj_val($v, 'scode'); ?>" />
         </label>

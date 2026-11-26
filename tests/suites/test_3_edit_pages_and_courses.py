@@ -98,16 +98,16 @@ s,h,_=a("Admin/deletecurrsubj.php",{"accid":subid,"token":tk}); check("unused su
 
 section("courses")
 s,h,_=a("Admin/courses.php"); tk=token(h); check("courses page lists BSIT/BSCS with counts, no warnings", s==200 and "BSIT" in h and "BSCS" in h and not warns(h), warns(h))
-cp={"action":"add","course_code":"BSBA","course_title":"Bachelor of Science in Business","course_desc":"d","token":tk}
-s,h,_=a("Admin/courses.php",{**cp,"token":""}); check("add without token rejected", sql("select count(*) from courses_tbl where course_code='bsba'")=="0")
-s,h,_=a("Admin/courses.php",cp); check("add course (code lower-cased)", sql("select course_code from courses_tbl where course_code='bsba'")=="bsba" and "added" in al(h), al(h))
+cp={"action":"add","course_code":"TESTBA","course_title":"Bachelor of Science in Business","course_desc":"d","token":tk}
+s,h,_=a("Admin/courses.php",{**cp,"token":""}); check("add without token rejected", sql("select count(*) from courses_tbl where course_code='testba'")=="0")
+s,h,_=a("Admin/courses.php",cp); check("add course (code lower-cased)", sql("select course_code from courses_tbl where course_code='testba'")=="testba" and "added" in al(h), al(h))
 s,h,_=a("Admin/courses.php",cp); check("duplicate code -> friendly message", "already exists" in al(h), al(h))
 s,h,_=a("Admin/courses.php",{**cp,"course_code":"bad code!"}); check("bad characters in code rejected", "can only use" in al(h))
 s,h,_=a("Admin/courses.php",{**cp,"course_title":""}); check("empty title rejected", "required" in al(h))
-cid=sql("select course_ID from courses_tbl where course_code='bsba'")
-s,h,_=a("Admin/courses.php?edit="+cid); check("edit form pre-filled", 'value="bsba"' in h and "Edit Course" in h)
-s,h,_=a("Admin/courses.php",{"action":"save","course_id":cid,"course_code":"bsba2","course_title":"Business","course_desc":"","token":tk}); check("edit course saves", sql("select course_code,course_title from courses_tbl where ID=%s"%cid if False else "select course_code,course_title from courses_tbl where course_ID=%s"%cid)=="bsba2\tBusiness", al(h))
-s,h,_=a("Admin/addnewsubj.php"); check("new course appears in the Add Subject course list", 'value=\'bsba2\'' in h or 'value="bsba2"' in h)
+cid=sql("select course_ID from courses_tbl where course_code='testba'")
+s,h,_=a("Admin/courses.php?edit="+cid); check("edit form pre-filled", 'value="testba"' in h and "Edit Course" in h)
+s,h,_=a("Admin/courses.php",{"action":"save","course_id":cid,"course_code":"testba2","course_title":"Business","course_desc":"","token":tk}); check("edit course saves", sql("select course_code,course_title from courses_tbl where ID=%s"%cid if False else "select course_code,course_title from courses_tbl where course_ID=%s"%cid)=="testba2\tBusiness", al(h))
+s,h,_=a("Admin/addnewsubj.php"); check("new course appears in the Add Subject course list", 'value=\'testba2\'' in h or 'value="testba2"' in h)
 s,h,_=a("Admin/courses.php",{"action":"delete","course_id":"1","token":tk}); check("course with students/subjects cannot be deleted (explains why)", "cannot be deleted" in al(h) and "student(s)" in al(h) and sql("select count(*) from courses_tbl where course_ID=1")=="1", al(h))
 s,h,_=a("Admin/courses.php",{"action":"delete","course_id":cid,"token":tk}); check("empty course can be deleted", sql("select count(*) from courses_tbl where course_ID=%s"%cid)=="0" and "deleted" in al(h), al(h))
 s,h,_=a("Admin/courses.php",{"action":"delete","course_id":"9999","token":tk}); check("deleting a missing course -> message", "no longer exists" in al(h))

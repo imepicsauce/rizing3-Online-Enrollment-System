@@ -14,15 +14,15 @@
 	}
 	$_SESSION['studnum'] = $rows['studnum'];
 
-	// Only the subjects of the student's own course can be chosen.
-	$stmt = $conn->prepare("SELECT subjectcode, subjecttitle, description, numofunits, day, time, room FROM subjecttbl WHERE course_con = ? ORDER BY subjectcode");
-	$stmt->bind_param("s", $rows['course']);
-	$stmt->execute();
-	$subjects = $stmt->get_result();
 $terms = student_enrollment_terms($conn, $rows['studnum']);
 $requested = $_POST['sem'] ?? $_GET['sem'] ?? null;
 $semester = is_string($requested) && isset($terms[$requested]) ? $requested : featured_enrollment_term($terms);
 $term = $terms[$semester];
+	// Only the subjects of the student's own course can be chosen.
+	$stmt = $conn->prepare("SELECT subjectcode, subjecttitle, description, numofunits, day, time, room FROM subjecttbl WHERE course_con = ? AND (semester = ? OR semester = '') ORDER BY subjectcode");
+	$stmt->bind_param("ss", $rows['course'], $semester);
+	$stmt->execute();
+	$subjects = $stmt->get_result();
 $canChoose = $term['eligible'];
 $selected = is_array($_POST['subject'] ?? null) ? $_POST['subject'] : [];
 $pageTitle = 'Subject enrollment';
@@ -51,7 +51,7 @@ require __DIR__ . '/../includes/workspace_top.php';
 <form id="selection" method="post" action="showsubs.php">
 <?= csrf_field() ?><input type="hidden" name="sem" value="<?= h($semester) ?>">
 <div class="scroll"><table><thead><tr><th>Select</th><th>Subject code</th><th>Subject title</th><th>Class meeting</th><th>Room</th><th>Units</th></tr></thead><tbody>
-<?php if (!$subjects->num_rows) { ?><tr><td colspan="6">No subjects have been added for your course yet.</td></tr><?php } ?>
+<?php if (!$subjects->num_rows) { ?><tr><td colspan="6">No subjects are offered for your program this semester.</td></tr><?php } ?>
 <?php while ($s = $subjects->fetch_assoc()) { ?>
 <tr><td><input <?= !$canChoose ? 'disabled' : '' ?> type="checkbox" name="subject[]" aria-label="Select <?= h($s['subjectcode']) ?>" value="<?= h($s['subjectcode']) ?>" data-units="<?= (int)$s['numofunits'] ?>" <?= in_array($s['subjectcode'], $selected, true) ? 'checked' : '' ?>></td><td><?= h($s['subjectcode']) ?></td><td><?= h($s['subjecttitle']) ?><?php if ($s['description']) { ?><details><summary>Description</summary><?= h($s['description']) ?></details><?php } ?></td><td><?= h(trim($s['day'].' '.$s['time']) ?: 'To be announced') ?></td><td><?= h($s['room'] ?: 'To be announced') ?></td><td><?= (int)$s['numofunits'] ?></td></tr>
 <?php } ?></tbody></table></div>

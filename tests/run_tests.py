@@ -122,7 +122,9 @@ VALUES ('2026 - 2027','1st Sem','2000-01-01','2099-01-01','2099-01-31'),
         for path in suites:
             name = os.path.basename(path)
             print("\n" + "=" * 70 + "\n" + name + "\n" + "=" * 70, flush=True)
-            reset_db(args, schema)
+            # Legacy workflow suites use the original BSIT offerings in both terms.
+            fixture = "" if name == "test_program_catalog.py" else "UPDATE subjecttbl SET semester='' WHERE subjectcode IN ('IT201','IT202','CS 103');"
+            reset_db(args, schema + fixture)
             p = subprocess.run([sys.executable, "-u", path], env=env, cwd=HERE)
             results.append((name, p.returncode == 0))
     finally:

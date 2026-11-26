@@ -70,3 +70,9 @@ Done:
 ## Tests
 
 Automated tests live in `tests/`. Run `python tests/run_tests.py` after every change; see `tests/README.md` for setup (XAMPP) and how to read the results. They use a separate throwaway database, never your real one.
+
+## Philippine program catalog and demo people
+
+Fresh installations include eleven illustrative first-year programs with six subjects per semester. For an existing database, select it in phpMyAdmin and import `database/migrations/2026-program-catalog.sql` before using the updated portal. Existing subjects keep their availability in both semesters until the registrar edits their semester under Subjects. The supplied curricula and class meetings are examples for registrar review.
+
+To populate a demo database, import `database/sample-students-faculty.sql` after the catalog and the enrollment access and student ID migrations. Use an account with routine creation privileges. This optional script creates one fictional student and one faculty account per program and assigns the faculty member to its sample offerings. The result lists the assigned student IDs and birthdate passwords. Faculty usernames follow `demo.prof.bsit` and initial passwords follow `RizingDemo-BSIT!`, substituting each program code. These sample credentials are intended for demo databases only.

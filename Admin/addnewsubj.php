@@ -16,9 +16,9 @@ if (isset($_POST['register'])) {
 			$units = (string)$v['numunits'];
 			$islab = $v['islab']; $istut = $v['istutorial'];
 			$stmt = $conn->prepare("INSERT INTO subjecttbl
-				(subjectcode, subjecttitle, numofunits, room, time, instructor, day, islab, istutorial, description, course_con)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			$stmt->bind_param("sssssssiiss", $v['scode'], $v['stitle'], $units, $v['sroom'], $v['stime'], $v['sinstructor'], $v['sday'], $islab, $istut, $v['cdescription'], $v['course']);
+				(subjectcode, subjecttitle, numofunits, room, time, instructor, day, islab, istutorial, description, course_con, semester)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			$stmt->bind_param("sssssssiisss", $v['scode'], $v['stitle'], $units, $v['sroom'], $v['stime'], $v['sinstructor'], $v['sday'], $islab, $istut, $v['cdescription'], $v['course'], $v['semester']);
 			$stmt->execute();
 			notify_user('Successfully Created new Subject', true);
 			redirect_to('subjectreg.php');
