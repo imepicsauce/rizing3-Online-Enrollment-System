@@ -4,7 +4,7 @@ require_role('admin');
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/includes/subject_save.php');
 
-$courses = array_column($conn->query("SELECT course_code FROM courses_tbl ORDER BY course_code")->fetch_all(MYSQLI_ASSOC), 'course_code');
+$courses = array_column($conn->query("SELECT course_code FROM courses_tbl WHERE is_offered=1 ORDER BY course_code")->fetch_all(MYSQLI_ASSOC), 'course_code');
 $v = ['numunits' => 3];
 
 if (isset($_POST['register'])) {

@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_role('faculty');
 require_once __DIR__ . '/../config/db.php';
-$stmt = $conn->prepare("SELECT s.subjectcode,s.subjecttitle,s.course_con,s.semester,s.day,s.time,s.room,s.numofunits FROM subjecttbl s JOIN faculty_subject f ON f.subjectID=s.ID WHERE f.facultyID=? ORDER BY s.subjectcode");
+$stmt = $conn->prepare("SELECT s.subjectcode,s.subjecttitle,s.course_con,s.semester,s.day,s.time,s.room,s.numofunits FROM subjecttbl s JOIN faculty_subject f ON f.subjectID=s.ID WHERE f.facultyID=? AND s.course_con IN (SELECT course_code FROM courses_tbl WHERE is_offered=1) ORDER BY s.subjectcode");
 $stmt->bind_param('i',$_SESSION['userID']);
 $stmt->execute();
 $subjects = $stmt->get_result();

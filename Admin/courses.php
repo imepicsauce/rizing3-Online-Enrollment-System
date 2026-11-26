@@ -73,7 +73,7 @@ if (isset($_GET['edit'])) {
 	$edit = $stmt->get_result()->fetch_assoc();
 }
 
-$courses = $conn->query("SELECT c.course_ID, c.course_code, c.course_title, c.course_desc,
+$courses = $conn->query("SELECT c.course_ID, c.course_code, c.course_title, c.course_desc, c.is_offered,
 		(SELECT COUNT(*) FROM studenttbl s WHERE s.course = c.course_code) AS students,
 		(SELECT COUNT(*) FROM subjecttbl j WHERE j.course_con = c.course_code) AS subjects
 	FROM courses_tbl c ORDER BY c.course_code");
@@ -95,7 +95,7 @@ require __DIR__ . '/../includes/workspace_top.php';
 			while ($c = $courses->fetch_assoc()) { ?>
 				<tr>
 					<td><?php echo h(strtoupper($c['course_code'])); ?></td>
-					<td><?php echo h($c['course_title']); ?></td>
+					<td><?php echo h($c['course_title']); ?><?= $c['is_offered'] ? '' : ' (retired)' ?></td>
 					<td><?php echo h($c['course_desc']); ?></td>
 					<td align="center"><?php echo (int)$c['students']; ?></td>
 					<td align="center"><?php echo (int)$c['subjects']; ?></td>

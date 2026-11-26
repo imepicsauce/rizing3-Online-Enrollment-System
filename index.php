@@ -11,7 +11,7 @@ $programs = null;
 $windows = [];
 try {
     $catalog = enrollment_connection();
-    $programs = $catalog->query('SELECT course_code, course_title FROM courses_tbl ORDER BY course_title')->fetch_all(MYSQLI_ASSOC);
+    $programs = $catalog->query('SELECT course_code, course_title FROM courses_tbl WHERE is_offered=1 ORDER BY course_title')->fetch_all(MYSQLI_ASSOC);
     $windows = term_windows($catalog);
 } catch (mysqli_sql_exception $e) {
     // The public entrance remains usable while the catalog is unavailable.

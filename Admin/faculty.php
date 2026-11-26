@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $conn->prepare('DELETE FROM faculty_subject WHERE subjectID=?');
             $stmt->bind_param('i',$subject);
         } else {
-            $stmt = $conn->prepare("INSERT INTO faculty_subject (subjectID,facultyID) SELECT s.ID,u.ID FROM subjecttbl s JOIN usertbl u ON u.ID=? AND u.user_type='faculty' WHERE s.ID=? ON DUPLICATE KEY UPDATE facultyID=VALUES(facultyID)");
+            $stmt = $conn->prepare("INSERT INTO faculty_subject (subjectID,facultyID) SELECT s.ID,u.ID FROM subjecttbl s JOIN usertbl u ON u.ID=? AND u.user_type='faculty' WHERE s.ID=? AND s.course_con IN (SELECT course_code FROM courses_tbl WHERE is_offered=1) ON DUPLICATE KEY UPDATE facultyID=VALUES(facultyID)");
             $stmt->bind_param('ii',$faculty,$subject);
         }
         $stmt->execute();
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect_to('faculty.php');
 }
 $staff = $conn->query("SELECT ID,fullname,username FROM usertbl WHERE user_type='faculty' ORDER BY fullname")->fetch_all(MYSQLI_ASSOC);
-$subjects = $conn->query("SELECT s.ID,s.subjectcode,s.subjecttitle,f.facultyID FROM subjecttbl s LEFT JOIN faculty_subject f ON f.subjectID=s.ID ORDER BY subjectcode");
+$subjects = $conn->query("SELECT s.ID,s.subjectcode,s.subjecttitle,f.facultyID FROM subjecttbl s LEFT JOIN faculty_subject f ON f.subjectID=s.ID WHERE s.course_con IN (SELECT course_code FROM courses_tbl WHERE is_offered=1) ORDER BY subjectcode");
 $pageTitle = 'Faculty access';
 require __DIR__ . '/../includes/workspace_top.php';
 ?>

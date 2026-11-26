@@ -4,7 +4,7 @@ require_role('admin');
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/includes/subject_save.php');
 
-$courses = array_column($conn->query("SELECT course_code FROM courses_tbl ORDER BY course_code")->fetch_all(MYSQLI_ASSOC), 'course_code');
+$courses = array_column($conn->query("SELECT course_code FROM courses_tbl WHERE is_offered=1 ORDER BY course_code")->fetch_all(MYSQLI_ASSOC), 'course_code');
 $id = (int)($_GET['id'] ?? $_POST['id'] ?? 0);
 
 $stmt = $conn->prepare("SELECT * FROM subjecttbl WHERE ID = ? LIMIT 1");
@@ -15,6 +15,8 @@ if (!$row) {
 	notify_user('That subject was not found.');
 	redirect_to('subjectreg.php');
 }
+// Allow an existing historical record to retain its own retired program.
+if (!in_array($row['course_con'], $courses, true)) { $courses[] = $row['course_con']; }
 $oldCode = $row['subjectcode'];
 $v = ['semester' => $row['semester'], 'course' => $row['course_con'], 'scode' => $row['subjectcode'], 'stitle' => $row['subjecttitle'], 'cdescription' => $row['description'],
       'numunits' => (int)$row['numofunits'], 'sroom' => $row['room'], 'stime' => $row['time'], 'sday' => $row['day'],

@@ -16,7 +16,7 @@ require __DIR__ . '/../includes/workspace_top.php';
               </tr></thead>    
               <tbody>
 			  <?php
-				$getsubjects = $conn->query("SELECT ID, subjectcode, subjecttitle, semester, numofunits FROM subjecttbl");
+				$getsubjects = $conn->query("SELECT ID, subjectcode, subjecttitle, semester, numofunits FROM subjecttbl WHERE course_con IN (SELECT course_code FROM courses_tbl WHERE is_offered=1)");
 				while ($r = $getsubjects->fetch_assoc()) { ?>
 				<tr>
 					<td><?php echo h($r['subjectcode']); ?></td>

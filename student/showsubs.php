@@ -58,7 +58,7 @@ if (count($codes) === 0) {
 
 // Everything on the form is re-read from the database. Nothing about units or fees is trusted from the browser.
 $subs = [];
-$stmt = $conn->prepare("SELECT subjectcode, subjecttitle, numofunits, room, day, time, COALESCE(u.fullname, s.instructor) AS instructor, islab, istutorial FROM subjecttbl s LEFT JOIN faculty_subject f ON f.subjectID=s.ID LEFT JOIN usertbl u ON u.ID=f.facultyID WHERE subjectcode = ? AND course_con = ? AND (s.semester = ? OR s.semester = '')");
+$stmt = $conn->prepare("SELECT subjectcode, subjecttitle, numofunits, room, day, time, COALESCE(u.fullname, s.instructor) AS instructor, islab, istutorial FROM subjecttbl s LEFT JOIN faculty_subject f ON f.subjectID=s.ID LEFT JOIN usertbl u ON u.ID=f.facultyID WHERE subjectcode = ? AND course_con = ? AND course_con IN (SELECT course_code FROM courses_tbl WHERE is_offered=1) AND (s.semester = ? OR s.semester = '')");
 foreach ($codes as $code) {
 	$stmt->bind_param("sss", $code, $rows['course'], $sem);
 	$stmt->execute();

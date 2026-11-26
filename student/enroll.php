@@ -19,7 +19,7 @@ $requested = $_POST['sem'] ?? $_GET['sem'] ?? null;
 $semester = is_string($requested) && isset($terms[$requested]) ? $requested : featured_enrollment_term($terms);
 $term = $terms[$semester];
 	// Only the subjects of the student's own course can be chosen.
-	$stmt = $conn->prepare("SELECT subjectcode, subjecttitle, description, numofunits, day, time, room FROM subjecttbl WHERE course_con = ? AND (semester = ? OR semester = '') ORDER BY subjectcode");
+	$stmt = $conn->prepare("SELECT subjectcode, subjecttitle, description, numofunits, day, time, room FROM subjecttbl WHERE course_con = ? AND course_con IN (SELECT course_code FROM courses_tbl WHERE is_offered=1) AND (semester = ? OR semester = '') ORDER BY subjectcode");
 	$stmt->bind_param("ss", $rows['course'], $semester);
 	$stmt->execute();
 	$subjects = $stmt->get_result();

@@ -4,7 +4,7 @@ require_role('admin');
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/includes/student_form_lib.php');
 
-$courses = array_column($conn->query("SELECT course_code FROM courses_tbl ORDER BY course_code")->fetch_all(MYSQLI_ASSOC), 'course_code');
+$courses = array_column($conn->query("SELECT course_code FROM courses_tbl WHERE is_offered=1 ORDER BY course_code")->fetch_all(MYSQLI_ASSOC), 'course_code');
 $id = (int)($_GET['id'] ?? $_POST['id'] ?? 0);
 
 $stmt = $conn->prepare("SELECT s.*, u.username FROM studenttbl s JOIN usertbl u ON u.ID = s.accountID WHERE s.ID = ? AND u.user_type = 'student' LIMIT 1");
@@ -15,6 +15,8 @@ if (!$row) {
 	notify_user('That student account was not found.');
 	redirect_to('userreg.php');
 }
+// Allow an existing historical record to retain its own retired program.
+if (!in_array($row['course'], $courses, true)) { $courses[] = $row['course']; }
 $accountID = (int)$row['accountID'];
 $isEdit = true;
 $fixedID = $row['username'] === $row['studnum'] &&
