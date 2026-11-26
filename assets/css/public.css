@@ -121,7 +121,8 @@ footer span {font-family: var(--serif);}
 .program-list li {display: grid; grid-template-columns: minmax(4rem,auto) 1fr; gap: 1rem; padding: 1.5rem 0; border-bottom: 1px solid var(--rule); align-items: baseline;}
 .program-list span {font-weight: 700; color: var(--accent); overflow-wrap: anywhere;}
 .program-list strong {font: clamp(1.35rem,1.8vw,1.75rem)/1.2 var(--serif);}
-.guide {padding-block: clamp(2.8rem, 4vw, 5rem);}
+.guide {background: #eeede7; padding-block: clamp(3rem, 5vw, 6rem);}
+.guide-title h2 {font-size: clamp(2.6rem, 4.8vw, 5rem);}
 .guide-title {display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .65rem;}
 .guide-title p {font-size: .92rem;}
 .guide-title strong {font-weight: 650; white-space: nowrap;}
@@ -159,12 +160,21 @@ footer span {font-family: var(--serif);}
   .about-layout {gap: 2rem;}
 }
 
-.public-calendar {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));gap:clamp(1.5rem,4vw,4rem);margin:1.8rem 0 2.5rem;}
-.calendar-term {border-top:2px solid var(--ink);}
+.public-calendar {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));gap:1.2rem;margin:clamp(1.5rem,3vw,2.5rem) 0;}
+.calendar-term {
+  padding: .5rem clamp(1rem, 2.2vw, 2.25rem) 1.3rem;
+  background: #faf9f6;
+  border-top: 3px solid #aaa99f;
+}
+.calendar-term.is-open {background: #292b29; border-color: #f49a61; color: #faf9f6;}
+.calendar-term.is-open header {border-color: #62655f;}
+.calendar-term.is-open header span {color: #ffb786;}
+.calendar-term.is-open dt {color: #dddcd5;}
+.calendar-term .next-date dt, .calendar-term .next-date dd {color: inherit; font-weight: 700;}
 .calendar-term header,.calendar-term dl div {display:flex;align-items:baseline;justify-content:space-between;gap:1rem;}
 .calendar-term header {padding-block:.85rem;border-bottom:1px solid var(--rule);}
 .calendar-term header strong {font:1.6rem var(--serif);}
-.calendar-term header span {color:var(--accent);font-weight:650;}
+.calendar-term header span {color:var(--muted);font-weight:650;}
 .calendar-term dl {margin:.75rem 0 0;}
 .calendar-term dl div {padding:.22rem 0;}
 .calendar-term dt {color:var(--muted);}

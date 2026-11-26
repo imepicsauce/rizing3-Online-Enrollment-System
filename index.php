@@ -64,7 +64,8 @@ try {
         </ul>
         <?php } else { ?><p><?= $programs === null ? 'The program catalog is temporarily unavailable.' : 'The registrar has not listed any programs yet.' ?></p><?php } ?>
     </section>
-    <section class="guide wrap" id="enrollment" aria-labelledby="guide-heading">
+    <section class="guide" id="enrollment" aria-labelledby="guide-heading">
+        <div class="wrap">
         <div class="guide-title">
             <h2 id="guide-heading">Enrollment guide</h2>
             <p>Academic year <strong><?php echo h(SCHOOL_YEAR); ?></strong></p>
@@ -73,10 +74,12 @@ try {
         <div class="public-calendar" role="region" aria-label="Enrollment dates">
             <?php foreach (SEMESTERS as $semester) {
                 if (!isset($windows[$semester])) { continue; }
-                $window = $windows[$semester]; ?>
-                <div class="calendar-term"><header><strong><?= h($semester) ?></strong><span><?= h(enrollment_phase($window)) ?></span></header>
+                $window = $windows[$semester];
+                $phase = enrollment_phase($window);
+                $nextDate = ['Upcoming'=>'starts', 'Registration'=>'adjustment', 'Adjustment'=>'ends'][$phase] ?? null; ?>
+                <div class="calendar-term<?= in_array($phase, ['Registration','Adjustment'], true) ? ' is-open' : '' ?>"><header><strong><?= h($semester) ?></strong><span><?= h($phase) ?></span></header>
                 <dl><?php foreach (['starts'=>'Registration opens','adjustment'=>'Adjustment begins','ends'=>'Enrollment closes'] as $field=>$label) { ?>
-                    <div><dt><?= $label ?></dt><dd><time datetime="<?= h($window[$field]) ?>"><?= h((new DateTimeImmutable($window[$field]))->format('M j, Y')) ?></time></dd></div>
+                    <div<?= $field === $nextDate ? ' class="next-date"' : '' ?>><dt><?= $label ?></dt><dd><time datetime="<?= h($window[$field]) ?>"><?= h((new DateTimeImmutable($window[$field]))->format('M j, Y')) ?></time></dd></div>
                 <?php } ?></dl></div>
             <?php } ?>
         </div>
@@ -86,6 +89,7 @@ try {
             <li><h3>Choose your subjects</h3><p><a href="portal.php">Sign in to the portal</a> to select your semester and the subjects offered for your program.</p></li>
             <li><h3>Review and submit</h3><p>Check your units and fees, then submit your form. Track approval in My Enrollment Report.</p></li>
         </ol>
+        </div>
     </section>
     <section class="about" id="university" aria-labelledby="about-heading">
         <div class="wrap about-layout">
